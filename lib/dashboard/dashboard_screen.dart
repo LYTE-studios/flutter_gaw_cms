@@ -1,0 +1,45 @@
+import 'package:beamer/beamer.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/widgets/base_screen.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
+
+const BeamPage dashboardBeamPage = BeamPage(
+  title: 'Home',
+  key: ValueKey('dashboard'),
+  type: BeamPageType.noTransition,
+  child: DashboardScreen(),
+);
+
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
+
+  static const String route = '/dashboard';
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  String route = DashboardPage.route;
+
+  final Map<String, Widget> pages = {
+    DashboardPage.route: const DashboardPage(),
+    StatisticsPage.route: const StatisticsPage(),
+    CustomersPage.route: const CustomersPage(),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return BaseScreen(
+      route: route,
+      onChangeRoute: (String route) {
+        setState(() {
+          this.route = route;
+        });
+      },
+      child: pages[route] ?? const SizedBox(),
+    );
+  }
+}
