@@ -30,11 +30,11 @@ dependencies:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main 
 
-# dependency_overrides:
-#   flutter_package_gaw_ui: 
-#     path: ../flutter_package_gaw_ui
-#   flutter_package_gaw_api: 
-#     path: ../flutter_package_gaw_api
+dependency_overrides:
+  flutter_package_gaw_ui: 
+    path: ../flutter_package_gaw_ui
+  flutter_package_gaw_api: 
+    path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
@@ -44,7 +44,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  assets: 
-  
-    - assets/translations/

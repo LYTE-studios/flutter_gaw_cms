@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/customers/dialogs/wizard_items/add_customer_wizard_item.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
 class CustomerCreateDialog extends StatefulWidget {
@@ -65,77 +66,130 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
     return Dialog(
       child: Container(
         height: 420,
-        width: 560,
+        width: 720,
         decoration: BoxDecoration(
           color: GawTheme.clearBackground,
           borderRadius: BorderRadius.circular(12),
         ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: PaddingSizes.extraBigPadding * 2,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            LayoutBuilder(builder: (context, constraints) {
-              return SizedBox(
-                height: 360,
-                width: constraints.maxWidth,
-                child: Row(
-                  children: [
-                    SizeTransition(
-                      axisAlignment: -1,
-                      axis: Axis.horizontal,
-                      sizeFactor: page1Animation,
-                      child: Container(
-                        height: 100,
-                        width: index == 0 ? constraints.maxWidth : 0,
-                        color: Colors.red,
-                      ),
-                    ),
-                    SizeTransition(
-                      axisAlignment: -1,
-                      axis: Axis.horizontal,
-                      sizeFactor: page1Animation,
-                      child: Container(
-                        height: 100,
-                        width: index == 1 ? constraints.maxWidth : 0,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    SizeTransition(
-                      sizeFactor: page3Animation,
-                      child: Expanded(
-                        child: Container(color: Colors.green),
-                      ),
-                    ),
-                    SizeTransition(
-                      sizeFactor: page4Animation,
-                      child: Expanded(
-                        child: Container(color: Colors.red),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
             SizedBox(
-              child: InkWell(
-                onTap: () {
-                  switch (index) {
-                    case 0:
-                      {
+              height: 100,
+              child: WizardHeader(
+                items: const [
+                  'Information',
+                  'Address',
+                  'Picture',
+                  'Billing',
+                ],
+                selectedIndex: index,
+              ),
+            ),
+            Expanded(
+              child: LayoutBuilder(builder: (context, constraints) {
+                double width =
+                    constraints.maxWidth - PaddingSizes.extraBigPadding;
+
+                return SizedBox(
+                  height: 360,
+                  width: width,
+                  child: Row(
+                    children: [
+                      SizeTransition(
+                        axisAlignment: -1,
+                        axis: Axis.horizontal,
+                        sizeFactor: page1Animation,
+                        child: SizedBox(
+                          width: index == 0 ? width : 0,
+                          child: const AddCustomerWizardItem(),
+                        ),
+                      ),
+                      SizeTransition(
+                        axisAlignment: -1,
+                        axis: Axis.horizontal,
+                        sizeFactor: page1Animation,
+                        child: Container(
+                          height: 100,
+                          width: index == 1 ? width : 0,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizeTransition(
+                        sizeFactor: page3Animation,
+                        child: Expanded(
+                          child: Container(color: Colors.green),
+                        ),
+                      ),
+                      SizeTransition(
+                        sizeFactor: page4Animation,
+                        child: Expanded(
+                          child: Container(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+            SizedBox(
+              height: 120,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        index = index + 1;
+                      });
+                      return;
+                    },
+                    child: Container(
+                      height: 42,
+                      width: 156,
+                      decoration: BoxDecoration(
+                        color: GawTheme.mainTint,
+                        borderRadius: BorderRadius.circular(
+                          8,
+                        ),
+                        boxShadow: const [
+                          Shadows.lightShadow,
+                        ],
+                      ),
+                      child: Center(
+                        child: MainText(
+                          'Next',
+                          textStyleOverride: TextStyles.titleStyle.copyWith(
+                            color: GawTheme.mainTintText,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: index > 0,
+                    child: GestureDetector(
+                      onTap: () {
                         setState(() {
-                          index = 1;
+                          index = index - 1;
                         });
                         return;
-                      }
-                  }
-                },
-                child: Container(
-                  height: 42,
-                  width: 120,
-                  decoration: const BoxDecoration(
-                    color: GawTheme.mainTint,
+                      },
+                      child: const SizedBox(
+                        width: 72,
+                        child: Center(
+                          child: MainText(
+                            'Back',
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: const MainText('Press'),
-                ),
+                ],
               ),
             )
           ],

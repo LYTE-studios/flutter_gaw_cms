@@ -4,6 +4,7 @@ import 'package:flutter_gaw_cms/core/widgets/base_screen.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
 
 const BeamPage dashboardBeamPage = BeamPage(
   title: 'Home',
@@ -28,6 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DashboardPage.route: const DashboardPage(),
     StatisticsPage.route: const StatisticsPage(),
     CustomersPage.route: const CustomersPage(),
+    WashersPage.route: const WashersPage(),
   };
 
   @override
