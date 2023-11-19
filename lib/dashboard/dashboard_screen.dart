@@ -9,6 +9,8 @@ import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
+final GlobalKey<ScaffoldState> globalScaffoldKey = GlobalKey();
+
 const BeamPage dashboardBeamPage = BeamPage(
   title: 'Home',
   key: ValueKey('dashboard'),
@@ -36,8 +38,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   };
 
   @override
+  void initState() {
+    dashboardRouter.beamToNamed(DashboardPage.route);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseScreen(
+      key: globalScaffoldKey,
       route: route,
       onChangeRoute: (String route) {
         dashboardRouter.beamToNamed(route);

@@ -23,30 +23,32 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Column(
-          children: [
-            CmsHeader(),
-          ],
-        ),
-        Column(
-          children: [
-            const Spacer(
-              flex: 1,
-            ),
-            Expanded(
-              child: ScreenSheet(
-                child: GenericListView(
-                  title: LocaleKeys.applications.tr(),
-                  valueName: LocaleKeys.applications.tr().toLowerCase(),
-                  showFooter: false,
+    return Scaffold(
+      body: Stack(
+        children: [
+          const Column(
+            children: [
+              CmsHeader(),
+            ],
+          ),
+          Column(
+            children: [
+              const Spacer(
+                flex: 1,
+              ),
+              Expanded(
+                child: ScreenSheet(
+                  child: GenericListView(
+                    title: LocaleKeys.applications.tr(),
+                    valueName: LocaleKeys.applications.tr().toLowerCase(),
+                    showFooter: false,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
