@@ -8,6 +8,8 @@ import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
 class BaseScreen extends StatelessWidget {
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+
   final Widget child;
 
   final String route;
@@ -16,6 +18,7 @@ class BaseScreen extends StatelessWidget {
 
   const BaseScreen({
     super.key,
+    this.scaffoldKey,
     required this.child,
     this.route = '',
     this.onChangeRoute,
@@ -24,6 +27,7 @@ class BaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -88,7 +92,7 @@ class CmsDrawer extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(
                     left:
-                        PaddingSizes.extraBigPadding + PaddingSizes.mainPadding,
+                    PaddingSizes.extraBigPadding + PaddingSizes.mainPadding,
                     top: PaddingSizes.bigPadding,
                     bottom: PaddingSizes.smallPadding,
                   ),

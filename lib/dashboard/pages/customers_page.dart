@@ -32,63 +32,65 @@ class _CustomersPageState extends State<CustomersPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Column(
-          children: [
-            CmsHeader(),
-          ],
-        ),
-        Column(
-          children: [
-            SizedBox(
-              height: 180,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const Spacer(),
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => const CustomerCreateDialog(),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(PaddingSizes.mainPadding),
-                      child: Container(
-                        height: 36,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: GawTheme.clearBackground,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: MainText(
-                            'Add new customer',
-                            textStyleOverride: TextStyles.mainStyle.copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+    return Scaffold(
+      body: Stack(
+        children: [
+          const Column(
+            children: [
+              CmsHeader(),
+            ],
+          ),
+          Column(
+            children: [
+              SizedBox(
+                height: 180,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const CustomerCreateDialog(),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(PaddingSizes.mainPadding),
+                        child: Container(
+                          height: 36,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: GawTheme.clearBackground,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: MainText(
+                              'Add new customer',
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ScreenSheet(
-                child: GenericListView(
-                  title: LocaleKeys.customers.tr(),
-                  valueName: LocaleKeys.customers.tr().toLowerCase(),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+              Expanded(
+                child: ScreenSheet(
+                  child: GenericListView(
+                    title: LocaleKeys.customers.tr(),
+                    valueName: LocaleKeys.customers.tr().toLowerCase(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
