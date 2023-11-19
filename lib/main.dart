@@ -2,7 +2,6 @@ import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/routing/router.dart';
-import 'package:flutter_gaw_cms/generated/codegen_loader.g.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:themed/themed.dart';
@@ -33,11 +32,9 @@ class GawApp extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          theme: ThemeData(
-            primaryColor: GawTheme.mainTint,
-          ),
+          theme: fallbackTheme,
           routeInformationParser: BeamerParser(),
-          routerDelegate: router,
+          routerDelegate: mainRouter,
         ),
       ),
     );

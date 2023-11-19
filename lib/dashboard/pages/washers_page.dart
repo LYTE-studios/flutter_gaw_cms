@@ -4,23 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
-const BeamPage dashboardPageBeamPage = BeamPage(
-  title: 'Dashboard',
-  key: ValueKey('dashboard'),
+const BeamPage washersBeamPage = BeamPage(
+  title: 'Washers',
+  key: ValueKey('washers'),
   type: BeamPageType.noTransition,
-  child: DashboardPage(),
+  child: WashersPage(),
 );
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+class WashersPage extends StatefulWidget {
+  const WashersPage({super.key});
 
-  static const String route = '/dashboard';
+  static const String route = '/washers';
 
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<WashersPage> createState() => _WashersPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class _WashersPageState extends State<WashersPage> {
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -36,11 +36,11 @@ class _DashboardPageState extends State<DashboardPage> {
               flex: 1,
             ),
             Expanded(
+              flex: 2,
               child: ScreenSheet(
                 child: GenericListView(
-                  title: LocaleKeys.applications.tr(),
-                  valueName: LocaleKeys.applications.tr().toLowerCase(),
-                  showFooter: false,
+                  title: LocaleKeys.washers.tr(),
+                  valueName: LocaleKeys.washers.tr().toLowerCase(),
                 ),
               ),
             ),

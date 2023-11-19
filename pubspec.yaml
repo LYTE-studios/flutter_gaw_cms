@@ -11,13 +11,14 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   beamer: ^1.5.6
-  themed: ^4.0.0
+  themed: ^5.0.0
   flutter_svg: ^2.0.7
   google_fonts: ^5.1.0
   easy_localization: ^3.0.2
   flutter_riverpod: ^2.3.10
   freezed: ^2.4.1
   google_maps_flutter: ^2.5.0
+  tuple: ^2.0.2
 
   # Get-a-Wash
 
@@ -28,13 +29,13 @@ dependencies:
   flutter_package_gaw_api:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
-      ref: main 
+      ref: main
 
-# dependency_overrides:
-#   flutter_package_gaw_ui: 
-#     path: ../flutter_package_gaw_ui
-#   flutter_package_gaw_api: 
-#     path: ../flutter_package_gaw_api
+dependency_overrides:
+  flutter_package_gaw_ui:
+    path: ../flutter_package_gaw_ui
+  flutter_package_gaw_api:
+    path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
@@ -44,7 +45,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  assets: 
-  
-    - assets/translations/

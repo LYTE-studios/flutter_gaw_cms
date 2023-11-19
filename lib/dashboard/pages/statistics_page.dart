@@ -1,4 +1,12 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+
+const BeamPage statisticsBeamPage = BeamPage(
+  title: 'Statistics',
+  key: ValueKey('statistics'),
+  type: BeamPageType.noTransition,
+  child: StatisticsPage(),
+);
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});

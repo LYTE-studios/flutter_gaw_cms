@@ -4,6 +4,7 @@ import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_sub_it
 import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
 class BaseScreen extends StatelessWidget {
@@ -131,11 +132,14 @@ class CmsDrawer extends StatelessWidget {
                 const SizedBox(
                   height: PaddingSizes.smallPadding,
                 ),
-                const DrawerNavigationItem(
+                DrawerNavigationItem(
                   label: 'Washers',
                   iconUrl: PixelPerfectIcons.waterDripNormal,
-                  active: false,
-                  subItems: [
+                  onTap: () {
+                    onChange?.call(WashersPage.route);
+                  },
+                  active: WashersPage.route == route,
+                  subItems: const [
                     DrawerNavigationSubItem(
                       label: 'Applications',
                     ),
