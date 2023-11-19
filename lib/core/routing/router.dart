@@ -16,6 +16,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
 
 BeamerDelegate mainRouter = BeamerDelegate(
   notFoundRedirectNamed: NotFoundScreen.route,
+  initialPath: SplashScreen.route,
   locationBuilder: RoutesLocationBuilder(
     routes: routes,
   ),

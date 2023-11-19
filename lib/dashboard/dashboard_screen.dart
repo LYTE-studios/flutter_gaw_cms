@@ -38,6 +38,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   };
 
   @override
+  void initState() {
+    dashboardRouter.beamToNamed(DashboardPage.route);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BaseScreen(
       key: globalScaffoldKey,

@@ -9,7 +9,7 @@ class CmsBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: GawTheme.unselectedMainTint.withOpacity(0.12),
+        color: GawTheme.unselectedMainTint.withOpacity(0.15),
       ),
       width: 480,
       child: Column(
@@ -49,7 +49,6 @@ class _HoveringItems extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         return Stack(
           children: [
-
             // TODO Finish widgets
             Positioned(
               bottom: constraints.maxHeight - 300,

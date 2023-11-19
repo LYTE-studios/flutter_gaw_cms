@@ -23,6 +23,8 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   late final TextEditingController tecEmail = TextEditingController()
     ..addListener(_validate);
   late final TextEditingController tecPassword = TextEditingController()
@@ -46,7 +48,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
       ExceptionHandler.show(
         error,
         stackTrace: stackTrace,
-        context: context,
+        context: _scaffoldKey.currentContext,
+        message: 'Are you sure those credentials are correct?',
       );
     });
   }
@@ -67,6 +70,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: GawTheme.clearBackground,
       body: Center(
         child: SizedBox(

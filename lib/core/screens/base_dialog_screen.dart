@@ -59,7 +59,9 @@ class BaseDialogScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(
+                height: PaddingSizes.extraBigPadding * 2,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: PaddingSizes.bigPadding,
@@ -70,6 +72,7 @@ class BaseDialogScreen extends StatelessWidget {
                   bottom: true,
                   child: SizedBox(
                     height: 48,
+                    width: 180,
                     child: GenericButton(
                       label: 'Go back',
                       color: GawTheme.clearBackground,
@@ -82,6 +85,7 @@ class BaseDialogScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              const Spacer(),
             ],
           ),
         ),
