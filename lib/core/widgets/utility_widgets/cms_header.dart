@@ -10,7 +10,9 @@ class CmsHeader extends StatelessWidget {
       height: 280,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
       child: Row(
-        children: [],
+        children: [
+
+        ],
       ),
     );
   }

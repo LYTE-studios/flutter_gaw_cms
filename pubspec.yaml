@@ -18,6 +18,7 @@ dependencies:
   flutter_riverpod: ^2.3.10
   freezed: ^2.4.1
   google_maps_flutter: ^2.5.0
+  tuple: ^2.0.2
 
   # Get-a-Wash
 

@@ -32,11 +32,9 @@ class GawApp extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
-          theme: ThemeData(
-            primaryColor: GawTheme.mainTint,
-          ),
+          theme: fallbackTheme,
           routeInformationParser: BeamerParser(),
-          routerDelegate: router,
+          routerDelegate: mainRouter,
         ),
       ),
     );

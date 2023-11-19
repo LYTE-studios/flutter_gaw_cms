@@ -2,6 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const BeamPage splashBeamPage = BeamPage(
   title: 'Loading...',
@@ -10,16 +11,16 @@ const BeamPage splashBeamPage = BeamPage(
   child: SplashScreen(),
 );
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   static const String route = '/';
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     Future(() {

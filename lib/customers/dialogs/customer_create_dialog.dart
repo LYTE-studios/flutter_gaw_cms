@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/wizard_items/add_customer_wizard_item.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:tuple/tuple.dart';
 
 class CustomerCreateDialog extends StatefulWidget {
   const CustomerCreateDialog({super.key});
@@ -10,54 +11,35 @@ class CustomerCreateDialog extends StatefulWidget {
 }
 
 class _CustomerCreateDialogState extends State<CustomerCreateDialog>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   int index = 0;
 
-  late final AnimationController page1Controller = AnimationController(
-    duration: const Duration(milliseconds: 200),
-    vsync: this,
-  );
+  List<Tuple2<AnimationController, Animation>> pageControllers = [];
 
-  late final Animation<double> page1Animation = CurvedAnimation(
-    parent: page1Controller,
-    curve: Curves.fastOutSlowIn,
-  );
+  void _createControllers() {
+    for(int i = 0; i < 4; i++) {
+      AnimationController controller = AnimationController(
+        duration: const Duration(milliseconds: 200),
+        vsync: this,
+      );
 
-  late final AnimationController page2Controller = AnimationController(
-    duration: const Duration(milliseconds: 200),
-    vsync: this,
-  );
-
-  late final Animation<double> page2Animation = CurvedAnimation(
-    parent: page1Controller,
-    curve: Curves.fastOutSlowIn,
-  );
-
-  late final AnimationController page3Controller = AnimationController(
-    duration: const Duration(milliseconds: 200),
-    vsync: this,
-  );
-
-  late final Animation<double> page3Animation = CurvedAnimation(
-    parent: page1Controller,
-    curve: Curves.fastOutSlowIn,
-  );
-
-  late final AnimationController page4Controller = AnimationController(
-    duration: const Duration(milliseconds: 200),
-    vsync: this,
-  );
-
-  late final Animation<double> page4Animation = CurvedAnimation(
-    parent: page1Controller,
-    curve: Curves.fastOutSlowIn,
-  );
+      pageControllers.add(
+        Tuple2(
+        controller,
+        CurvedAnimation(
+        parent: controller,
+          curve: Curves.fastOutSlowIn,
+        ),
+      ),);
+    }
+  }
 
   @override
   void initState() {
     Future(() {
-      page1Controller.forward();
+      pageControllers.first.item1.forward();
     });
+    _createControllers();
     super.initState();
   }
 
@@ -103,7 +85,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                       SizeTransition(
                         axisAlignment: -1,
                         axis: Axis.horizontal,
-                        sizeFactor: page1Animation,
+                        sizeFactor: pageControllers[0].item1,
                         child: SizedBox(
                           width: index == 0 ? width : 0,
                           child: const AddCustomerWizardItem(),
@@ -112,7 +94,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                       SizeTransition(
                         axisAlignment: -1,
                         axis: Axis.horizontal,
-                        sizeFactor: page1Animation,
+                        sizeFactor: pageControllers[1].item1,
                         child: Container(
                           height: 100,
                           width: index == 1 ? width : 0,
@@ -120,13 +102,13 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                         ),
                       ),
                       SizeTransition(
-                        sizeFactor: page3Animation,
+                        sizeFactor: pageControllers[2].item1,
                         child: Expanded(
                           child: Container(color: Colors.green),
                         ),
                       ),
                       SizeTransition(
-                        sizeFactor: page4Animation,
+                        sizeFactor: pageControllers[3].item1,
                         child: Expanded(
                           child: Container(color: Colors.red),
                         ),

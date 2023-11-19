@@ -1,7 +1,15 @@
+import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+
+const BeamPage washersBeamPage = BeamPage(
+  title: 'Washers',
+  key: ValueKey('washers'),
+  type: BeamPageType.noTransition,
+  child: WashersPage(),
+);
 
 class WashersPage extends StatefulWidget {
   const WashersPage({super.key});
