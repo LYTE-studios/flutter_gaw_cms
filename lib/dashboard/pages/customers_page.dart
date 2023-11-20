@@ -1,8 +1,11 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/loading/loading_switcher.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
+import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
 const BeamPage customersBeamPage = BeamPage(
@@ -21,7 +24,7 @@ class CustomersPage extends StatefulWidget {
   State<CustomersPage> createState() => _CustomersPageState();
 }
 
-class _CustomersPageState extends State<CustomersPage> {
+class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
   final TextEditingController tecItemsPerPage = TextEditingController(
     text: 12.toString(),
   );
@@ -29,6 +32,29 @@ class _CustomersPageState extends State<CustomersPage> {
   final TextEditingController tecPages = TextEditingController(
     text: 1.toString(),
   );
+
+  CustomerListResponse? customerListResponse;
+
+  void loadData() {
+    setLoading(true);
+
+    CustomerApi.getCustomers().then((response) {
+      setLoading(false);
+      setState(() {
+        customerListResponse = response;
+      });
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    });
+  }
+
+  @override
+  void initState() {
+    Future(() {
+      loadData();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +107,39 @@ class _CustomersPageState extends State<CustomersPage> {
               ),
               Expanded(
                 child: ScreenSheet(
-                  child: GenericListView(
-                    title: LocaleKeys.customers.tr(),
-                    valueName: LocaleKeys.customers.tr().toLowerCase(),
+                  child: LoadingSwitcher(
+                    loading: loading,
+                    child: GenericListView(
+                      title: LocaleKeys.customers.tr(),
+                      valueName: LocaleKeys.customers.tr().toLowerCase(),
+                      header: ListUtil.makeHeader(
+                        {
+                          'Name': ListUtil.mColumn,
+                          'email': ListUtil.mColumn,
+                          'Phone': ListUtil.lColumn,
+                          'Company': ListUtil.lColumn,
+                          '': ListUtil.mColumn,
+                        },
+                      ),
+                      rows: customerListResponse?.customers.map(
+                            (customer) {
+                              return ListUtil.makeRow(
+                                {
+                                  MainText(customer.getFullName()):
+                                      ListUtil.mColumn,
+                                  MainText(customer.email ?? ''):
+                                      ListUtil.mColumn,
+                                  MainText(customer.phoneNumber ?? ''):
+                                      ListUtil.mColumn,
+                                  MainText(customer.company ?? ''):
+                                      ListUtil.mColumn,
+                                  ListTapIcon(): ListUtil.lColumn,
+                                },
+                              );
+                            },
+                          ).toList() ??
+                          [],
+                    ),
                   ),
                 ),
               ),

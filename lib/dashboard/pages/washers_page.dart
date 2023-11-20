@@ -41,6 +41,8 @@ class _WashersPageState extends State<WashersPage> {
                 child: ScreenSheet(
                   child: GenericListView(
                     title: LocaleKeys.washers.tr(),
+                    header: const SizedBox(),
+                    rows: [],
                     valueName: LocaleKeys.washers.tr().toLowerCase(),
                   ),
                 ),

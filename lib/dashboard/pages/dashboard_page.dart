@@ -42,6 +42,8 @@ class _DashboardPageState extends State<DashboardPage> {
                     title: LocaleKeys.applications.tr(),
                     valueName: LocaleKeys.applications.tr().toLowerCase(),
                     showFooter: false,
+                    rows: [],
+                    header: const SizedBox(),
                   ),
                 ),
               ),
