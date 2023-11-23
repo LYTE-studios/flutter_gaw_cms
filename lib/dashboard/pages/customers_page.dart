@@ -2,9 +2,11 @@ import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/loading/loading_switcher.dart';
+import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
+import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
 import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
@@ -112,29 +114,39 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                     child: GenericListView(
                       title: LocaleKeys.customers.tr(),
                       valueName: LocaleKeys.customers.tr().toLowerCase(),
+                      totalItems: customerListResponse?.total,
                       header: ListUtil.makeHeader(
                         {
                           'Name': ListUtil.mColumn,
                           'email': ListUtil.mColumn,
-                          'Phone': ListUtil.lColumn,
-                          'Company': ListUtil.lColumn,
-                          '': ListUtil.mColumn,
+                          'Phone': ListUtil.mColumn,
+                          'Company': ListUtil.mColumn,
+                          '': ListUtil.lColumn,
                         },
                       ),
                       rows: customerListResponse?.customers.map(
                             (customer) {
-                              return ListUtil.makeRow(
-                                {
-                                  MainText(customer.getFullName()):
-                                      ListUtil.mColumn,
-                                  MainText(customer.email ?? ''):
-                                      ListUtil.mColumn,
-                                  MainText(customer.phoneNumber ?? ''):
-                                      ListUtil.mColumn,
-                                  MainText(customer.company ?? ''):
-                                      ListUtil.mColumn,
-                                  ListTapIcon(): ListUtil.lColumn,
+                              return InkWell(
+                                onTap: () {
+                                  DialogUtil.show(
+                                      dialog: CustomerDetailDialog(
+                                        customerId: customer.id,
+                                      ),
+                                      context: context);
                                 },
+                                child: ListUtil.makeRow(
+                                  {
+                                    StringCell(customer.getFullName()):
+                                        ListUtil.mColumn,
+                                    StringCell(customer.email ?? ''):
+                                        ListUtil.mColumn,
+                                    StringCell(customer.phoneNumber ?? ''):
+                                        ListUtil.mColumn,
+                                    StringCell(customer.company ?? ''):
+                                        ListUtil.mColumn,
+                                    const ListTapIcon(): ListUtil.lColumn,
+                                  },
+                                ),
                               );
                             },
                           ).toList() ??
