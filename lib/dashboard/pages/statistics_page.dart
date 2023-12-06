@@ -12,7 +12,7 @@ const BeamPage statisticsBeamPage = BeamPage(
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
 
-  static const String route = '/dashboard/statistics';
+  static const String route = '/dashboard/home/statistics';
 
   @override
   State<StatisticsPage> createState() => _StatisticsPageState();
