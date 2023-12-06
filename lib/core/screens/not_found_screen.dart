@@ -12,7 +12,7 @@ const BeamPage notFoundBeamPage = BeamPage(
 class NotFoundScreen extends StatefulWidget {
   const NotFoundScreen({super.key});
 
-  static const String route = '/not/found';
+  static const String route = '/dashboard/not/found';
 
   @override
   State<NotFoundScreen> createState() => _NotFoundScreenState();

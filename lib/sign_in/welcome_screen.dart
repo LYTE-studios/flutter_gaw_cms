@@ -16,7 +16,7 @@ const BeamPage welcomeBeamPage = BeamPage(
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
-  static const String route = '/welcome';
+  static const String route = '/sign-in/welcome';
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();

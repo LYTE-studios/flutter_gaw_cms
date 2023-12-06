@@ -22,7 +22,13 @@ class CmsBanner extends StatelessWidget {
             ),
             child: MainLogoBig(),
           ),
-          const _HoveringItems(),
+          const Spacer(),
+          const SizedBox(
+            height: 520,
+            width: 480,
+            child: _HoveringItems(),
+          ),
+          const Spacer(),
           SizedBox(
             height: 56,
             child: Center(
@@ -51,8 +57,8 @@ class _HoveringItems extends StatelessWidget {
           children: [
             // TODO Finish widgets
             Positioned(
-              bottom: constraints.maxHeight - 300,
-              left: constraints.maxWidth - 330,
+              bottom: constraints.maxHeight - 180,
+              left: constraints.maxWidth - 230,
               child: SizedBox(
                 height: 120,
                 width: 120,
@@ -79,8 +85,8 @@ class _HoveringItems extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: (constraints.maxHeight / 2) - 120,
-              left: constraints.maxWidth - 410,
+              bottom: constraints.maxHeight / 2,
+              left: constraints.maxWidth - 310,
               child: const SizedBox(
                 height: 140,
                 width: 200,
@@ -90,8 +96,8 @@ class _HoveringItems extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: constraints.maxHeight - 390,
-              left: constraints.maxWidth - 230,
+              bottom: constraints.maxHeight - 270,
+              left: constraints.maxWidth - 130,
               child: const SizedBox(
                 height: 140,
                 width: 140,

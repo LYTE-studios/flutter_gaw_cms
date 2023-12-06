@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/not_found_screen.dart';

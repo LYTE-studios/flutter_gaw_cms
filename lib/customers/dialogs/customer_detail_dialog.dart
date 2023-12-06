@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
 import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 
 class CustomerDetailDialog extends StatefulWidget {
@@ -71,7 +72,6 @@ class _LabeledField extends StatelessWidget {
   final bool enabled;
 
   const _LabeledField({
-    super.key,
     required this.label,
     required this.tec,
     this.enabled = false,

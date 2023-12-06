@@ -12,7 +12,7 @@ const BeamPage applicationsBeamPage = BeamPage(
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({super.key});
 
-  static const String route = '/washers/applications';
+  static const String route = '/dashboard/washers/applications';
 
   @override
   State<ApplicationsPage> createState() => _ApplicationsPageState();

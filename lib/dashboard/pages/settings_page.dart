@@ -12,7 +12,7 @@ const BeamPage settingsBeamPage = BeamPage(
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
-  static const String route = '/settings';
+  static const String route = '/dashboard/settings';
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();

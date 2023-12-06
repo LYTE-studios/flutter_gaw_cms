@@ -20,7 +20,7 @@ const BeamPage customersBeamPage = BeamPage(
 class CustomersPage extends StatefulWidget {
   const CustomersPage({super.key});
 
-  static const String route = '/customers';
+  static const String route = '/dashboard/customers';
 
   @override
   State<CustomersPage> createState() => _CustomersPageState();
@@ -136,15 +136,21 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                                 },
                                 child: ListUtil.makeRow(
                                   {
-                                    StringCell(customer.getFullName()):
-                                        ListUtil.mColumn,
-                                    StringCell(customer.email ?? ''):
-                                        ListUtil.mColumn,
-                                    StringCell(customer.phoneNumber ?? ''):
-                                        ListUtil.mColumn,
-                                    StringCell(customer.company ?? ''):
-                                        ListUtil.mColumn,
-                                    const ListTapIcon(): ListUtil.lColumn,
+                                    TextRowItem(
+                                      value: customer.getFullName(),
+                                    ): ListUtil.mColumn,
+                                    TextRowItem(
+                                      value: customer.email,
+                                    ): ListUtil.mColumn,
+                                    TextRowItem(
+                                      value: customer.phoneNumber,
+                                    ): ListUtil.mColumn,
+                                    TextRowItem(
+                                      value: customer.company,
+                                    ): ListUtil.mColumn,
+                                    const IconRowItem(
+                                      icon: PixelPerfectIcons.eyeNormal,
+                                    ): ListUtil.lColumn,
                                   },
                                 ),
                               );

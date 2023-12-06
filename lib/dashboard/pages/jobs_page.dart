@@ -13,7 +13,7 @@ const BeamPage jobsBeamPage = BeamPage(
 class JobsPage extends StatefulWidget {
   const JobsPage({super.key});
 
-  static const String route = '/jobs';
+  static const String route = '/dashboard/jobs';
 
   @override
   State<JobsPage> createState() => _JobsPageState();
@@ -22,7 +22,7 @@ class JobsPage extends StatefulWidget {
 class _JobsPageState extends State<JobsPage> {
   @override
   Widget build(BuildContext context) {
-    return BaseLayoutScreen(
+    return const BaseLayoutScreen(
       child: Column(
         children: [
           GenericListView(

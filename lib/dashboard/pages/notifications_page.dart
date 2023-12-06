@@ -14,7 +14,7 @@ const BeamPage notificationsBeamPage = BeamPage(
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
-  static const String route = '/notifications';
+  static const String route = '/dashboard/notifications';
 
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();

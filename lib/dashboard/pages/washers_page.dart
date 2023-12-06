@@ -20,7 +20,7 @@ const BeamPage washersBeamPage = BeamPage(
 class WashersPage extends StatefulWidget {
   const WashersPage({super.key});
 
-  static const String route = '/washers';
+  static const String route = '/dashboard/washers';
 
   @override
   State<WashersPage> createState() => _WashersPageState();
@@ -127,13 +127,15 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                                 },
                                 child: ListUtil.makeRow(
                                   {
-                                    StringCell(washer.getFullName()):
+                                    TextRowItem(value: washer.getFullName()):
                                         ListUtil.mColumn,
-                                    StringCell(washer.email ?? ''):
+                                    TextRowItem(value: washer.email):
                                         ListUtil.mColumn,
-                                    StringCell(washer.phoneNumber ?? ''):
+                                    TextRowItem(value: washer.phoneNumber):
                                         ListUtil.mColumn,
-                                    const ListTapIcon(): ListUtil.lColumn,
+                                    const IconRowItem(
+                                      icon: PixelPerfectIcons.eyeNormal,
+                                    ): ListUtil.lColumn,
                                   },
                                 ),
                               );
