@@ -52,7 +52,10 @@ class AddCustomerWizardItem extends StatelessWidget {
             ),
           ),
         ),
-        Row(),
+        Row(
+          children: [
+          ],
+        ),
       ],
     );
   }

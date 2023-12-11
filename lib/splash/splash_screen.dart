@@ -10,7 +10,7 @@ import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const BeamPage splashBeamPage = BeamPage(
-  title: 'Loading...',
+  title: 'Welcome!',
   key: ValueKey('splash'),
   type: BeamPageType.noTransition,
   child: SplashScreen(),

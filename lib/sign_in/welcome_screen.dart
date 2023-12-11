@@ -34,6 +34,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
 
   void _login() {
     setLoading(true);
+
     AuthenticationApi.credentialsLogin(
       request: LoginRequest(
         (b) => b
