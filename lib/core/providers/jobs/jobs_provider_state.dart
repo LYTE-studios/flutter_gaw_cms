@@ -1,4 +1,4 @@
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'jobs_provider_state.freezed.dart';

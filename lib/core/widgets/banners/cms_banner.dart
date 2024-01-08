@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/banners/base_banner_item.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 class CmsBanner extends StatelessWidget {
   const CmsBanner({super.key});

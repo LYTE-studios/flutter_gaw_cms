@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/jobs/address_block.dart';
 import 'package:flutter_gaw_cms/core/widgets/user/cms_avatar.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_api/gaw_api.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 class JobItem extends StatelessWidget {
   final Job job;

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 class BaseDialog extends StatelessWidget {
   final Widget child;
@@ -11,14 +11,22 @@ class BaseDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 450,
-      height: 360,
-      decoration: BoxDecoration(
-        color: GawTheme.clearBackground,
-        borderRadius: BorderRadius.circular(12),
+    return Dialog(
+      child: Container(
+        height: 420,
+        width: 860,
+        decoration: BoxDecoration(
+          color: GawTheme.clearBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: PaddingSizes.bigPadding,
+            horizontal: PaddingSizes.extraBigPadding,
+          ),
+          child: child,
+        ),
       ),
-      child: child,
     );
   }
 }

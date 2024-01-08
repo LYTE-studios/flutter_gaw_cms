@@ -1,6 +1,6 @@
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider_state.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ErrorCallback = Function(dynamic error)?;

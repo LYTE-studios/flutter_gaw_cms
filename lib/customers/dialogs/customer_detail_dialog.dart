@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 class CustomerDetailDialog extends StatefulWidget {
   final String? customerId;
@@ -18,47 +18,48 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog> {
   @override
   Widget build(BuildContext context) {
     return BaseDialog(
-      child: Padding(
-        padding: const EdgeInsets.all(
-          PaddingSizes.bigPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                MainText(
-                  'Customer profile',
-                  textStyleOverride: TextStyles.mainStyleTitle,
-                ),
-                GestureDetector(
-                  child: const SvgIcon(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              MainText(
+                'Customer profile',
+                textStyleOverride: TextStyles.mainStyleTitle,
+              ),
+              const Spacer(),
+              GestureDetector(
+                child: const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: SvgIcon(
                     PixelPerfectIcons.editNormal,
                   ),
                 ),
-              ],
-            ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: SizedBox(
-                height: 120,
-                width: 120,
-                child: ProfilePictureAvatar(
-                  showCircle: true,
-                ),
               ),
-            ),
-            Row(
-              children: [
-                _LabeledField(
-                  label: 'First name',
-                  tec: TextEditingController(),
-                )
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+          // // const Row(
+          //   children: [
+          //     // SizedBox(
+          //     //   height: 120,
+          //     //   width: 120,
+          //     //   child: ProfilePictureAvatar(
+          //     //     showCircle: true,
+          //     //   ),
+          //     // ),
+          //     Spacer(),
+          //   ],
+          // ),
+          // Row(
+          //   children: [
+          //     _LabeledField(
+          //       label: 'First name',
+          //       tec: TextEditingController(),
+          //     )
+          //   ],
+          // ),
+        ],
       ),
     );
   }

@@ -1,14 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/loading/loading_switcher.dart';
 import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_api/gaw_api.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage customersBeamPage = BeamPage(
   title: 'Customers',
@@ -78,10 +77,9 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                     const Spacer(),
                     InkWell(
                       onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => const CustomerCreateDialog(),
-                        );
+                        DialogUtil.show(
+                            dialog: const CustomerCreateDialog(),
+                            context: context);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(PaddingSizes.mainPadding),
@@ -115,8 +113,8 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                       title: LocaleKeys.customers.tr(),
                       valueName: LocaleKeys.customers.tr().toLowerCase(),
                       totalItems: customerListResponse?.total,
-                      header: ListUtil.makeHeader(
-                        {
+                      header: BaseListHeader(
+                        items: {
                           'Name': ListUtil.mColumn,
                           'email': ListUtil.mColumn,
                           'Phone': ListUtil.mColumn,
@@ -129,13 +127,14 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                               return InkWell(
                                 onTap: () {
                                   DialogUtil.show(
-                                      dialog: CustomerDetailDialog(
-                                        customerId: customer.id,
-                                      ),
-                                      context: context);
+                                    dialog: CustomerDetailDialog(
+                                      customerId: customer.id,
+                                    ),
+                                    context: context,
+                                  );
                                 },
-                                child: ListUtil.makeRow(
-                                  {
+                                child: BaseListItem(
+                                  items: {
                                     TextRowItem(
                                       value: customer.getFullName(),
                                     ): ListUtil.mColumn,

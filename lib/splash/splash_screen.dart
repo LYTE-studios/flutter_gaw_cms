@@ -5,8 +5,8 @@ import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
 import 'package:flutter_gaw_cms/secrets.dart';
 import 'package:flutter_gaw_cms/sign_in/sign_in_screen.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_api/gaw_api.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const BeamPage splashBeamPage = BeamPage(
