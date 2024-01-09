@@ -24,18 +24,18 @@ dependencies:
 
   gaw_ui:
     git:
-      url: https://lyte-manager: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@github.com/LYTE-studios/gaw_ui
+      url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_ui
       ref: main
   gaw_api:
     git:
-      url: https://lyte-manager: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@github.com/LYTE-studios/gaw_api
+      url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
 
-dependency_overrides:
-  gaw_ui:
-    path: ../flutter_package_gaw_ui
-  gaw_api:
-    path: ../flutter_package_gaw_api
+#dependency_overrides:
+#  gaw_ui:
+#    path: ../flutter_package_gaw_ui
+#  gaw_api:
+#    path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
