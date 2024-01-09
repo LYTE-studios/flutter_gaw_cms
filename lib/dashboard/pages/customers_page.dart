@@ -116,7 +116,7 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                       header: BaseListHeader(
                         items: {
                           'Name': ListUtil.mColumn,
-                          'email': ListUtil.mColumn,
+                          'Email': ListUtil.mColumn,
                           'Phone': ListUtil.mColumn,
                           'Company': ListUtil.mColumn,
                           '': ListUtil.lColumn,

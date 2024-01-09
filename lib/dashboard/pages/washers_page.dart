@@ -109,7 +109,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                       header: BaseListHeader(
                         items: {
                           'Name': ListUtil.mColumn,
-                          'email': ListUtil.mColumn,
+                          'Email': ListUtil.mColumn,
                           'Phone': ListUtil.mColumn,
                           '': ListUtil.lColumn,
                         },

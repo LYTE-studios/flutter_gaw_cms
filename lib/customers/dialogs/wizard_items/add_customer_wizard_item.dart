@@ -45,7 +45,7 @@ class AddCustomerWizardItem extends StatelessWidget {
                 ),
                 Expanded(
                   child: InputTextForm(
-                    hint: 'Username',
+                    hint: 'Email',
                   ),
                 ),
               ],
