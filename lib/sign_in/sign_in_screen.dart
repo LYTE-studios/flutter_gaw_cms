@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/routing/sign_in_router.dart';
 import 'package:flutter_gaw_cms/core/widgets/banners/cms_banner.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage signInBeamPage = BeamPage(
   title: 'Sign in',

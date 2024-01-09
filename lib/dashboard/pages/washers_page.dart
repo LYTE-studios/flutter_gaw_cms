@@ -1,14 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/loading/loading_switcher.dart';
 import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_api/gaw_api.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage washersBeamPage = BeamPage(
   title: 'Washers',
@@ -107,8 +106,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                       title: LocaleKeys.washers.tr(),
                       valueName: LocaleKeys.customers.tr().toLowerCase(),
                       totalItems: washersListResponse?.total,
-                      header: ListUtil.makeHeader(
-                        {
+                      header: BaseListHeader(
+                        items: {
                           'Name': ListUtil.mColumn,
                           'email': ListUtil.mColumn,
                           'Phone': ListUtil.mColumn,
@@ -125,8 +124,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                                       ),
                                       context: context);
                                 },
-                                child: ListUtil.makeRow(
-                                  {
+                                child: BaseListItem(
+                                  items: {
                                     TextRowItem(value: washer.getFullName()):
                                         ListUtil.mColumn,
                                     TextRowItem(value: washer.email):

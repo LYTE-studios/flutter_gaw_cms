@@ -29,3 +29,4 @@ doc/api/
 lib/secrets.dart
 
 .idea/
+.DS_Store

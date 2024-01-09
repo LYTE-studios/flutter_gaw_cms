@@ -9,8 +9,8 @@ import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
 import 'package:flutter_gaw_cms/sign_in/sign_in_screen.dart';
-import 'package:flutter_package_gaw_api/flutter_package_gaw_api.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_api/gaw_api.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 import '../../../dashboard/pages/customers_page.dart';
 import '../../../dashboard/pages/washers_page.dart';

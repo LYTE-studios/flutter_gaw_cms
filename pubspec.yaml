@@ -22,19 +22,19 @@ dependencies:
 
   # Get-a-Wash
 
-  flutter_package_gaw_ui:
+  gaw_ui:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_ui
       ref: main
-  flutter_package_gaw_api:
+  gaw_api:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
 
 #dependency_overrides:
-#  flutter_package_gaw_ui:
+#  gaw_ui:
 #    path: ../flutter_package_gaw_ui
-#  flutter_package_gaw_api:
+#  gaw_api:
 #    path: ../flutter_package_gaw_api
 
 dev_dependencies:

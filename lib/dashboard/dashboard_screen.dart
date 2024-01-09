@@ -7,7 +7,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
-import 'package:flutter_package_gaw_ui/flutter_package_gaw_ui.dart';
+import 'package:gaw_ui/gaw_ui.dart';
 
 final GlobalKey<ScaffoldState> globalScaffoldKey = GlobalKey();
 
