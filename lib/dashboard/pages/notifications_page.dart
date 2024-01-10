@@ -2,6 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 BeamPage notificationsBeamPage = BeamPage(
@@ -16,18 +17,29 @@ class NotificationsPage extends StatefulWidget {
 
   static const String route = '/dashboard/notifications';
 
-  final Map<String, Widget> notifications = {
-    "NL": const LanguageNotification(),
-    "FR": const LanguageNotification(),
-    "EN": const LanguageNotification(),
-  };
-
   @override
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
+class NotificationInfo {
+  NotificationInfo();
+
+  bool inAppNotificationChecked = false;
+  bool pushAppNotificationChecked = false;
+  String text = "";
+}
+
+final notificationsProvider =
+    StateProvider<Map<String, NotificationInfo>>((ref) => {});
+
 class _NotificationsPageState extends State<NotificationsPage> {
   int selectedLanguageIndex = 0;
+
+  final Map<String, Widget> notifications = {
+    "NL": const LanguageNotification(language: "NL"),
+    "FR": const LanguageNotification(language: "FR"),
+    "EN": const LanguageNotification(language: "EN"),
+  };
 
   void pageIndexChange(int index) {
     if (index == selectedLanguageIndex) {
@@ -39,7 +51,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
     });
   }
 
-  void onSubmit() {}
+  /// Callback when user presses the 'send' button
+  Future<void> onSubmit() async {
+    // TODO: implement
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,24 +62,25 @@ class _NotificationsPageState extends State<NotificationsPage> {
       child: Column(
         children: [
           const SizedBox(
-            height: CmsHeader.headerHeight,
+            height: CmsHeader.headerHeight + 8,
           ),
           ScreenSheet(
             child: Padding(
-              padding: const EdgeInsets.all(
-                PaddingSizes.mainPadding,
+              padding: const EdgeInsets.symmetric(
+                vertical: 38,
+                horizontal: PaddingSizes.extraBigPadding,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TabbedView(
-                    tabs: widget.notifications.keys.toList(),
-                    pages: widget.notifications.values.toList(),
+                    tabs: notifications.keys.toList(),
+                    pages: notifications.values.toList(),
                     selectedIndex: selectedLanguageIndex,
                     onPageIndexChange: pageIndexChange,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: PaddingSizes.mainPadding),
+                    padding: const EdgeInsets.only(top: 20),
                     child: SizedBox(
                       width: 161,
                       child: GenericButton(label: "Send", onTap: onSubmit),
@@ -80,43 +96,130 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 }
 
-class LanguageNotification extends StatefulWidget {
-  const LanguageNotification({super.key});
+/// Structure for defining the settings buttons
+/// which should show up
+class _LanguageNotificationOptions {
+  String text;
+  ValueChanged<bool> callback;
+  bool value;
 
-  @override
-  State<StatefulWidget> createState() => _LanguageNotification();
+  _LanguageNotificationOptions({
+    required this.text,
+    required this.callback,
+    required this.value,
+  });
 }
 
-class _LanguageNotification extends State<LanguageNotification> {
-  bool inAppNotificationChecked = false;
-  bool pushAppNotificationChecked = false;
-  String text = "";
+/// Tab
+class LanguageNotification extends ConsumerStatefulWidget {
+  const LanguageNotification({
+    super.key,
+    required this.language,
+  });
 
-  void inAppNotificationClicked(bool value) {
-    setState(() {
-      inAppNotificationChecked = value;
+  final String language;
+
+  @override
+  _LanguageNotification createState() => _LanguageNotification();
+}
+
+/// A tabbed menu
+// class _LanguageNotification extends State<LanguageNotification> {
+class _LanguageNotification extends ConsumerState<LanguageNotification> {
+  // Callback when user clicks the in-app notification button
+  void inAppNotificationClicked(bool value, WidgetRef ref) {
+    Map<String, NotificationInfo> infos = ref.read(notificationsProvider);
+
+    infos.update(widget.language, (not) {
+      not.inAppNotificationChecked = value;
+      return not;
+    });
+
+    ref.watch(notificationsProvider.notifier).state = infos;
+  }
+
+  // Callback when user clicks the push-app notification button
+  void pushAppNotificationClicked(bool value, WidgetRef ref) {
+    ref.watch(notificationsProvider).update(widget.language, (not) {
+      not.pushAppNotificationChecked = value;
+      return not;
     });
   }
 
-  void pushAppNotificationClicked(bool value) {
-    setState(() {
-      pushAppNotificationChecked = value;
+  // Callback when user clicks the both button
+  void bothClicked(bool value, WidgetRef ref) {
+    ref.watch(notificationsProvider).update(widget.language, (not) {
+      not.pushAppNotificationChecked = value;
+      not.inAppNotificationChecked = value;
+      return not;
     });
   }
 
-  void bothClicked(bool value) {
-    setState(() {
-      pushAppNotificationChecked = value;
-      inAppNotificationChecked = value;
-    });
+  List<Widget> generateSettingButtons(WidgetRef ref) {
+    List<Widget> buttons = [];
+
+    Map<String, NotificationInfo> infos = ref.watch(notificationsProvider);
+    infos.putIfAbsent(widget.language, () => NotificationInfo());
+
+    NotificationInfo info = infos[widget.language]!;
+
+    // Specify type of buttons to appear
+    List<_LanguageNotificationOptions> opts = [
+      _LanguageNotificationOptions(
+        text: 'In-App Notification',
+        callback: (bool value) => inAppNotificationClicked(value, ref),
+        value: info.inAppNotificationChecked,
+      ),
+      _LanguageNotificationOptions(
+        text: 'Push-App Notification',
+        callback: (bool value) => pushAppNotificationClicked(value, ref),
+        value: info.pushAppNotificationChecked,
+      ),
+      _LanguageNotificationOptions(
+        text: 'Both',
+        callback: (bool value) => bothClicked(value, ref),
+        value: info.inAppNotificationChecked && info.pushAppNotificationChecked,
+      ),
+    ];
+
+    // Convert button specs into button widgets
+    for (var opt in opts) {
+      buttons.add(
+        Container(
+          padding: const EdgeInsets.only(bottom: 24),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 38,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: Switch(
+                    value: opt.value,
+                    onChanged: opt.callback,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              Text(opt.text),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return buttons;
   }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
-
+    controller.text =
+        ref.watch(notificationsProvider)[widget.language]?.text ?? "";
     controller.addListener(() {
-      text = controller.text;
+      ref.watch(notificationsProvider).update(widget.language, (not) {
+        not.text = controller.text;
+        return not;
+      });
     });
 
     return Row(
@@ -130,59 +233,20 @@ class _LanguageNotification extends State<LanguageNotification> {
             ),
             child: AppInputField(
               hint: "Text",
-              controller: TextEditingController(),
+              controller: controller,
             ),
           ),
         ),
+        // Button column
         Padding(
-          padding: EdgeInsets.only(
-              top: PaddingSizes.mainPadding, left: 32, right: 32),
+          padding: const EdgeInsets.only(
+            top: PaddingSizes.mainPadding,
+            left: 32,
+            right: 32,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: EdgeInsets.only(bottom: 30),
-                child: Row(
-                  children: [
-                    Switch(
-                      value: inAppNotificationChecked,
-                      onChanged: inAppNotificationClicked,
-                    ),
-                    SizedBox(width: 20),
-                    Text(
-                      "In-App Notification",
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(bottom: 30),
-                child: Row(
-                  children: [
-                    Switch(
-                      value: pushAppNotificationChecked,
-                      onChanged: pushAppNotificationClicked,
-                    ),
-                    SizedBox(width: 20),
-                    Text("Push-App Notification"),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(bottom: 30),
-                child: Row(
-                  children: [
-                    Switch(
-                      value: pushAppNotificationChecked &&
-                          inAppNotificationChecked,
-                      onChanged: bothClicked,
-                    ),
-                    SizedBox(width: 20),
-                    Text("Both"),
-                  ],
-                ),
-              ),
-            ],
+            children: generateSettingButtons(ref),
           ),
         ),
       ],
