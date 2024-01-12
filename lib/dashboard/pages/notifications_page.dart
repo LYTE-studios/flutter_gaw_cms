@@ -36,13 +36,16 @@ class NotificationInfo {
 final notificationsProvider =
     StateProvider<Map<String, NotificationInfo>>((ref) => {});
 
+final inAppNotificationProvider = StateProvider<bool>((ref) => false);
+final pushAppNotificationProvider = StateProvider<bool>((ref) => false);
+
 class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   int selectedLanguageIndex = 0;
 
   final Map<String, Widget> notifications = {
-    "NL": const LanguageNotification(language: "NL"),
-    "FR": const LanguageNotification(language: "FR"),
-    "EN": const LanguageNotification(language: "EN"),
+    "NL": const LanguageNotification(language: "NL", text: "Dutch"),
+    "FR": const LanguageNotification(language: "FR", text: "French"),
+    "EN": const LanguageNotification(language: "EN", text: "English"),
   };
 
   void pageIndexChange(int index) {
@@ -55,50 +58,44 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     });
   }
 
-  bool pushAppNotificationChecked = false;
-  bool inAppNotificationChecked = false;
-
   // Callback when user clicks the in-app notification button
   void inAppNotificationClicked(bool value) {
-    setState(() {
-      inAppNotificationChecked = value;
-    });
+    ref.read(inAppNotificationProvider.notifier).state = value;
   }
 
   // Callback when user clicks the push-app notification button
   void pushAppNotificationClicked(bool value) {
-    setState(() {
-      pushAppNotificationChecked = value;
-    });
+    ref.read(pushAppNotificationProvider.notifier).state = value;
   }
 
   // Callback when user clicks the both button
   void bothClicked(bool value) {
-    setState(() {
-      inAppNotificationChecked = value;
-      pushAppNotificationChecked = value;
-    });
+    ref.read(inAppNotificationProvider.notifier).state = value;
+    ref.read(pushAppNotificationProvider.notifier).state = value;
   }
 
   List<Widget> generateSettingButtons() {
     List<Widget> buttons = [];
+
+    bool inApp = ref.watch(inAppNotificationProvider);
+    bool pushApp = ref.watch(pushAppNotificationProvider);
 
     // Specify type of buttons to appear
     List<_LanguageNotificationOptions> opts = [
       _LanguageNotificationOptions(
         text: 'In-App Notification',
         callback: inAppNotificationClicked,
-        value: inAppNotificationChecked,
+        value: inApp,
       ),
       _LanguageNotificationOptions(
         text: 'Push-App Notification',
         callback: pushAppNotificationClicked,
-        value: pushAppNotificationChecked,
+        value: pushApp,
       ),
       _LanguageNotificationOptions(
         text: 'Both',
         callback: bothClicked,
-        value: inAppNotificationChecked && pushAppNotificationChecked,
+        value: inApp && pushApp,
       ),
     ];
 
@@ -132,9 +129,12 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
 
   /// Callback when user presses the 'send' button
   Future<void> onSubmit() async {
+    bool inApp = ref.read(inAppNotificationProvider.notifier).state;
+    bool pushApp = ref.read(pushAppNotificationProvider.notifier).state;
+
     print("SENDING");
-    print("In App: $inAppNotificationChecked");
-    print("Push App: $pushAppNotificationChecked");
+    print("In App: $inApp");
+    print("Push App: $pushApp");
     print("Languages");
     print(ref.read(notificationsProvider));
     // TODO: implement
@@ -145,10 +145,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     return BaseLayoutScreen(
       child: Column(
         children: [
-          const SizedBox(
-            height: CmsHeader.headerHeight + 8,
-          ),
           ScreenSheet(
+            topPadding: CmsHeader.headerHeight + 8,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 38,
@@ -229,17 +227,19 @@ class LanguageNotification extends ConsumerStatefulWidget {
   const LanguageNotification({
     super.key,
     required this.language,
+    required this.text,
   });
 
   final String language;
+  final String text;
 
   @override
-  _LanguageNotification createState() => _LanguageNotification();
+  LanguageNotificationState createState() => LanguageNotificationState();
 }
 
 /// A tabbed menu
 // class _LanguageNotification extends State<LanguageNotification> {
-class _LanguageNotification extends ConsumerState<LanguageNotification> {
+class LanguageNotificationState extends ConsumerState<LanguageNotification> {
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
@@ -257,6 +257,12 @@ class _LanguageNotification extends ConsumerState<LanguageNotification> {
       });
     });
 
+    const InputBorder border = UnderlineInputBorder(
+      borderSide: BorderSide(
+        color: GawTheme.unselectedBackground,
+      ),
+    );
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -268,9 +274,9 @@ class _LanguageNotification extends ConsumerState<LanguageNotification> {
             child: TextField(
               maxLines: null,
               decoration: InputDecoration(
-                hintText: "Text",
-                enabledBorder: UnderlineInputBorder(),
-                focusedBorder: UnderlineInputBorder(),
+                hintText: widget.text,
+                enabledBorder: border,
+                focusedBorder: border,
               ),
               controller: controller,
             ),
