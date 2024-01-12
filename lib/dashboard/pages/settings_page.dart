@@ -5,8 +5,18 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:image_picker/image_picker.dart';
+
+final imagePathProvider = StateProvider<String?>((ref) => null);
+final showPictureProvider = StateProvider<bool>((ref) => false);
+final logOutProvider = StateProvider<String?>((ref) => null);
+final fullNameProvider = StateProvider<String>((ref) => "");
+final userNameProvider = StateProvider<String>((ref) => "");
+final emailProvider = StateProvider<String>((ref) => "");
+final phoneNumberProvider = StateProvider<String>((ref) => "");
+final bioProvider = StateProvider<String>((ref) => "");
 
 const BeamPage settingsBeamPage = BeamPage(
   title: 'Settings',
@@ -15,49 +25,45 @@ const BeamPage settingsBeamPage = BeamPage(
   child: SettingsPage(),
 );
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   static const String route = '/dashboard/settings';
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
-  String? imagePath;
-  String? logoutTime;
-  bool showPicture = false;
-
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     Widget imageWidget;
+
+    String? imagePath = ref.watch(imagePathProvider);
 
     if (imagePath == null) {
       imageWidget = Container(
         width: 120,
         height: 120,
-        padding: EdgeInsets.all(PaddingSizes.bigPadding),
-        child: Column(
+        padding: const EdgeInsets.all(PaddingSizes.bigPadding),
+        child: const Column(
           children: [
-            Container(
+            SizedBox(
               width: 26,
               height: 26,
               child: SvgIcon(
                 PixelPerfectIcons.upload,
-                color: Color.fromRGBO(153, 153, 153, 1),
+                color: GawTheme.toolBarItem,
               ),
             ),
             SizedBox(height: 15),
-            Container(
+            SizedBox(
               width: 85,
               child: MainText(
                 "Upload your photo",
                 alignment: TextAlign.center,
-                color: Color.fromRGBO(153, 153, 153, 1),
-                textStyleOverride: TextStyle(
-                  fontSize: 11,
-                ),
+                fontSize: 11,
+                color: GawTheme.toolBarItem,
               ),
             ),
           ],
@@ -66,17 +72,28 @@ class _SettingsPageState extends State<SettingsPage> {
     } else {
       imageWidget = Column(
         children: [
-          Container(
+          SizedBox(
             width: 120,
             height: 120,
-            child: Image.network(
-              imagePath!,
-              fit: BoxFit.cover,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              child: Image.network(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],
       );
     }
+
+    bool showPicture = ref.watch(showPictureProvider);
+    String? logoutTime = ref.watch(logOutProvider);
+    String fullName = ref.watch(fullNameProvider);
+    String userName = ref.watch(userNameProvider);
+    String email = ref.watch(emailProvider);
+    String phoneNumber = ref.watch(phoneNumberProvider);
+    String bio = ref.watch(bioProvider);
 
     return BaseLayoutScreen(
       child: Column(
@@ -92,24 +109,37 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       Expanded(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const MainText("Your Profile Picture"),
+                            const SizedBox(height: PaddingSizes.mainPadding),
                             TextButton(
                               style: const ButtonStyle(
-                                splashFactory: NoSplash.splashFactory,
+                                padding:
+                                    MaterialStatePropertyAll(EdgeInsets.zero),
+                                overlayColor: MaterialStatePropertyAll(
+                                    Colors.transparent),
                               ),
                               onPressed: () async {
                                 XFile? file = await ImagePicker()
                                     .pickImage(source: ImageSource.gallery);
 
-                                setState(() {
-                                  imagePath = file?.path;
-                                });
+                                ref.watch(imagePathProvider.notifier).state = file?.path;
                               },
                               child: DottedBorder(
-                                color: const Color.fromRGBO(202, 202, 202, 1),
+                                borderType: BorderType.RRect,
+                                color: GawTheme.unselectedBackground,
+                                dashPattern: const [4.5, 4.5],
+                                radius: const Radius.circular(12),
                                 strokeWidth: 1,
-                                child: imageWidget,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: GawTheme.clearBackground,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12)),
+                                  ),
+                                  child: imageWidget,
+                                ),
                               ),
                             ),
                           ],
@@ -126,9 +156,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                 Switch(
                                   value: showPicture,
                                   onChanged: (bool value) {
-                                    setState(() {
-                                      showPicture = value;
-                                    });
+                                    ref
+                                        .watch(showPictureProvider.notifier)
+                                        .state = value;
                                   },
                                 ),
                               ],
@@ -138,24 +168,34 @@ class _SettingsPageState extends State<SettingsPage> {
                               children: [
                                 const MainText("Automatically log out after"),
                                 DropdownButton<String>(
+                                  dropdownColor: GawTheme.background,
+                                  hint: const MainText("Select"),
                                   onChanged: (String? value) {
-                                    setState(() {
-                                      logoutTime = value;
-                                    });
+                                    ref.read(logOutProvider.notifier).state =
+                                        value;
                                   },
                                   value: logoutTime,
                                   items: const [
                                     DropdownMenuItem(
                                       value: "1hour",
-                                      child: MainText("After one hour"),
+                                      child: MainText(
+                                        "After one hour",
+                                        color: GawTheme.secondaryTint,
+                                      ),
                                     ),
                                     DropdownMenuItem(
                                       value: "1day",
-                                      child: MainText("After one day"),
+                                      child: MainText(
+                                        "After one day",
+                                        color: GawTheme.secondaryTint,
+                                      ),
                                     ),
                                     DropdownMenuItem(
                                       value: "1week",
-                                      child: MainText("After one week"),
+                                      child: MainText(
+                                        "After one week",
+                                        color: GawTheme.secondaryTint,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -169,45 +209,67 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: 38),
                   const Divider(),
                   const SizedBox(height: 30),
-                  const Row(
+                  Row(
                     children: [
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MainText("Full Name"),
-                            SizedBox(height: PaddingSizes.smallPadding),
-                            TextField(
-                              decoration: InputDecoration(
-                                hintText: "Full Name",
-                              ),
-                            ),
-                            SizedBox(height: PaddingSizes.extraBigPadding),
-                            MainText("User Name"),
-                            SizedBox(height: PaddingSizes.smallPadding),
+                            const MainText("Full Name", fontSize: 14.5),
+                            const SizedBox(height: PaddingSizes.smallPadding),
                             TextField(
                               decoration:
-                                  InputDecoration(hintText: "User Name"),
+                                  const InputDecoration(hintText: "Full Name"),
+                              controller: TextEditingController(text: fullName),
+                              onChanged: (String value) {
+                                ref.watch(fullNameProvider.notifier).state =
+                                    value;
+                              },
+                            ),
+                            const SizedBox(
+                                height: PaddingSizes.extraBigPadding),
+                            const MainText("User Name", fontSize: 14.5),
+                            const SizedBox(height: PaddingSizes.smallPadding),
+                            TextField(
+                              decoration:
+                                  const InputDecoration(hintText: "User Name"),
+                              controller: TextEditingController(text: userName),
+                              onChanged: (String value) {
+                                ref.watch(userNameProvider.notifier).state =
+                                    value;
+                              },
                             )
                           ],
                         ),
                       ),
-                      SizedBox(width: PaddingSizes.mainPadding * 2),
+                      const SizedBox(width: PaddingSizes.mainPadding * 2),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MainText("Email"),
-                            SizedBox(height: PaddingSizes.smallPadding),
-                            TextField(
-                              decoration: InputDecoration(hintText: "Email"),
-                            ),
-                            SizedBox(height: PaddingSizes.extraBigPadding),
-                            MainText("Phone Number"),
-                            SizedBox(height: PaddingSizes.smallPadding),
+                            const MainText("Email", fontSize: 14.5),
+                            const SizedBox(height: PaddingSizes.smallPadding),
                             TextField(
                               decoration:
-                                  InputDecoration(hintText: "Phone Number"),
+                                  const InputDecoration(hintText: "Email"),
+                              controller: TextEditingController(text: email),
+                              onChanged: (String value) {
+                                ref.watch(emailProvider.notifier).state = value;
+                              },
+                            ),
+                            const SizedBox(
+                                height: PaddingSizes.extraBigPadding),
+                            const MainText("Phone Number", fontSize: 14.5),
+                            const SizedBox(height: PaddingSizes.smallPadding),
+                            TextField(
+                              decoration: const InputDecoration(
+                                  hintText: "Phone Number"),
+                              controller:
+                                  TextEditingController(text: phoneNumber),
+                              onChanged: (String value) {
+                                ref.watch(phoneNumberProvider.notifier).state =
+                                    value;
+                              },
                             )
                           ],
                         ),
@@ -217,23 +279,26 @@ class _SettingsPageState extends State<SettingsPage> {
                   const SizedBox(height: PaddingSizes.mainPadding * 2),
                   const MainText("Bio"),
                   const SizedBox(height: PaddingSizes.smallPadding),
-                  const TextField(
+                  TextField(
                     minLines: 5,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                         hintText:
                             "Write your Bio here. For example, your hobbies, interests, etc."),
                     maxLines: null,
+                    controller: TextEditingController(text: bio),
+                    onChanged: (String value) {
+                      ref.watch(bioProvider.notifier).state = value;
+                    },
                   ),
                   const SizedBox(height: 20),
                   const Row(
                     children: [
                       GenericButton(
-                          label: "Save changes",
-                          color: Color.fromRGBO(53, 115, 183, 1)),
+                          label: "Save changes", color: GawTheme.mainTint),
                       GenericButton(
                         label: "Cancel",
                         color: Colors.transparent,
-                        textColor: Color.fromRGBO(76, 83, 95, 1),
+                        textColor: GawTheme.darkBackground,
                       ),
                     ],
                   ),
