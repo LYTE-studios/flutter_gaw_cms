@@ -24,10 +24,14 @@ class JobsPage extends StatefulWidget {
 class WasherInfo {
   String name;
   Image profilePicture;
+  String start;
+  String end;
 
   WasherInfo({
     required this.name,
     required this.profilePicture,
+    required this.start,
+    required this.end,
   });
 }
 
@@ -93,12 +97,17 @@ final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
           WasherInfo(
             name: "Theresa Webb",
             profilePicture: Image.network(
-                "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg"),
+              "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg",
+            ),
+            start: "11:30",
+            end: "15:30",
           ),
           WasherInfo(
             name: "Theresa Webb",
             profilePicture: Image.network(
                 "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg"),
+            start: "12:30",
+            end: "16:30",
           ),
         ],
       ),
@@ -119,8 +128,9 @@ class _JobsPageState extends State<JobsPage> {
           ScreenSheet(
             hasBackground: false,
             topPadding: CmsHeader.headerHeight + 8,
-            child: Column(
+            child: Stack(
               children: [
+                Positioned(child: GenericButton(label: "AA"))
                 TabbedView(
                   tabs: const [
                     'All jobs',
@@ -268,13 +278,8 @@ class JobPopup extends ConsumerWidget {
     Widget title;
     Widget washerArea;
     if (viewing.status == JobStatus.active) {
-      title = const Row(
-        children: [
-          SvgImage(PixelPerfectIcons.washers),
-          PopupTitleText("Job Info"),
-        ],
-      );
-
+      title = const PopupTitleText("Job Info",
+          icon: SvgImage(PixelPerfectIcons.info));
       List<Widget> widgets = [];
       for (final washer in viewing.washers) {
         widgets.add(
@@ -293,19 +298,13 @@ class JobPopup extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const InputTitleText("Washers"),
-            Row(
-              children: widgets,
-            )
+            Row(children: widgets),
           ],
         ),
       );
     } else {
-      title = const Row(
-        children: [
-          SvgImage(PixelPerfectIcons.editNormal),
-          PopupTitleText("Job Draft"),
-        ],
-      );
+      title = const PopupTitleText("Job Draft",
+          icon: SvgImage(PixelPerfectIcons.washers));
 
       washerArea = const Expanded(
         flex: 1,
@@ -323,6 +322,32 @@ class JobPopup extends ConsumerWidget {
     }
 
     bool enabled = viewing.status == JobStatus.draft;
+
+    Widget footer = Container();
+    if (viewing.status == JobStatus.draft) {
+      footer = Column(
+        children: [
+          const SizedBox(height: 41),
+          Row(
+            children: [
+              GenericButton(
+                label: "Save",
+                onTap: () {
+                  ref.read(currentlyEditingProvider.notifier).state = null;
+                },
+              ),
+              const SizedBox(width: PaddingSizes.mainPadding),
+              GenericButton(
+                label: "Cancel",
+                onTap: () {
+                  ref.read(currentlyEditingProvider.notifier).state = null;
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    }
 
     return PopupSheet(
       maxWidth: 1131,
@@ -482,16 +507,17 @@ class JobPopup extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(height: PaddingSizes.extraBigPadding),
+              const SizedBox(height: PaddingSizes.extraBigPadding),
               const InputTitleText("Job description"),
               // InputTextForm(fontSize: 14),
               TextFormField(
-                minLines: 6,
-                maxLines: 6,
+                minLines: 2,
+                maxLines: 2,
                 enabled: enabled,
               ),
             ],
           ),
+          footer,
         ],
       ),
     );
@@ -512,48 +538,84 @@ class WasherPopup extends ConsumerWidget {
     return PopupSheet(
       maxWidth: 1131,
       maxHeight: 689,
-      child: Column(
-        children: [
-          TextButton(
-            child: MainText("Back"),
-            onPressed: () {
-              ref.read(washerFocusProvider.notifier).state = null;
-            },
-          ),
-          SizedBox(height: 68),
-          Text(info.name),
-          SizedBox(height: 54),
-          Row(
-            children: [
-              Text("From: AAA"),
-              SizedBox(width: 42),
-              Text("To: AAA"),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 450,
-                height: 255,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
-                  border: Border.all(color: GawTheme.toolBarItem),
-                ),
-                child: Text("Washer Signature"),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 60),
+        child: Column(
+          children: [
+            TextButton(
+              child: const Row(
+                children: [
+                  SvgIcon(PixelPerfectIcons.arrowBack),
+                  SizedBox(width: 15),
+                  MainText("Back"),
+                ],
               ),
-              Container(
-                width: 450,
-                height: 255,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
-                  border: Border.all(color: GawTheme.toolBarItem),
+              onPressed: () {
+                ref.read(washerFocusProvider.notifier).state = null;
+              },
+            ),
+            const SizedBox(height: 68),
+            Text(info.name),
+            const SizedBox(height: 54),
+            Row(
+              children: [
+                const MainText(
+                  "From:",
+                  color: GawTheme.text,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Text("Client Signature"),
-              ),
-            ],
-          )
-        ],
+                MainText(
+                  info.start,
+                  color: GawTheme.mainTint,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                ),
+                const SizedBox(width: 42),
+                const MainText(
+                  "Until:",
+                  color: GawTheme.text,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                ),
+                MainText(
+                  info.end,
+                  color: GawTheme.mainTint,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w600,
+                ),
+              ],
+            ),
+            SizedBox(height: 66),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 450,
+                  height: 255,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: GawTheme.toolBarItem),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: const Text("Washer Signature"),
+                ),
+                Container(
+                  width: 450,
+                  height: 255,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(13),
+                    border: Border.all(color: GawTheme.toolBarItem),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  child: const Text("Client Signature"),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -713,6 +775,7 @@ class JobCard extends ConsumerWidget {
             Row(
               children: [
                 const SvgImage(PixelPerfectIcons.personMedium),
+                const SizedBox(width: PaddingSizes.extraSmallPadding),
                 Text("${info.washerCount}/${info.maxWasherCount}"),
                 const SizedBox(width: PaddingSizes.extraBigPadding),
                 Container(
