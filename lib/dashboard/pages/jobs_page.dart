@@ -21,6 +21,16 @@ class JobsPage extends StatefulWidget {
   State<JobsPage> createState() => _JobsPageState();
 }
 
+class WasherInfo {
+  String name;
+  Image profilePicture;
+
+  WasherInfo({
+    required this.name,
+    required this.profilePicture,
+  });
+}
+
 class JobInfo {
   String abbreviation;
   String name;
@@ -32,6 +42,7 @@ class JobInfo {
   int washerCount;
   int maxWasherCount;
   JobStatus status;
+  List<WasherInfo> washers;
 
   JobInfo({
     required this.abbreviation,
@@ -44,13 +55,14 @@ class JobInfo {
     required this.washerCount,
     required this.maxWasherCount,
     required this.status,
+    this.washers = const [],
   });
 }
 
 enum JobStatus {
   draft,
   active,
-  done;
+  done,
 }
 
 final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
@@ -77,8 +89,24 @@ final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
         washerCount: 3,
         maxWasherCount: 3,
         status: JobStatus.active,
+        washers: [
+          WasherInfo(
+            name: "Theresa Webb",
+            profilePicture: Image.network(
+                "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg"),
+          ),
+          WasherInfo(
+            name: "Theresa Webb",
+            profilePicture: Image.network(
+                "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg"),
+          ),
+        ],
       ),
     ]);
+
+final currentlyEditingProvider = StateProvider<JobInfo?>((ref) => null);
+final currentlyDeletingProvider = StateProvider<JobInfo?>((ref) => null);
+final washerFocusProvider = StateProvider<WasherInfo?>((ref) => null);
 
 class _JobsPageState extends State<JobsPage> {
   int selectedPage = 0;
@@ -116,32 +144,211 @@ class _JobsPageState extends State<JobsPage> {
               ],
             ),
           ),
-          JobPopup(),
+          const JobPopup(),
+          const JobDeletePopup(),
+          const WasherPopup(),
         ],
       ),
     );
   }
 }
 
-class JobPopup extends StatelessWidget {
-  const JobPopup({super.key});
+class JobDeletePopup extends ConsumerWidget {
+  const JobDeletePopup({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    JobInfo? deleting = ref.watch(currentlyDeletingProvider);
+
+    return PopupSheet(
+      maxWidth: 421,
+      maxHeight: 231,
+      visible: deleting != null,
+      child: Column(
+        children: [
+          const PopupTitleText(
+            "Are you sure you want to delete this job?",
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+            paddingBottom: 36,
+          ),
+          const MainText(
+              "This will delete this job permanently. You cannot undo this action."),
+          Row(
+            children: [
+              GenericButton(
+                label: "Delete",
+                color: GawTheme.error,
+                onTap: () {
+                  ref.read(currentlyDeletingProvider.notifier).state = null;
+                  ref.read(jobsProvider.notifier).state.remove(deleting);
+
+                  // Force update
+                  ref
+                      .read(jobsProvider.notifier)
+                      .update((state) => state.toList());
+                },
+              ),
+              const SizedBox(width: PaddingSizes.mainPadding),
+              GenericButton(
+                label: "Cancel",
+                onTap: () {
+                  ref.read(currentlyDeletingProvider.notifier).state = null;
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WasherWidget extends StatelessWidget {
+  final WasherInfo info;
+
+  const WasherWidget({
+    required this.info,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return PopupSheet(
-      maxWidth: 700,
-      maxHeight: 500,
-      visible: false,
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.topRight,
-            child: SvgImage("TODO"),
+    return Row(
+      children: [
+        Container(
+          height: 44,
+          decoration: BoxDecoration(
+            border: Border.all(color: GawTheme.border, width: 1),
+            borderRadius: BorderRadius.circular(7),
           ),
-          Row(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgImage("TODO"),
-              Text("Job Info"),
+              Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: info.profilePicture,
+                  ),
+                  const SizedBox(width: PaddingSizes.mainPadding),
+                  MainText(
+                    info.name,
+                    color: GawTheme.specialText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: PaddingSizes.mainPadding),
+      ],
+    );
+  }
+}
+
+class JobPopup extends ConsumerWidget {
+  const JobPopup({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    JobInfo? viewing = ref.watch(currentlyEditingProvider);
+
+    if (viewing == null && true) {
+      return Container();
+    }
+
+    Widget title;
+    Widget washerArea;
+    if (viewing.status == JobStatus.active) {
+      title = const Row(
+        children: [
+          SvgImage(PixelPerfectIcons.washers),
+          PopupTitleText("Job Info"),
+        ],
+      );
+
+      List<Widget> widgets = [];
+      for (final washer in viewing.washers) {
+        widgets.add(
+          TextButton(
+            onPressed: () {
+              ref.read(washerFocusProvider.notifier).state = washer;
+            },
+            child: WasherWidget(info: washer),
+          ),
+        );
+      }
+
+      washerArea = Expanded(
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const InputTitleText("Washers"),
+            Row(
+              children: widgets,
+            )
+          ],
+        ),
+      );
+    } else {
+      title = const Row(
+        children: [
+          SvgImage(PixelPerfectIcons.editNormal),
+          PopupTitleText("Job Draft"),
+        ],
+      );
+
+      washerArea = const Expanded(
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InputTitleText("Needed washers for the job"),
+            InputTextForm(
+              hint: "#",
+              fontSize: 14,
+            ),
+          ],
+        ),
+      );
+    }
+
+    bool enabled = viewing.status == JobStatus.draft;
+
+    return PopupSheet(
+      maxWidth: 1131,
+      maxHeight: 689,
+      visible: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                child: title,
+              ),
+              Container(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  child: const SvgIcon(
+                    PixelPerfectIcons.xNormal,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    ref.read(currentlyEditingProvider.notifier).state = null;
+                  },
+                ),
+              ),
             ],
           ),
           Column(
@@ -152,52 +359,60 @@ class JobPopup extends StatelessWidget {
                   Expanded(
                     flex: 1,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MainText("Job Details"),
-                        AppInputField(
+                        InputTitleText("Job Details"),
+                        InputTextForm(
                           hint: "Wash get driven 4 auto's",
-                          controller: TextEditingController(text: ""),
+                          fontSize: 14,
+                          enabled: enabled,
                         ),
                       ],
                     ),
                   ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [Text("Washers"), Text("Something else ")],
-                    ),
-                  ),
+                  SizedBox(width: PaddingSizes.extraBigPadding),
+                  washerArea,
+                  SizedBox(width: PaddingSizes.extraBigPadding),
+                  Spacer(),
                 ],
               ),
+              SizedBox(height: PaddingSizes.extraBigPadding),
               Row(
                 children: [
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MainText("Recruitment Period"),
-                        AppInputField(
-                          hint: "Wash get driven 4 auto's",
-                          controller: TextEditingController(text: ""),
+                        InputTitleText("Recruitment Period"),
+                        InputTextForm(
+                          hint: "Jul, 10 - Jul, 12",
+                          fontSize: 14,
+                          enabled: enabled,
                         ),
                       ],
                     ),
                   ),
+                  SizedBox(width: PaddingSizes.extraBigPadding),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MainText("Time Period"),
+                        InputTitleText("Time Period"),
                         Row(
                           children: [
                             Expanded(
-                              child: AppInputField(
-                                hint: "Wash get driven 4 auto's",
-                                controller: TextEditingController(text: ""),
+                              child: InputTextForm(
+                                hint: "July 10",
+                                fontSize: 14,
+                                enabled: enabled,
                               ),
                             ),
+                            SizedBox(width: PaddingSizes.mainPadding),
                             Expanded(
-                              child: AppInputField(
-                                hint: "Wash get driven 4 auto's",
-                                controller: TextEditingController(text: ""),
+                              child: InputTextForm(
+                                hint: "12:00 - 13:00",
+                                fontSize: 14,
+                                enabled: enabled,
                               ),
                             ),
                           ],
@@ -205,21 +420,136 @@ class JobPopup extends StatelessWidget {
                       ],
                     ),
                   ),
+                  SizedBox(width: PaddingSizes.extraBigPadding),
                   Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const MainText("Customer"),
-                        AppInputField(
-                          hint: "Jan Van den Steen",
-                          controller: TextEditingController(text: ""),
+                        InputTitleText("Customer"),
+                        InputTextForm(
+                          hint: "Customer",
+                          fontSize: 14,
+                          enabled: enabled,
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
+              SizedBox(height: PaddingSizes.extraBigPadding),
               Row(
-                children: [],
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InputTitleText("Street Address"),
+                        InputTextForm(
+                          hint: "Vinkstraat 55",
+                          fontSize: 14,
+                          enabled: enabled,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: PaddingSizes.extraBigPadding),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InputTitleText("City"),
+                        InputTextForm(
+                          hint: "Kortrijk",
+                          fontSize: 14,
+                          enabled: enabled,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: PaddingSizes.extraBigPadding),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InputTitleText("Postcode"),
+                        InputTextForm(
+                          hint: "8500",
+                          fontSize: 14,
+                          enabled: enabled,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: PaddingSizes.extraBigPadding),
+              const InputTitleText("Job description"),
+              // InputTextForm(fontSize: 14),
+              TextFormField(
+                minLines: 6,
+                maxLines: 6,
+                enabled: enabled,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WasherPopup extends ConsumerWidget {
+  const WasherPopup({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    WasherInfo? info = ref.watch(washerFocusProvider);
+
+    if (info == null) {
+      return Container();
+    }
+
+    return PopupSheet(
+      maxWidth: 1131,
+      maxHeight: 689,
+      child: Column(
+        children: [
+          TextButton(
+            child: MainText("Back"),
+            onPressed: () {
+              ref.read(washerFocusProvider.notifier).state = null;
+            },
+          ),
+          SizedBox(height: 68),
+          Text(info.name),
+          SizedBox(height: 54),
+          Row(
+            children: [
+              Text("From: AAA"),
+              SizedBox(width: 42),
+              Text("To: AAA"),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 450,
+                height: 255,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: GawTheme.toolBarItem),
+                ),
+                child: Text("Washer Signature"),
+              ),
+              Container(
+                width: 450,
+                height: 255,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: GawTheme.toolBarItem),
+                ),
+                child: Text("Client Signature"),
               ),
             ],
           )
@@ -241,24 +571,24 @@ class JobsListingPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     List<JobInfo> infos = ref.watch(jobsProvider);
 
-    List<JobCard> widgets = [];
+    List<Widget> widgets = [];
     for (final info in infos) {
       if (filter == null || info.status == filter) {
-        widgets.add(JobCard(info: info));
+        widgets.add(Flexible(child: JobCard(info: info)));
       }
     }
 
-    return Row(
-      children: [
-        Column(
-          children: widgets,
-        ),
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        direction: Axis.horizontal,
+        children: widgets,
+      ),
     );
   }
 }
 
-class JobCard extends StatelessWidget {
+class JobCard extends ConsumerWidget {
   final JobInfo info;
   const JobCard({
     required this.info,
@@ -266,7 +596,7 @@ class JobCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     List<Widget> locations = [];
 
     for (final location in info.places) {
@@ -353,9 +683,7 @@ class JobCard extends StatelessWidget {
                 ),
                 Text(
                   "duplicate draft",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: TextStyle(decoration: TextDecoration.underline),
                 ),
               ],
             ),
@@ -370,21 +698,17 @@ class JobCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                MainText(
-                  info.name,
-                  fontWeight: FontWeight.w600,
-                ),
-                MainText(
-                  "${info.start} - ${info.end}",
-                  color: GawTheme.secondaryTint,
-                  fontWeight: FontWeight.w600,
-                ),
+                MainText(info.name, fontWeight: FontWeight.w600, fontSize: 14),
+                MainText("${info.start} - ${info.end}",
+                    color: GawTheme.secondaryTint,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12.3),
               ],
             ),
             const SizedBox(height: PaddingSizes.mainPadding),
             Row(children: locations),
             const SizedBox(height: PaddingSizes.bigPadding),
-            MainText(info.description),
+            MainText(info.description, fontSize: 12.3),
             const SizedBox(height: PaddingSizes.bigPadding),
             Row(
               children: [
@@ -417,9 +741,21 @@ class JobCard extends StatelessWidget {
               children: [
                 GenericButton(
                   label: "Delete",
+                  fontSize: 10.5,
+                  minHeight: 35,
+                  color: GawTheme.error,
+                  onTap: () {
+                    ref.read(currentlyDeletingProvider.notifier).state = info;
+                  },
                 ),
-                GenericButton(
+                EditButton(
+                  onTap: () {
+                    ref.read(currentlyEditingProvider.notifier).state = info;
+                  },
                   label: "Edit",
+                  fontSize: 10.5,
+                  minHeight: 35,
+                  color: Colors.transparent,
                 ),
               ],
             ),
