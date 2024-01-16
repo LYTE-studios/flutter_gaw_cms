@@ -16,10 +16,12 @@ class BaseBannerItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         color: GawTheme.clearBackground,
         boxShadow: const [
-          Shadows.mainShadow,
+          Shadows.bottomSheetShadow,
         ],
       ),
-      child: child,
+      child: Center(
+        child: child,
+      ),
     );
   }
 }
