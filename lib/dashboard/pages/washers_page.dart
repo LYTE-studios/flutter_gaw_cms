@@ -56,7 +56,10 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
         children: [
           const Column(
             children: [
-              CmsHeader(),
+              CmsHeader(
+                mainRoute: 'Washers',
+                subRoute: 'Registered',
+              ),
             ],
           ),
           Column(
@@ -109,7 +112,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                       header: BaseListHeader(
                         items: {
                           'Name': ListUtil.mColumn,
-                          'email': ListUtil.mColumn,
+                          'Email': ListUtil.mColumn,
                           'Phone': ListUtil.mColumn,
                           '': ListUtil.lColumn,
                         },
