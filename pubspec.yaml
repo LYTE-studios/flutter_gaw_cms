@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for Get-a-Wash
 publish_to: none
-version: 1.1.0+2
+version: 1.0.0+4
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -33,9 +33,9 @@ dependencies:
   image_picker: ^1.0.7
   dotted_border: ^2.1.0
 
-#dependency_overrides:
-#  gaw_ui:
-#    path: ../flutter_package_gaw_ui
+dependency_overrides:
+  gaw_ui:
+    path: ../flutter_package_gaw_ui
 #  gaw_api:
 #    path: ../flutter_package_gaw_api
 
@@ -47,3 +47,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/

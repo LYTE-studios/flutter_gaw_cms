@@ -12,30 +12,41 @@ class CmsBanner extends StatelessWidget {
         color: GawTheme.unselectedMainTint.withOpacity(0.15),
       ),
       width: 480,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: PaddingSizes.extraBigPadding * 2,
-              vertical: PaddingSizes.bigPadding * 2,
+          const Positioned(
+            top: 0,
+            left: 0,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: PaddingSizes.extraBigPadding * 2,
+                vertical: PaddingSizes.bigPadding * 2,
+              ),
+              child: MainLogoBig(),
             ),
-            child: MainLogoBig(),
           ),
-          const Spacer(),
-          const SizedBox(
-            height: 520,
-            width: 480,
-            child: _HoveringItems(),
+          const Positioned(
+            top: 120,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 520,
+              child: _HoveringItems(),
+            ),
           ),
-          const Spacer(),
-          SizedBox(
-            height: 56,
-            child: Center(
-              child: MainText(
-                '© 2023 GET-A-WASH',
-                textStyleOverride: TextStyles.mainStyle.copyWith(
-                  fontSize: 12,
+          Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            child: SizedBox(
+              height: 56,
+              child: Center(
+                child: MainText(
+                  '© 2023 GET-A-WASH',
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
@@ -47,68 +58,69 @@ class CmsBanner extends StatelessWidget {
 }
 
 class _HoveringItems extends StatelessWidget {
-  const _HoveringItems({super.key});
+  const _HoveringItems();
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: LayoutBuilder(builder: (context, constraints) {
-        return Stack(
-          children: [
-            // TODO Finish widgets
-            Positioned(
-              bottom: constraints.maxHeight - 180,
-              left: constraints.maxWidth - 230,
+    return const Stack(
+      children: [
+        Positioned(
+          top: 64,
+          left: 140,
+          child: SizedBox(
+            height: 120,
+            width: 120,
+            child: BaseBannerItem(
               child: SizedBox(
-                height: 120,
-                width: 120,
-                child: BaseBannerItem(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: PaddingSizes.mainPadding,
-                        ),
-                        child: MainText(
-                          '8h',
-                          textStyleOverride: TextStyles.titleStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 32,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                height: 96,
+                width: 96,
+                child: SvgImage(
+                  'images/banner_item_1.svg',
+                  useRootPackage: true,
                 ),
               ),
             ),
-            Positioned(
-              bottom: constraints.maxHeight / 2,
-              left: constraints.maxWidth - 310,
-              child: const SizedBox(
-                height: 140,
-                width: 200,
-                child: BaseBannerItem(
-                  child: SizedBox(),
+          ),
+        ),
+        Positioned(
+          bottom: 170,
+          left: 90,
+          child: SizedBox(
+            height: 140,
+            width: 200,
+            child: BaseBannerItem(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: PaddingSizes.bigPadding,
+                ),
+                child: SvgImage(
+                  'images/banner_item_3.svg',
+                  useRootPackage: true,
                 ),
               ),
             ),
-            Positioned(
-              bottom: constraints.maxHeight - 270,
-              left: constraints.maxWidth - 130,
-              child: const SizedBox(
-                height: 140,
-                width: 140,
-                child: BaseBannerItem(
-                  child: SizedBox(),
+          ),
+        ),
+        Positioned(
+          bottom: 240,
+          left: 240,
+          child: SizedBox(
+            height: 140,
+            width: 140,
+            child: BaseBannerItem(
+              child: Padding(
+                padding: EdgeInsets.all(
+                  PaddingSizes.mainPadding,
+                ),
+                child: SvgImage(
+                  'images/banner_item_2.svg',
+                  useRootPackage: true,
                 ),
               ),
             ),
-          ],
-        );
-      }),
+          ),
+        ),
+      ],
     );
   }
 }

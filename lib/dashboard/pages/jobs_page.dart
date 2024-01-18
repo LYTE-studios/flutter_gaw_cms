@@ -1,7 +1,6 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
-import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage jobsBeamPage = BeamPage(
   title: 'Jobs',
@@ -23,14 +22,10 @@ class _JobsPageState extends State<JobsPage> {
   @override
   Widget build(BuildContext context) {
     return const BaseLayoutScreen(
+      mainRoute: 'Jobs',
+      subRoute: 'Jobs',
       child: Column(
-        children: [
-          GenericListView(
-            title: 'Jobs',
-            header: const SizedBox(),
-            rows: [],
-          )
-        ],
+        children: [],
       ),
     );
   }

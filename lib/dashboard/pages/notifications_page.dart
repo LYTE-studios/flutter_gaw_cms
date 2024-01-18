@@ -143,6 +143,8 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(
+      mainRoute: 'Notifications',
+      subRoute: 'Notifications',
       child: Column(
         children: [
           ScreenSheet(

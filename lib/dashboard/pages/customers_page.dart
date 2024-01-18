@@ -64,7 +64,10 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
         children: [
           const Column(
             children: [
-              CmsHeader(),
+              CmsHeader(
+                mainRoute: 'Customers',
+                subRoute: 'Customers',
+              ),
             ],
           ),
           Column(
@@ -107,56 +110,54 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
               ),
               Expanded(
                 child: ScreenSheet(
-                  child: LoadingSwitcher(
+                  child: GenericListView(
                     loading: loading,
-                    child: GenericListView(
-                      title: LocaleKeys.customers.tr(),
-                      valueName: LocaleKeys.customers.tr().toLowerCase(),
-                      totalItems: customerListResponse?.total,
-                      header: BaseListHeader(
-                        items: {
-                          'Name': ListUtil.mColumn,
-                          'email': ListUtil.mColumn,
-                          'Phone': ListUtil.mColumn,
-                          'Company': ListUtil.mColumn,
-                          '': ListUtil.lColumn,
-                        },
-                      ),
-                      rows: customerListResponse?.customers.map(
-                            (customer) {
-                              return InkWell(
-                                onTap: () {
-                                  DialogUtil.show(
-                                    dialog: CustomerDetailDialog(
-                                      customerId: customer.id,
-                                    ),
-                                    context: context,
-                                  );
-                                },
-                                child: BaseListItem(
-                                  items: {
-                                    TextRowItem(
-                                      value: customer.getFullName(),
-                                    ): ListUtil.mColumn,
-                                    TextRowItem(
-                                      value: customer.email,
-                                    ): ListUtil.mColumn,
-                                    TextRowItem(
-                                      value: customer.phoneNumber,
-                                    ): ListUtil.mColumn,
-                                    TextRowItem(
-                                      value: customer.company,
-                                    ): ListUtil.mColumn,
-                                    const IconRowItem(
-                                      icon: PixelPerfectIcons.eyeNormal,
-                                    ): ListUtil.lColumn,
-                                  },
-                                ),
-                              );
-                            },
-                          ).toList() ??
-                          [],
+                    title: LocaleKeys.customers.tr(),
+                    valueName: LocaleKeys.customers.tr().toLowerCase(),
+                    totalItems: customerListResponse?.total,
+                    header: BaseListHeader(
+                      items: {
+                        'Name': ListUtil.mColumn,
+                        'Email': ListUtil.mColumn,
+                        'Phone': ListUtil.mColumn,
+                        'Company': ListUtil.mColumn,
+                        '': ListUtil.lColumn,
+                      },
                     ),
+                    rows: customerListResponse?.customers.map(
+                          (customer) {
+                            return InkWell(
+                              onTap: () {
+                                DialogUtil.show(
+                                  dialog: CustomerDetailDialog(
+                                    customerId: customer.id,
+                                  ),
+                                  context: context,
+                                );
+                              },
+                              child: BaseListItem(
+                                items: {
+                                  TextRowItem(
+                                    value: customer.getFullName(),
+                                  ): ListUtil.mColumn,
+                                  SelectableTextRowItem(
+                                    value: customer.email,
+                                  ): ListUtil.mColumn,
+                                  SelectableTextRowItem(
+                                    value: customer.phoneNumber,
+                                  ): ListUtil.mColumn,
+                                  TextRowItem(
+                                    value: customer.company,
+                                  ): ListUtil.mColumn,
+                                  const IconRowItem(
+                                    icon: PixelPerfectIcons.eyeNormal,
+                                  ): ListUtil.lColumn,
+                                },
+                              ),
+                            );
+                          },
+                        ).toList() ??
+                        [],
                   ),
                 ),
               ),

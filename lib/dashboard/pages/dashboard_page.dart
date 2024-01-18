@@ -26,7 +26,11 @@ class _DashboardPageState extends State<DashboardPage> {
         children: [
           const Column(
             children: [
-              CmsHeader(),
+              CmsHeader(
+                mainRoute: 'Dashboard',
+                subRoute: 'Dashboard',
+                showWelcomeMessage: true,
+              ),
             ],
           ),
 

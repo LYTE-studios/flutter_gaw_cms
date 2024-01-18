@@ -29,6 +29,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     String? logoutTime = ref.watch(logOutProvider);
 
     return BaseLayoutScreen(
+      mainRoute: 'Settings',
+      subRoute: 'Account settings',
       child: DefaultTextStyle(
         style: const TextStyle(
           fontWeight: FontWeight.w600,
