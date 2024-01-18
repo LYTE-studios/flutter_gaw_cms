@@ -36,11 +36,13 @@ class WasherInfo {
 }
 
 class JobInfo {
+  String details;
   String abbreviation;
   String name;
-  String date;
-  String start;
-  String end;
+  String startdate;
+  String enddate;
+  String starttime;
+  String endtime;
   List<String> places;
   String description;
   int washerCount;
@@ -49,18 +51,38 @@ class JobInfo {
   List<WasherInfo> washers;
 
   JobInfo({
-    required this.abbreviation,
-    required this.name,
-    required this.date,
-    required this.start,
-    required this.end,
-    required this.places,
-    required this.description,
-    required this.washerCount,
-    required this.maxWasherCount,
-    required this.status,
+    this.details = "",
+    this.abbreviation = "",
+    this.name = "",
+    this.startdate = "",
+    this.enddate = "",
+    this.starttime = "",
+    this.endtime = "",
+    this.places = const ["", "", ""],
+    this.description = "",
+    this.washerCount = 0,
+    this.maxWasherCount = 0,
+    this.status = JobStatus.draft,
     this.washers = const [],
   });
+
+  JobInfo copy() {
+    return JobInfo(
+      details: details,
+      abbreviation: abbreviation,
+      name: name,
+      startdate: startdate,
+      enddate: enddate,
+      starttime: starttime,
+      endtime: endtime,
+      places: places.toList(),
+      description: description,
+      washerCount: washerCount,
+      maxWasherCount: maxWasherCount,
+      status: status,
+      washers: washers.toList(),
+    );
+  }
 }
 
 enum JobStatus {
@@ -73,9 +95,10 @@ final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
       JobInfo(
         abbreviation: "SM",
         name: "Stieg Martens",
-        date: "28/03/2023",
-        start: "14:00",
-        end: "18:00",
+        startdate: "28/03/2023",
+        enddate: "30/03/2023",
+        starttime: "14:00",
+        endtime: "18:00",
         places: ["Kortrijk", "Mellestraat 30", "8500"],
         description: "Garage Vandenplas needs 3 washers from 14-18pm",
         washerCount: 0,
@@ -85,9 +108,10 @@ final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
       JobInfo(
         abbreviation: "SM",
         name: "Stieg Martens",
-        date: "28/03/2023",
-        start: "14:00",
-        end: "18:00",
+        startdate: "28/03/2023",
+        enddate: "30/03/2023",
+        starttime: "14:00",
+        endtime: "18:00",
         places: ["Kortrijk", "Mellestraat 30", "8500"],
         description: "Garage Vandenplas needs 3 washers from 14-18pm",
         washerCount: 3,
@@ -130,7 +154,15 @@ class _JobsPageState extends State<JobsPage> {
             topPadding: CmsHeader.headerHeight + 8,
             child: Stack(
               children: [
-                Positioned(child: GenericButton(label: "AA"))
+                const Positioned(
+                  top: 4,
+                  right: 10,
+                  child: GenericButton(
+                    label: "Add",
+                    fontSize: 10.4,
+                    minHeight: 31,
+                  ),
+                ),
                 TabbedView(
                   tabs: const [
                     'All jobs',
@@ -159,6 +191,241 @@ class _JobsPageState extends State<JobsPage> {
           const WasherPopup(),
         ],
       ),
+    );
+  }
+}
+
+class JobSettingsWidget extends ConsumerWidget {
+  final JobInfo viewing;
+  JobSettingsWidget({
+    required this.viewing,
+    super.key,
+  });
+
+  late final JobInfo newInfo = viewing.copy();
+
+  void updateDetails(WidgetRef ref) {
+    List<JobInfo> jobs = ref.read(jobsProvider);
+    int index = jobs.indexWhere((element) => element == viewing);
+    if (index == -1) {
+      jobs.add(newInfo);
+    } else {
+      jobs[index] = newInfo;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    Widget washerArea;
+    if (viewing.status == JobStatus.active) {
+      List<Widget> widgets = [];
+      for (final washer in viewing.washers) {
+        widgets.add(
+          TextButton(
+            onPressed: () {
+              ref.read(washerFocusProvider.notifier).state = washer;
+            },
+            child: WasherWidget(info: washer),
+          ),
+        );
+      }
+
+      washerArea = Expanded(
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const InputTitleText("Washers"),
+            Row(children: widgets),
+          ],
+        ),
+      );
+    } else {
+      washerArea = Expanded(
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const InputTitleText("Needed washers for the job"),
+            InputTextForm(
+              hint: "#",
+              text: viewing.maxWasherCount.toString(),
+              fontSize: 14,
+              callback: (value) =>
+                  newInfo.maxWasherCount = int.tryParse(value) ?? 0,
+            ),
+          ],
+        ),
+      );
+    }
+
+    bool enabled = viewing.status == JobStatus.draft;
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Job Details"),
+                  InputTextForm(
+                    hint: "Wash get driven 4 auto's",
+                    text: viewing.details,
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) => newInfo.details = value,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            washerArea,
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            const Spacer(),
+          ],
+        ),
+        const SizedBox(height: PaddingSizes.extraBigPadding),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Recruitment Period"),
+                  InputTextForm(
+                    hint: "Jul, 10 - Jul, 12",
+                    text: "${viewing.startdate} - ${viewing.enddate}",
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) {
+                      final split = value.split(" - ");
+                      newInfo.startdate = split[0];
+                      newInfo.enddate = split[1];
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Time Period"),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: InputTextForm(
+                          hint: "July 10",
+                          text: viewing.startdate,
+                          fontSize: 14,
+                          enabled: enabled,
+                          callback: (value) => newInfo.startdate = value,
+                        ),
+                      ),
+                      const SizedBox(width: PaddingSizes.mainPadding),
+                      Expanded(
+                        child: InputTextForm(
+                          hint: "12:00 - 13:00",
+                          text: "${viewing.starttime} - ${viewing.endtime}",
+                          fontSize: 14,
+                          enabled: enabled,
+                          callback: (value) {
+                            final split = value.split(" - ");
+                            newInfo.starttime = split[0];
+                            newInfo.endtime = split[1];
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Customer"),
+                  InputTextForm(
+                    hint: "Customer",
+                    text: viewing.name,
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) => newInfo.name = value,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: PaddingSizes.extraBigPadding),
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Street Address"),
+                  InputTextForm(
+                    hint: "Vinkstraat 55",
+                    text: viewing.places[0],
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) => newInfo.places[0] = value,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("City"),
+                  InputTextForm(
+                    hint: "Kortrijk",
+                    text: viewing.places[1],
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) => newInfo.places[1] = value,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: PaddingSizes.extraBigPadding),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const InputTitleText("Postcode"),
+                  InputTextForm(
+                    hint: "8500",
+                    text: viewing.places[2],
+                    fontSize: 14,
+                    enabled: enabled,
+                    callback: (value) => newInfo.places[2] = value,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: PaddingSizes.extraBigPadding),
+        const InputTitleText("Job description"),
+        TextFormField(
+          minLines: 2,
+          maxLines: 2,
+          decoration: InputDecoration(labelText: viewing.description),
+          enabled: enabled,
+          onChanged: (value) => newInfo.description = value,
+        ),
+      ],
     );
   }
 }
@@ -275,53 +542,16 @@ class JobPopup extends ConsumerWidget {
       return Container();
     }
 
+    JobSettingsWidget settings = JobSettingsWidget(viewing: viewing);
+
     Widget title;
-    Widget washerArea;
-    if (viewing.status == JobStatus.active) {
+    if (viewing.status == JobStatus.draft) {
+      title = const PopupTitleText("Job Draft",
+          icon: SvgImage(PixelPerfectIcons.editNormal));
+    } else {
       title = const PopupTitleText("Job Info",
           icon: SvgImage(PixelPerfectIcons.info));
-      List<Widget> widgets = [];
-      for (final washer in viewing.washers) {
-        widgets.add(
-          TextButton(
-            onPressed: () {
-              ref.read(washerFocusProvider.notifier).state = washer;
-            },
-            child: WasherWidget(info: washer),
-          ),
-        );
-      }
-
-      washerArea = Expanded(
-        flex: 1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const InputTitleText("Washers"),
-            Row(children: widgets),
-          ],
-        ),
-      );
-    } else {
-      title = const PopupTitleText("Job Draft",
-          icon: SvgImage(PixelPerfectIcons.washers));
-
-      washerArea = const Expanded(
-        flex: 1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InputTitleText("Needed washers for the job"),
-            InputTextForm(
-              hint: "#",
-              fontSize: 14,
-            ),
-          ],
-        ),
-      );
     }
-
-    bool enabled = viewing.status == JobStatus.draft;
 
     Widget footer = Container();
     if (viewing.status == JobStatus.draft) {
@@ -333,6 +563,7 @@ class JobPopup extends ConsumerWidget {
               GenericButton(
                 label: "Save",
                 onTap: () {
+                  settings.updateDetails(ref);
                   ref.read(currentlyEditingProvider.notifier).state = null;
                 },
               ),
@@ -376,147 +607,49 @@ class JobPopup extends ConsumerWidget {
               ),
             ],
           ),
-          Column(
+          settings,
+          footer,
+        ],
+      ),
+    );
+  }
+}
+
+class JobCreatePopup extends ConsumerWidget {
+  const JobCreatePopup({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    JobInfo viewing = JobInfo();
+
+    Widget footer = Container();
+
+    return PopupSheet(
+      maxWidth: 1131,
+      maxHeight: 689,
+      visible: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Job Details"),
-                        InputTextForm(
-                          hint: "Wash get driven 4 auto's",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
+              const PopupTitleText("Create Job"),
+              Container(
+                alignment: Alignment.topRight,
+                child: TextButton(
+                  child: const SvgIcon(
+                    PixelPerfectIcons.xNormal,
+                    color: Colors.black,
                   ),
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  washerArea,
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  Spacer(),
-                ],
-              ),
-              SizedBox(height: PaddingSizes.extraBigPadding),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Recruitment Period"),
-                        InputTextForm(
-                          hint: "Jul, 10 - Jul, 12",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Time Period"),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: InputTextForm(
-                                hint: "July 10",
-                                fontSize: 14,
-                                enabled: enabled,
-                              ),
-                            ),
-                            SizedBox(width: PaddingSizes.mainPadding),
-                            Expanded(
-                              child: InputTextForm(
-                                hint: "12:00 - 13:00",
-                                fontSize: 14,
-                                enabled: enabled,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Customer"),
-                        InputTextForm(
-                          hint: "Customer",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: PaddingSizes.extraBigPadding),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Street Address"),
-                        InputTextForm(
-                          hint: "Vinkstraat 55",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("City"),
-                        InputTextForm(
-                          hint: "Kortrijk",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: PaddingSizes.extraBigPadding),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InputTitleText("Postcode"),
-                        InputTextForm(
-                          hint: "8500",
-                          fontSize: 14,
-                          enabled: enabled,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: PaddingSizes.extraBigPadding),
-              const InputTitleText("Job description"),
-              // InputTextForm(fontSize: 14),
-              TextFormField(
-                minLines: 2,
-                maxLines: 2,
-                enabled: enabled,
+                  onPressed: () {
+                    ref.read(currentlyEditingProvider.notifier).state = null;
+                  },
+                ),
               ),
             ],
           ),
+          JobSettingsWidget(viewing: viewing),
           footer,
         ],
       ),
@@ -752,7 +885,7 @@ class JobCard extends ConsumerWidget {
             Container(
               alignment: Alignment.centerRight,
               child: MainText(
-                info.date,
+                info.startdate,
                 color: GawTheme.secondaryTint,
                 fontWeight: FontWeight.w600,
               ),
@@ -761,7 +894,7 @@ class JobCard extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MainText(info.name, fontWeight: FontWeight.w600, fontSize: 14),
-                MainText("${info.start} - ${info.end}",
+                MainText("${info.starttime} - ${info.endtime}",
                     color: GawTheme.secondaryTint,
                     fontWeight: FontWeight.w600,
                     fontSize: 12.3),
