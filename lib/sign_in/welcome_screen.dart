@@ -1,8 +1,10 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/routing/router.dart';
+import 'package:flutter_gaw_cms/core/routing/sign_in_router.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
+import 'package:flutter_gaw_cms/sign_in/forgot_password_screen.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -104,6 +106,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
                 hint: 'At least 8 characters',
                 label: 'Password',
                 isPasswordField: true,
+              ),
+              const SizedBox(
+                height: PaddingSizes.smallPadding,
+              ),
+              Row(
+                children: [
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      signInRouter.beamToNamed(ForgotPasswordScreen.route);
+                    },
+                    child: const Text(
+                      'Forgot password?',
+                      textAlign: TextAlign.end,
+                      style: TextStyle(
+                        color: GawTheme.mainTint,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w200,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: PaddingSizes.extraBigPadding,
