@@ -1,8 +1,10 @@
 import 'package:beamer/beamer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage jobsBeamPage = BeamPage(
@@ -12,13 +14,13 @@ const BeamPage jobsBeamPage = BeamPage(
   child: JobsPage(),
 );
 
-class JobsPage extends StatefulWidget {
+class JobsPage extends ConsumerStatefulWidget {
   const JobsPage({super.key});
 
   static const String route = '/dashboard/jobs';
 
   @override
-  State<JobsPage> createState() => _JobsPageState();
+  ConsumerState<JobsPage> createState() => _JobsPageState();
 }
 
 class WasherInfo {
@@ -35,113 +37,12 @@ class WasherInfo {
   });
 }
 
-class JobInfo {
-  String details;
-  String abbreviation;
-  String name;
-  String startdate;
-  String enddate;
-  String starttime;
-  String endtime;
-  List<String> places;
-  String description;
-  int washerCount;
-  int maxWasherCount;
-  JobStatus status;
-  List<WasherInfo> washers;
-
-  JobInfo({
-    this.details = "",
-    this.abbreviation = "",
-    this.name = "",
-    this.startdate = "",
-    this.enddate = "",
-    this.starttime = "",
-    this.endtime = "",
-    this.places = const ["", "", ""],
-    this.description = "",
-    this.washerCount = 0,
-    this.maxWasherCount = 0,
-    this.status = JobStatus.draft,
-    this.washers = const [],
-  });
-
-  JobInfo copy() {
-    return JobInfo(
-      details: details,
-      abbreviation: abbreviation,
-      name: name,
-      startdate: startdate,
-      enddate: enddate,
-      starttime: starttime,
-      endtime: endtime,
-      places: places.toList(),
-      description: description,
-      washerCount: washerCount,
-      maxWasherCount: maxWasherCount,
-      status: status,
-      washers: washers.toList(),
-    );
-  }
-}
-
-enum JobStatus {
-  draft,
-  active,
-  done,
-}
-
-final jobsProvider = StateProvider<List<JobInfo>>((ref) => [
-      JobInfo(
-        abbreviation: "SM",
-        name: "Stieg Martens",
-        startdate: "28/03/2023",
-        enddate: "30/03/2023",
-        starttime: "14:00",
-        endtime: "18:00",
-        places: ["Kortrijk", "Mellestraat 30", "8500"],
-        description: "Garage Vandenplas needs 3 washers from 14-18pm",
-        washerCount: 0,
-        maxWasherCount: 3,
-        status: JobStatus.draft,
-      ),
-      JobInfo(
-        abbreviation: "SM",
-        name: "Stieg Martens",
-        startdate: "28/03/2023",
-        enddate: "30/03/2023",
-        starttime: "14:00",
-        endtime: "18:00",
-        places: ["Kortrijk", "Mellestraat 30", "8500"],
-        description: "Garage Vandenplas needs 3 washers from 14-18pm",
-        washerCount: 3,
-        maxWasherCount: 3,
-        status: JobStatus.active,
-        washers: [
-          WasherInfo(
-            name: "Theresa Webb",
-            profilePicture: Image.network(
-              "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg",
-            ),
-            start: "11:30",
-            end: "15:30",
-          ),
-          WasherInfo(
-            name: "Theresa Webb",
-            profilePicture: Image.network(
-                "https://i.pinimg.com/474x/cd/20/d6/cd20d6bc40d4a51b8a39daab77c44ecd.jpg"),
-            start: "12:30",
-            end: "16:30",
-          ),
-        ],
-      ),
-    ]);
-
-final currentlyEditingProvider = StateProvider<JobInfo?>((ref) => null);
-final currentlyDeletingProvider = StateProvider<JobInfo?>((ref) => null);
+final currentlyCreatingProvider = StateProvider<bool>((ref) => false);
+final currentlyEditingProvider = StateProvider<Job?>((ref) => null);
+final currentlyDeletingProvider = StateProvider<Job?>((ref) => null);
 final washerFocusProvider = StateProvider<WasherInfo?>((ref) => null);
 
-class _JobsPageState extends State<JobsPage> {
+class _JobsPageState extends ConsumerState<JobsPage> {
   int selectedPage = 0;
 
   @override
@@ -154,11 +55,14 @@ class _JobsPageState extends State<JobsPage> {
             topPadding: CmsHeader.headerHeight + 8,
             child: Stack(
               children: [
-                const Positioned(
+                Positioned(
                   top: 4,
                   right: 10,
                   child: GenericButton(
                     label: "Add",
+                    onTap: () {
+                      ref.read(currentlyCreatingProvider.notifier).state = true;
+                    },
                     fontSize: 10.4,
                     minHeight: 31,
                   ),
@@ -166,15 +70,15 @@ class _JobsPageState extends State<JobsPage> {
                 TabbedView(
                   tabs: const [
                     'All jobs',
-                    'Active jobs',
-                    'Done jobs',
-                    'Drafts'
+                    // 'Active jobs',
+                    // 'Done jobs',
+                    // 'Drafts'
                   ],
                   pages: const [
                     JobsListingPage(),
-                    JobsListingPage(filter: JobStatus.active),
-                    JobsListingPage(filter: JobStatus.done),
-                    JobsListingPage(filter: JobStatus.draft),
+                    // JobsListingPage(filter: JobState.ac),
+                    // JobsListingPage(filter: JobStatus.done),
+                    // JobsListingPage(filter: JobStatus.draft),
                   ],
                   selectedIndex: selectedPage,
                   onPageIndexChange: (int index) {
@@ -187,6 +91,7 @@ class _JobsPageState extends State<JobsPage> {
             ),
           ),
           const JobPopup(),
+          JobCreatePopup(),
           const JobDeletePopup(),
           const WasherPopup(),
         ],
@@ -195,71 +100,115 @@ class _JobsPageState extends State<JobsPage> {
   }
 }
 
-class JobSettingsWidget extends ConsumerWidget {
-  final JobInfo viewing;
-  JobSettingsWidget({
-    required this.viewing,
-    super.key,
-  });
+class JobSettingsState extends StatefulWidget {
+  JobSettingsState({super.key});
 
-  late final JobInfo newInfo = viewing.copy();
+  final CreateJobRequestBuilder job = CreateJobRequestBuilder();
 
-  void updateDetails(WidgetRef ref) {
-    List<JobInfo> jobs = ref.read(jobsProvider);
-    int index = jobs.indexWhere((element) => element == viewing);
-    if (index == -1) {
-      jobs.add(newInfo);
-    } else {
-      jobs[index] = newInfo;
-    }
+  void createJob(bool draft) {
+    job.isDraft = draft;
+    JobsApi.createJob(request: job.build());
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<JobSettingsState> createState() => JobSettingsWidget();
+}
+
+class JobSettingsWidget extends State<JobSettingsState> {
+  // final Job viewing;
+  // JobSettingsWidget({
+  //   // required this.viewing,
+  // });
+
+  Map<String, String> customers = {};
+
+  JobSettingsWidget() {
+    updateCustomers();
+  }
+
+  void updateCustomers() async {
+    CustomerApi.getCustomers().then((value) {
+      setState(() {
+        value?.customers.forEach((c) {
+          if (c.id == null) return;
+
+          customers[c.id!] = "${c.firstName} ${c.lastName}";
+        });
+      });
+    });
+  }
+
+  void updateDetails(WidgetRef ref) {
+    // JobsProviderState jobState = ref.read(jobsProvider);
+    // List<Job>? jobs = jobState.upcomingJobs?.jobs?.toList();
+
+    // if (jobs == null) {
+    //   return;
+    // }
+
+    // int index = jobs.indexWhere((element) => element == viewing);
+    // if (index == -1) {
+    //   jobs.add(newInfo);
+    // } else {
+    //   jobs[index] = newInfo;
+    // }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    CreateJobRequestBuilder job = widget.job;
+
     Widget washerArea;
-    if (viewing.status == JobStatus.active) {
-      List<Widget> widgets = [];
-      for (final washer in viewing.washers) {
-        widgets.add(
-          TextButton(
-            onPressed: () {
-              ref.read(washerFocusProvider.notifier).state = washer;
-            },
-            child: WasherWidget(info: washer),
+
+    // if (job == JobState.pending) {
+    //   List<Widget> widgets = [];
+    //   // for (final washer in viewing.) {
+    //   //   widgets.add(
+    //   //     TextButton(
+    //   //       onPressed: () {
+    //   //         ref.read(washerFocusProvider.notifier).state = washer;
+    //   //       },
+    //   //       child: WasherWidget(info: washer),
+    //   //     ),
+    //   //   );
+    //   // }
+
+    //   washerArea = Expanded(
+    //     flex: 1,
+    //     child: Column(
+    //       crossAxisAlignment: CrossAxisAlignment.start,
+    //       children: [
+    //         const InputTitleText("Washers"),
+    //         Row(children: widgets),
+    //       ],
+    //     ),
+    //   );
+    // } else {
+    washerArea = Expanded(
+      flex: 1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const InputTitleText("Needed washers for the job"),
+          InputTextForm(
+            hint: "#",
+            number: true,
+            text: (job.maxWashers ?? 0).toString(),
+            fontSize: 14,
+            callback: (value) => job.maxWashers = int.tryParse(value),
           ),
-        );
-      }
+        ],
+      ),
+    );
+    // }
 
-      washerArea = Expanded(
-        flex: 1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const InputTitleText("Washers"),
-            Row(children: widgets),
-          ],
-        ),
-      );
-    } else {
-      washerArea = Expanded(
-        flex: 1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const InputTitleText("Needed washers for the job"),
-            InputTextForm(
-              hint: "#",
-              text: viewing.maxWasherCount.toString(),
-              fontSize: 14,
-              callback: (value) =>
-                  newInfo.maxWasherCount = int.tryParse(value) ?? 0,
-            ),
-          ],
-        ),
-      );
-    }
+    bool enabled = job.isDraft ?? true;
 
-    bool enabled = viewing.status == JobStatus.draft;
+    String startFormatted = DateFormat("dd-MM-yyyy")
+        .format(DateTime.fromMillisecondsSinceEpoch(job.startTime ?? 0));
+
+    String endFormatted = DateFormat("dd-MM-yyyy")
+        .format(DateTime.fromMillisecondsSinceEpoch(job.endTime ?? 0));
 
     return Column(
       children: [
@@ -271,13 +220,13 @@ class JobSettingsWidget extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const InputTitleText("Job Details"),
+                  const InputTitleText("Job Title"),
                   InputTextForm(
                     hint: "Wash get driven 4 auto's",
-                    text: viewing.details,
+                    text: job.title,
                     fontSize: 14,
                     enabled: enabled,
-                    callback: (value) => newInfo.details = value,
+                    callback: (value) => job.title = value,
                   ),
                 ],
               ),
@@ -296,16 +245,35 @@ class JobSettingsWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const InputTitleText("Recruitment Period"),
-                  InputTextForm(
-                    hint: "Jul, 10 - Jul, 12",
-                    text: "${viewing.startdate} - ${viewing.enddate}",
-                    fontSize: 14,
-                    enabled: enabled,
-                    callback: (value) {
-                      final split = value.split(" - ");
-                      newInfo.startdate = split[0];
-                      newInfo.enddate = split[1];
+                  GestureDetector(
+                    onTap: () {
+                      showDatePicker(
+                        context: context,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      ).then((value) {
+                        setState(() {
+                          job.startTime = value?.millisecondsSinceEpoch;
+                        });
+
+                        if (value == null) return;
+
+                        showDatePicker(
+                          context: context,
+                          firstDate: DateTime.fromMillisecondsSinceEpoch(
+                              job.startTime ?? 0),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                        ).then((value) => setState(
+                            () => job.endTime = value?.millisecondsSinceEpoch));
+                      });
                     },
+                    child: InputTextForm(
+                      hint: "Jul, 10 - Jul, 12",
+                      text: "$startFormatted - $endFormatted",
+                      fontSize: 14,
+                      enabled: false,
+                    ),
                   ),
                 ],
               ),
@@ -318,29 +286,29 @@ class JobSettingsWidget extends ConsumerWidget {
                   const InputTitleText("Time Period"),
                   Row(
                     children: [
-                      Expanded(
-                        child: InputTextForm(
-                          hint: "July 10",
-                          text: viewing.startdate,
-                          fontSize: 14,
-                          enabled: enabled,
-                          callback: (value) => newInfo.startdate = value,
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: InputTextForm(
+                      //     hint: "July 10",
+                      //     text: viewing.startdate,
+                      //     fontSize: 14,
+                      //     enabled: enabled,
+                      //     callback: (value) => newInfo.startdate = value,
+                      //   ),
+                      // ),
                       const SizedBox(width: PaddingSizes.mainPadding),
-                      Expanded(
-                        child: InputTextForm(
-                          hint: "12:00 - 13:00",
-                          text: "${viewing.starttime} - ${viewing.endtime}",
-                          fontSize: 14,
-                          enabled: enabled,
-                          callback: (value) {
-                            final split = value.split(" - ");
-                            newInfo.starttime = split[0];
-                            newInfo.endtime = split[1];
-                          },
-                        ),
-                      ),
+                      // Expanded(
+                      //   child: InputTextForm(
+                      //     hint: "12:00 - 13:00",
+                      //     text: "${viewing.starttime} - ${viewing.endtime}",
+                      //     fontSize: 14,
+                      //     enabled: enabled,
+                      //     callback: (value) {
+                      //       final split = value.split(" - ");
+                      //       newInfo.starttime = split[0];
+                      //       newInfo.endtime = split[1];
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -352,12 +320,15 @@ class JobSettingsWidget extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const InputTitleText("Customer"),
-                  InputTextForm(
+                  DropdownInputField(
+                    callback: (value) {
+                      setState(() {
+                        job.customerId = value;
+                      });
+                    },
+                    value: job.customerId,
                     hint: "Customer",
-                    text: viewing.name,
-                    fontSize: 14,
-                    enabled: enabled,
-                    callback: (value) => newInfo.name = value,
+                    options: customers,
                   ),
                 ],
               ),
@@ -374,10 +345,10 @@ class JobSettingsWidget extends ConsumerWidget {
                   const InputTitleText("Street Address"),
                   InputTextForm(
                     hint: "Vinkstraat 55",
-                    text: viewing.places[0],
+                    text: job.address.streetName,
                     fontSize: 14,
                     enabled: enabled,
-                    callback: (value) => newInfo.places[0] = value,
+                    callback: (value) => job.address.streetName = value,
                   ),
                 ],
               ),
@@ -390,10 +361,10 @@ class JobSettingsWidget extends ConsumerWidget {
                   const InputTitleText("City"),
                   InputTextForm(
                     hint: "Kortrijk",
-                    text: viewing.places[1],
+                    text: job.address.city,
                     fontSize: 14,
                     enabled: enabled,
-                    callback: (value) => newInfo.places[1] = value,
+                    callback: (value) => job.address.city = value,
                   ),
                 ],
               ),
@@ -406,10 +377,10 @@ class JobSettingsWidget extends ConsumerWidget {
                   const InputTitleText("Postcode"),
                   InputTextForm(
                     hint: "8500",
-                    text: viewing.places[2],
+                    text: job.address.postalCode,
                     fontSize: 14,
                     enabled: enabled,
-                    callback: (value) => newInfo.places[2] = value,
+                    callback: (value) => job.address.postalCode = value,
                   ),
                 ],
               ),
@@ -421,9 +392,9 @@ class JobSettingsWidget extends ConsumerWidget {
         TextFormField(
           minLines: 2,
           maxLines: 2,
-          decoration: InputDecoration(labelText: viewing.description),
+          initialValue: job.description,
           enabled: enabled,
-          onChanged: (value) => newInfo.description = value,
+          onChanged: (value) => job.description = value,
         ),
       ],
     );
@@ -435,7 +406,7 @@ class JobDeletePopup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    JobInfo? deleting = ref.watch(currentlyDeletingProvider);
+    Job? deleting = ref.watch(currentlyDeletingProvider);
 
     return PopupSheet(
       maxWidth: 421,
@@ -457,13 +428,13 @@ class JobDeletePopup extends ConsumerWidget {
                 label: "Delete",
                 color: GawTheme.error,
                 onTap: () {
-                  ref.read(currentlyDeletingProvider.notifier).state = null;
-                  ref.read(jobsProvider.notifier).state.remove(deleting);
+                  // ref.read(currentlyDeletingProvider.notifier).state = null;
+                  // ref.read(jobsProvider.notifier).state.remove(deleting);
 
                   // Force update
-                  ref
-                      .read(jobsProvider.notifier)
-                      .update((state) => state.toList());
+                  // ref
+                  //     .read(jobsProvider.notifier)
+                  //     .update((state) => state.toList());
                 },
               ),
               const SizedBox(width: PaddingSizes.mainPadding),
@@ -536,16 +507,18 @@ class JobPopup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    JobInfo? viewing = ref.watch(currentlyEditingProvider);
+    Job? viewing = ref.watch(currentlyEditingProvider);
 
     if (viewing == null && true) {
       return Container();
     }
 
-    JobSettingsWidget settings = JobSettingsWidget(viewing: viewing);
+    // JobSettingsWidget settings = JobSettingsWidget(viewing: viewing);
+    JobSettingsState settings = JobSettingsState();
 
     Widget title;
-    if (viewing.status == JobStatus.draft) {
+    bool draft = viewing.isDraft ?? true;
+    if (draft) {
       title = const PopupTitleText("Job Draft",
           icon: SvgImage(PixelPerfectIcons.editNormal));
     } else {
@@ -554,7 +527,7 @@ class JobPopup extends ConsumerWidget {
     }
 
     Widget footer = Container();
-    if (viewing.status == JobStatus.draft) {
+    if (draft) {
       footer = Column(
         children: [
           const SizedBox(height: 41),
@@ -563,7 +536,7 @@ class JobPopup extends ConsumerWidget {
               GenericButton(
                 label: "Save",
                 onTap: () {
-                  settings.updateDetails(ref);
+                  //settings.updateDetails(ref);
                   ref.read(currentlyEditingProvider.notifier).state = null;
                 },
               ),
@@ -616,18 +589,33 @@ class JobPopup extends ConsumerWidget {
 }
 
 class JobCreatePopup extends ConsumerWidget {
-  const JobCreatePopup({super.key});
+  JobCreatePopup({super.key});
+
+  final settings = JobSettingsState(/*viewing: viewing*/);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    JobInfo viewing = JobInfo();
-
-    Widget footer = Container();
+    Widget footer = Row(
+      children: [
+        GenericButton(
+          onTap: () {
+            settings.createJob(false);
+          },
+          label: "Create",
+        ),
+        GenericButton(
+          onTap: () {
+            settings.createJob(true);
+          },
+          label: "Safe as draft",
+        ),
+      ],
+    );
 
     return PopupSheet(
       maxWidth: 1131,
       maxHeight: 689,
-      visible: true,
+      visible: ref.watch(currentlyCreatingProvider),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -643,13 +631,13 @@ class JobCreatePopup extends ConsumerWidget {
                     color: Colors.black,
                   ),
                   onPressed: () {
-                    ref.read(currentlyEditingProvider.notifier).state = null;
+                    ref.read(currentlyCreatingProvider.notifier).state = false;
                   },
                 ),
               ),
             ],
           ),
-          JobSettingsWidget(viewing: viewing),
+          settings,
           footer,
         ],
       ),
@@ -754,23 +742,45 @@ class WasherPopup extends ConsumerWidget {
   }
 }
 
-class JobsListingPage extends ConsumerWidget {
-  final JobStatus? filter;
-
-  const JobsListingPage({
-    this.filter,
-    super.key,
-  });
+class JobsListingPage extends StatefulWidget {
+  const JobsListingPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    List<JobInfo> infos = ref.watch(jobsProvider);
+  State<JobsListingPage> createState() => JobsListingPageWidget();
+}
 
+class JobsListingPageWidget extends State<JobsListingPage> {
+  // final JobState? filter;
+
+  // const JobsListingPage({
+  //   // this.filter,
+  //   super.key,
+  // });
+
+  JobsListingPageWidget() {
+    updateJobs();
+  }
+
+  List<Job> jobs = [];
+
+  void updateJobs() {
+    JobsApi.getJobs(request: UserBasedJobsRequest()).then((value) {
+      setState(() {
+        print(value);
+        value?.jobs?.forEach((j) {
+          jobs.add(j);
+        });
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     List<Widget> widgets = [];
-    for (final info in infos) {
-      if (filter == null || info.status == filter) {
-        widgets.add(Flexible(child: JobCard(info: info)));
-      }
+    for (final info in jobs) {
+      // if (filter == null || info.status == filter) {
+      widgets.add(Flexible(child: JobCard(info: info)));
+      // }
     }
 
     return SizedBox(
@@ -784,7 +794,7 @@ class JobsListingPage extends ConsumerWidget {
 }
 
 class JobCard extends ConsumerWidget {
-  final JobInfo info;
+  final Job info;
   const JobCard({
     required this.info,
     super.key,
@@ -794,7 +804,7 @@ class JobCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     List<Widget> locations = [];
 
-    for (final location in info.places) {
+    for (final location in info.address.formattedAddres().split(" ")) {
       locations.add(
         Row(
           children: [
@@ -820,29 +830,19 @@ class JobCard extends ConsumerWidget {
       );
     }
 
-    String statusString;
-    Color statusColour;
+    String statusString = "";
+    Color statusColour = GawTheme.mainTint;
 
-    switch (info.status) {
-      case JobStatus.active:
-        {
-          statusString = "Active";
-          statusColour = GawTheme.success;
-        }
-        break;
-      case JobStatus.draft:
-        {
-          statusString = "Draft";
-          statusColour = GawTheme.error;
-        }
-        break;
-      default:
-        {
-          statusString = "";
-          statusColour = GawTheme.mainTint;
-        }
-        break;
+    if (info.isDraft ?? true) {
+      statusString = "Draft";
+      statusColour = GawTheme.error;
+    } else if (info.state == JobState.pending) {
+      statusString = "Active";
+      statusColour = GawTheme.success;
     }
+
+    String abbreviation =
+        (info.title ?? " ").split(" ").map((e) => e[0]).join();
 
     return Padding(
       padding: const EdgeInsets.all(PaddingSizes.mainPadding),
@@ -871,12 +871,12 @@ class JobCard extends ConsumerWidget {
                   ),
                   padding: const EdgeInsets.all(8),
                   child: MainText(
-                    info.abbreviation,
+                    abbreviation,
                     color: GawTheme.clearText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text(
+                const Text(
                   "duplicate draft",
                   style: TextStyle(decoration: TextDecoration.underline),
                 ),
@@ -885,7 +885,8 @@ class JobCard extends ConsumerWidget {
             Container(
               alignment: Alignment.centerRight,
               child: MainText(
-                info.startdate,
+                DateFormat("dd/MM/yyyy").format(
+                    DateTime.fromMillisecondsSinceEpoch(info.startTime)),
                 color: GawTheme.secondaryTint,
                 fontWeight: FontWeight.w600,
               ),
@@ -893,8 +894,10 @@ class JobCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                MainText(info.name, fontWeight: FontWeight.w600, fontSize: 14),
-                MainText("${info.starttime} - ${info.endtime}",
+                MainText(info.title ?? "",
+                    fontWeight: FontWeight.w600, fontSize: 14),
+                MainText(
+                    "${DateFormat("hh:mm").format(DateTime.fromMillisecondsSinceEpoch(info.startTime))} - ${DateFormat("hh:mm").format(DateTime.fromMillisecondsSinceEpoch(info.endTime))}",
                     color: GawTheme.secondaryTint,
                     fontWeight: FontWeight.w600,
                     fontSize: 12.3),
@@ -903,13 +906,13 @@ class JobCard extends ConsumerWidget {
             const SizedBox(height: PaddingSizes.mainPadding),
             Row(children: locations),
             const SizedBox(height: PaddingSizes.bigPadding),
-            MainText(info.description, fontSize: 12.3),
+            MainText(info.description ?? "", fontSize: 12.3),
             const SizedBox(height: PaddingSizes.bigPadding),
             Row(
               children: [
                 const SvgImage(PixelPerfectIcons.personMedium),
                 const SizedBox(width: PaddingSizes.extraSmallPadding),
-                Text("${info.washerCount}/${info.maxWasherCount}"),
+                Text("${info.selectedWashers}/${info.maxWashers}"),
                 const SizedBox(width: PaddingSizes.extraBigPadding),
                 Container(
                   width: 72,
