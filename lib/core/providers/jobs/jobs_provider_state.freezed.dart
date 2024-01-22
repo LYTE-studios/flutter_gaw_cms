@@ -17,12 +17,10 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$JobsProviderState {
   bool get loading => throw _privateConstructorUsedError;
-  bool get loadingUpcomingJobs => throw _privateConstructorUsedError;
-  bool get loadingMyJobs => throw _privateConstructorUsedError;
+  JobListResponse? get activeJobs => throw _privateConstructorUsedError;
+  JobListResponse? get doneJobs => throw _privateConstructorUsedError;
+  JobListResponse? get draftJobs => throw _privateConstructorUsedError;
   JobListResponse? get upcomingJobs => throw _privateConstructorUsedError;
-  JobListResponse? get archiveJobs => throw _privateConstructorUsedError;
-  ApplicationListResponse? get myJobs => throw _privateConstructorUsedError;
-  Job? get currentJob => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $JobsProviderStateCopyWith<JobsProviderState> get copyWith =>
@@ -37,12 +35,10 @@ abstract class $JobsProviderStateCopyWith<$Res> {
   @useResult
   $Res call(
       {bool loading,
-      bool loadingUpcomingJobs,
-      bool loadingMyJobs,
-      JobListResponse? upcomingJobs,
-      JobListResponse? archiveJobs,
-      ApplicationListResponse? myJobs,
-      Job? currentJob});
+      JobListResponse? activeJobs,
+      JobListResponse? doneJobs,
+      JobListResponse? draftJobs,
+      JobListResponse? upcomingJobs});
 }
 
 /// @nodoc
@@ -59,42 +55,32 @@ class _$JobsProviderStateCopyWithImpl<$Res, $Val extends JobsProviderState>
   @override
   $Res call({
     Object? loading = null,
-    Object? loadingUpcomingJobs = null,
-    Object? loadingMyJobs = null,
+    Object? activeJobs = freezed,
+    Object? doneJobs = freezed,
+    Object? draftJobs = freezed,
     Object? upcomingJobs = freezed,
-    Object? archiveJobs = freezed,
-    Object? myJobs = freezed,
-    Object? currentJob = freezed,
   }) {
     return _then(_value.copyWith(
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
               as bool,
-      loadingUpcomingJobs: null == loadingUpcomingJobs
-          ? _value.loadingUpcomingJobs
-          : loadingUpcomingJobs // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingMyJobs: null == loadingMyJobs
-          ? _value.loadingMyJobs
-          : loadingMyJobs // ignore: cast_nullable_to_non_nullable
-              as bool,
+      activeJobs: freezed == activeJobs
+          ? _value.activeJobs
+          : activeJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
+      doneJobs: freezed == doneJobs
+          ? _value.doneJobs
+          : doneJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
+      draftJobs: freezed == draftJobs
+          ? _value.draftJobs
+          : draftJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
       upcomingJobs: freezed == upcomingJobs
           ? _value.upcomingJobs
           : upcomingJobs // ignore: cast_nullable_to_non_nullable
               as JobListResponse?,
-      archiveJobs: freezed == archiveJobs
-          ? _value.archiveJobs
-          : archiveJobs // ignore: cast_nullable_to_non_nullable
-              as JobListResponse?,
-      myJobs: freezed == myJobs
-          ? _value.myJobs
-          : myJobs // ignore: cast_nullable_to_non_nullable
-              as ApplicationListResponse?,
-      currentJob: freezed == currentJob
-          ? _value.currentJob
-          : currentJob // ignore: cast_nullable_to_non_nullable
-              as Job?,
     ) as $Val);
   }
 }
@@ -109,12 +95,10 @@ abstract class _$$jobsProviderStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {bool loading,
-      bool loadingUpcomingJobs,
-      bool loadingMyJobs,
-      JobListResponse? upcomingJobs,
-      JobListResponse? archiveJobs,
-      ApplicationListResponse? myJobs,
-      Job? currentJob});
+      JobListResponse? activeJobs,
+      JobListResponse? doneJobs,
+      JobListResponse? draftJobs,
+      JobListResponse? upcomingJobs});
 }
 
 /// @nodoc
@@ -129,42 +113,32 @@ class __$$jobsProviderStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? loading = null,
-    Object? loadingUpcomingJobs = null,
-    Object? loadingMyJobs = null,
+    Object? activeJobs = freezed,
+    Object? doneJobs = freezed,
+    Object? draftJobs = freezed,
     Object? upcomingJobs = freezed,
-    Object? archiveJobs = freezed,
-    Object? myJobs = freezed,
-    Object? currentJob = freezed,
   }) {
     return _then(_$jobsProviderStateImpl(
       loading: null == loading
           ? _value.loading
           : loading // ignore: cast_nullable_to_non_nullable
               as bool,
-      loadingUpcomingJobs: null == loadingUpcomingJobs
-          ? _value.loadingUpcomingJobs
-          : loadingUpcomingJobs // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingMyJobs: null == loadingMyJobs
-          ? _value.loadingMyJobs
-          : loadingMyJobs // ignore: cast_nullable_to_non_nullable
-              as bool,
+      activeJobs: freezed == activeJobs
+          ? _value.activeJobs
+          : activeJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
+      doneJobs: freezed == doneJobs
+          ? _value.doneJobs
+          : doneJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
+      draftJobs: freezed == draftJobs
+          ? _value.draftJobs
+          : draftJobs // ignore: cast_nullable_to_non_nullable
+              as JobListResponse?,
       upcomingJobs: freezed == upcomingJobs
           ? _value.upcomingJobs
           : upcomingJobs // ignore: cast_nullable_to_non_nullable
               as JobListResponse?,
-      archiveJobs: freezed == archiveJobs
-          ? _value.archiveJobs
-          : archiveJobs // ignore: cast_nullable_to_non_nullable
-              as JobListResponse?,
-      myJobs: freezed == myJobs
-          ? _value.myJobs
-          : myJobs // ignore: cast_nullable_to_non_nullable
-              as ApplicationListResponse?,
-      currentJob: freezed == currentJob
-          ? _value.currentJob
-          : currentJob // ignore: cast_nullable_to_non_nullable
-              as Job?,
     ));
   }
 }
@@ -174,58 +148,47 @@ class __$$jobsProviderStateImplCopyWithImpl<$Res>
 class _$jobsProviderStateImpl implements jobsProviderState {
   _$jobsProviderStateImpl(
       {this.loading = true,
-      this.loadingUpcomingJobs = true,
-      this.loadingMyJobs = true,
-      this.upcomingJobs,
-      this.archiveJobs,
-      this.myJobs,
-      this.currentJob});
+      this.activeJobs,
+      this.doneJobs,
+      this.draftJobs,
+      this.upcomingJobs});
 
   @override
   @JsonKey()
   final bool loading;
   @override
-  @JsonKey()
-  final bool loadingUpcomingJobs;
+  final JobListResponse? activeJobs;
   @override
-  @JsonKey()
-  final bool loadingMyJobs;
+  final JobListResponse? doneJobs;
+  @override
+  final JobListResponse? draftJobs;
   @override
   final JobListResponse? upcomingJobs;
-  @override
-  final JobListResponse? archiveJobs;
-  @override
-  final ApplicationListResponse? myJobs;
-  @override
-  final Job? currentJob;
 
   @override
   String toString() {
-    return 'JobsProviderState(loading: $loading, loadingUpcomingJobs: $loadingUpcomingJobs, loadingMyJobs: $loadingMyJobs, upcomingJobs: $upcomingJobs, archiveJobs: $archiveJobs, myJobs: $myJobs, currentJob: $currentJob)';
+    return 'JobsProviderState(loading: $loading, activeJobs: $activeJobs, doneJobs: $doneJobs, draftJobs: $draftJobs, upcomingJobs: $upcomingJobs)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$jobsProviderStateImpl &&
             (identical(other.loading, loading) || other.loading == loading) &&
-            (identical(other.loadingUpcomingJobs, loadingUpcomingJobs) ||
-                other.loadingUpcomingJobs == loadingUpcomingJobs) &&
-            (identical(other.loadingMyJobs, loadingMyJobs) ||
-                other.loadingMyJobs == loadingMyJobs) &&
+            (identical(other.activeJobs, activeJobs) ||
+                other.activeJobs == activeJobs) &&
+            (identical(other.doneJobs, doneJobs) ||
+                other.doneJobs == doneJobs) &&
+            (identical(other.draftJobs, draftJobs) ||
+                other.draftJobs == draftJobs) &&
             (identical(other.upcomingJobs, upcomingJobs) ||
-                other.upcomingJobs == upcomingJobs) &&
-            (identical(other.archiveJobs, archiveJobs) ||
-                other.archiveJobs == archiveJobs) &&
-            (identical(other.myJobs, myJobs) || other.myJobs == myJobs) &&
-            (identical(other.currentJob, currentJob) ||
-                other.currentJob == currentJob));
+                other.upcomingJobs == upcomingJobs));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, loading, loadingUpcomingJobs,
-      loadingMyJobs, upcomingJobs, archiveJobs, myJobs, currentJob);
+  int get hashCode => Object.hash(
+      runtimeType, loading, activeJobs, doneJobs, draftJobs, upcomingJobs);
 
   @JsonKey(ignore: true)
   @override
@@ -238,27 +201,21 @@ class _$jobsProviderStateImpl implements jobsProviderState {
 abstract class jobsProviderState implements JobsProviderState {
   factory jobsProviderState(
       {final bool loading,
-      final bool loadingUpcomingJobs,
-      final bool loadingMyJobs,
-      final JobListResponse? upcomingJobs,
-      final JobListResponse? archiveJobs,
-      final ApplicationListResponse? myJobs,
-      final Job? currentJob}) = _$jobsProviderStateImpl;
+      final JobListResponse? activeJobs,
+      final JobListResponse? doneJobs,
+      final JobListResponse? draftJobs,
+      final JobListResponse? upcomingJobs}) = _$jobsProviderStateImpl;
 
   @override
   bool get loading;
   @override
-  bool get loadingUpcomingJobs;
+  JobListResponse? get activeJobs;
   @override
-  bool get loadingMyJobs;
+  JobListResponse? get doneJobs;
+  @override
+  JobListResponse? get draftJobs;
   @override
   JobListResponse? get upcomingJobs;
-  @override
-  JobListResponse? get archiveJobs;
-  @override
-  ApplicationListResponse? get myJobs;
-  @override
-  Job? get currentJob;
   @override
   @JsonKey(ignore: true)
   _$$jobsProviderStateImplCopyWith<_$jobsProviderStateImpl> get copyWith =>

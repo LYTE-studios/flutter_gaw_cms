@@ -1,7 +1,7 @@
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider_state.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
-import 'package:gaw_api/gaw_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaw_api/gaw_api.dart';
 
 typedef ErrorCallback = Function(dynamic error)?;
 
@@ -31,61 +31,39 @@ class JobsProvider extends StateNotifier<JobsProviderState> {
   }
 
   void loadData() {
-    loadUpcomingJobs().catchError(_handleError);
-    loadApplications().catchError(_handleError);
+    setLoading(true);
+
+    Future(() {
+      loadDraftJobs().catchError(_handleError);
+      loadDoneJobs().catchError(_handleError);
+      loadUpcomingJobs().catchError(_handleError);
+      loadActiveJobs().catchError(_handleError);
+    }).then((_) {
+      setLoading(false);
+    });
   }
 
   Future<void> loadUpcomingJobs() async {
-    state = state.copyWith(
-      loadingUpcomingJobs: true,
-    );
+    JobListResponse? response = await JobsApi.getUpcomingJobs();
 
-    JobListResponse? jobsList = await JobsApi.getUpcomingJobs();
-
-    state = state.copyWith(
-      loadingUpcomingJobs: false,
-      upcomingJobs: jobsList,
-    );
+    state = state.copyWith(upcomingJobs: response);
   }
 
-  Future<void> loadJob({
-    required String jobId,
-  }) async {
-    state = state.copyWith(
-      currentJob: null,
-      loading: true,
-    );
+  Future<void> loadDraftJobs() async {
+    JobListResponse? response = await JobsApi.getDraftJobs();
 
-    Job? job = await JobsApi.getJob(id: jobId);
-
-    state = state.copyWith(
-      currentJob: job,
-      loading: false,
-    );
+    state = state.copyWith(draftJobs: response);
   }
 
-  Future<void> loadHistory() async {
-    setLoading(false);
+  Future<void> loadActiveJobs() async {
+    JobListResponse? response = await JobsApi.getActiveJobs();
 
-    JobListResponse? historyResponse = await JobsApi.getHistoryJobs();
-
-    state = state.copyWith(
-      loading: false,
-      archiveJobs: historyResponse,
-    );
+    state = state.copyWith(activeJobs: response);
   }
 
-  Future<void> loadApplications() async {
-    state = state.copyWith(
-      loadingMyJobs: true,
-    );
+  Future<void> loadDoneJobs() async {
+    JobListResponse? response = await JobsApi.getDoneJobs();
 
-    ApplicationListResponse? applicationList =
-        await JobsApi.getMyApplications();
-
-    state = state.copyWith(
-      loadingMyJobs: false,
-      myJobs: applicationList,
-    );
+    state = state.copyWith(doneJobs: response);
   }
 }
