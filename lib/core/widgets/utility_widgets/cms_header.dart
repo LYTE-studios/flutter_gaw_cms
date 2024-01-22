@@ -221,10 +221,4 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
       },
     );
   }
-
-  Widget buildMenuItem() {
-    return Image.asset(
-      !_english ? 'images/united_kingdom.png' : 'images/netherlands.png',
-    );
-  }
 }
