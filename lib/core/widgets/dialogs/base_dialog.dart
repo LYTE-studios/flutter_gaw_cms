@@ -13,7 +13,7 @@ class BaseDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        height: 420,
+        height: 520,
         width: 860,
         decoration: BoxDecoration(
           color: GawTheme.clearBackground,
