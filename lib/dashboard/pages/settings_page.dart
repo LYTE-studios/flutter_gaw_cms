@@ -31,41 +31,41 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     return BaseLayoutScreen(
       mainRoute: 'Settings',
       subRoute: 'Account settings',
-      child: DefaultTextStyle(
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-        ),
-        child: Column(
-          children: [
-            ScreenSheet(
+      child: Column(
+        children: [
+          Expanded(
+            child: ScreenSheet(
               topPadding: CmsHeader.headerHeight - PaddingSizes.bigPadding,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 34, vertical: 45),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const MainText("Automatically log out after"),
-                    const SizedBox(width: 100),
-                    DropdownInputField(
-                      hint: "Select",
-                      value: logoutTime,
-                      options: const {
-                        "1hour": "After one hour",
-                        "1day": "After one day",
-                        "1week": "After one week"
-                      },
-                      callback: (String? value) {
-                        ref.read(logOutProvider.notifier).state = value;
-                      },
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 34, vertical: 45),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const MainText("Automatically log out after"),
+                        const SizedBox(width: 100),
+                        DropdownInputField(
+                          hint: "Select",
+                          value: logoutTime,
+                          options: const {
+                            "1hour": "After one hour",
+                            "1day": "After one day",
+                            "1week": "After one week"
+                          },
+                          callback: (String? value) {
+                            ref.read(logOutProvider.notifier).state = value;
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

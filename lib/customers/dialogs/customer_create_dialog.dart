@@ -18,7 +18,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
   List<Tuple2<AnimationController, Animation>> pageControllers = [];
 
   void _createControllers() {
-    for(int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) {
       AnimationController controller = AnimationController(
         duration: const Duration(milliseconds: 200),
         vsync: this,
@@ -26,12 +26,13 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
 
       pageControllers.add(
         Tuple2(
-        controller,
-        CurvedAnimation(
-        parent: controller,
-          curve: Curves.fastOutSlowIn,
+          controller,
+          CurvedAnimation(
+            parent: controller,
+            curve: Curves.fastOutSlowIn,
+          ),
         ),
-      ),);
+      );
     }
   }
 
@@ -67,44 +68,49 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
             child: LayoutBuilder(builder: (context, constraints) {
               double width =
                   constraints.maxWidth - PaddingSizes.extraBigPadding;
-      
+
               return SizedBox(
                 height: 360,
                 width: width,
-                child: Row(
-                  children: [
-                    SizeTransition(
-                      axisAlignment: -1,
-                      axis: Axis.horizontal,
-                      sizeFactor: pageControllers[0].item1,
-                      child: SizedBox(
-                        width: index == 0 ? width : 0,
-                        child: const AddCustomerWizardItem(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: PaddingSizes.mainPadding,
+                  ),
+                  child: Row(
+                    children: [
+                      SizeTransition(
+                        axisAlignment: -1,
+                        axis: Axis.horizontal,
+                        sizeFactor: pageControllers[0].item1,
+                        child: SizedBox(
+                          width: index == 0 ? width : 0,
+                          child: const AddCustomerWizardItem(),
+                        ),
                       ),
-                    ),
-                    SizeTransition(
-                      axisAlignment: -1,
-                      axis: Axis.horizontal,
-                      sizeFactor: pageControllers[1].item1,
-                      child: Container(
-                        height: 100,
-                        width: index == 1 ? width : 0,
-                        color: Colors.blue,
+                      SizeTransition(
+                        axisAlignment: -1,
+                        axis: Axis.horizontal,
+                        sizeFactor: pageControllers[1].item1,
+                        child: Container(
+                          height: 100,
+                          width: index == 1 ? width : 0,
+                          color: Colors.blue,
+                        ),
                       ),
-                    ),
-                    SizeTransition(
-                      sizeFactor: pageControllers[2].item1,
-                      child: Expanded(
-                        child: Container(color: Colors.green),
+                      SizeTransition(
+                        sizeFactor: pageControllers[2].item1,
+                        child: Expanded(
+                          child: Container(color: Colors.green),
+                        ),
                       ),
-                    ),
-                    SizeTransition(
-                      sizeFactor: pageControllers[3].item1,
-                      child: Expanded(
-                        child: Container(color: Colors.red),
+                      SizeTransition(
+                        sizeFactor: pageControllers[3].item1,
+                        child: Expanded(
+                          child: Container(color: Colors.red),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }),
