@@ -43,6 +43,12 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
   );
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     showSubItems = manual ? showSubItems : widget.active;
 

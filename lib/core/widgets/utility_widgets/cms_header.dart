@@ -9,19 +9,21 @@ class CmsHeader extends StatelessWidget {
 
   final bool showWelcomeMessage;
 
-  const CmsHeader({
-    super.key,
-    required this.mainRoute,
-    required this.subRoute,
-    this.showWelcomeMessage = false,
-  });
+  final double? heightOverride;
+
+  const CmsHeader(
+      {super.key,
+      required this.mainRoute,
+      required this.subRoute,
+      this.showWelcomeMessage = false,
+      this.heightOverride});
 
   static const double headerHeight = 280;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: CmsHeader.headerHeight,
+      height: heightOverride ?? CmsHeader.headerHeight,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
       child: Row(
         children: [

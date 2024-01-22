@@ -75,15 +75,14 @@ class _HoveringItems extends StatelessWidget {
                 height: 96,
                 width: 96,
                 child: SvgImage(
-                  'images/banner_item_1.svg',
-                  useRootPackage: true,
+                  'assets/images/banner/banner_item_1.svg',
                 ),
               ),
             ),
           ),
         ),
         Positioned(
-          bottom: 170,
+          top: 208,
           left: 90,
           child: SizedBox(
             height: 140,
@@ -94,15 +93,14 @@ class _HoveringItems extends StatelessWidget {
                   horizontal: PaddingSizes.bigPadding,
                 ),
                 child: SvgImage(
-                  'images/banner_item_3.svg',
-                  useRootPackage: true,
+                  'assets/images/banner/banner_item_3.svg',
                 ),
               ),
             ),
           ),
         ),
         Positioned(
-          bottom: 240,
+          top: 136,
           left: 240,
           child: SizedBox(
             height: 140,
@@ -113,8 +111,7 @@ class _HoveringItems extends StatelessWidget {
                   PaddingSizes.mainPadding,
                 ),
                 child: SvgImage(
-                  'images/banner_item_2.svg',
-                  useRootPackage: true,
+                  'assets/images/banner/banner_item_2.svg',
                 ),
               ),
             ),
