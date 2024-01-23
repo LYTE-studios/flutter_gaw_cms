@@ -34,7 +34,7 @@ packages:
     source: hosted
     version: "2.11.0"
   beamer:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: beamer
       sha256: "88e3e47aceebbc4cb781949493acb99ec4af7043ae6fab6739a4708c24270fee"
@@ -210,7 +210,7 @@ packages:
     source: hosted
     version: "1.0.0"
   cupertino_icons:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: cupertino_icons
       sha256: d57953e10f9f8327ce64a508a355f0b1ec902193f66288e8cb5070e7c47eeb2d
@@ -234,7 +234,7 @@ packages:
     source: hosted
     version: "5.4.0"
   dotted_border:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: dotted_border
       sha256: "108837e11848ca776c53b30bc870086f84b62ed6e01c503ed976e8f8c7df9c04"
@@ -242,7 +242,7 @@ packages:
     source: hosted
     version: "2.1.0"
   easy_localization:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: easy_localization
       sha256: de63e3b422adfc97f256cbb3f8cf12739b6a4993d390f3cadb3f51837afaefe5
@@ -333,10 +333,10 @@ packages:
     dependency: transitive
     description:
       name: fl_chart
-      sha256: b5e2b0f13d93f8c532b5a2786bfb44580de1f50b927bf95813fa1af617e9caf8
+      sha256: fe6fec7d85975a99c73b9515a69a6e291364accfa0e4a5b3ce6de814d74b9a1c
       url: "https://pub.dev"
     source: hosted
-    version: "0.66.1"
+    version: "0.66.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -364,7 +364,7 @@ packages:
     source: hosted
     version: "2.0.17"
   flutter_riverpod:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_riverpod
       sha256: da9591d1f8d5881628ccd5c25c40e74fc3eef50ba45e40c3905a06e1712412d5
@@ -372,7 +372,7 @@ packages:
     source: hosted
     version: "2.4.9"
   flutter_svg:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_svg
       sha256: d39e7f95621fc84376bc0f7d504f05c3a41488c562f4a8ad410569127507402c
@@ -390,7 +390,7 @@ packages:
     source: sdk
     version: "0.0.0"
   freezed:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: freezed
       sha256: "6c5031daae12c7072b3a87eff98983076434b4889ef2a44384d0cae3f82372ba"
@@ -436,7 +436,7 @@ packages:
     source: hosted
     version: "2.1.2"
   google_fonts:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: google_fonts
       sha256: e20ff62b158b96f392bfc8afe29dee1503c94fbea2cbe8186fd59b756b8ae982
@@ -532,7 +532,7 @@ packages:
     source: hosted
     version: "4.0.2"
   image_picker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: image_picker
       sha256: "26222b01a0c9a2c8fe02fc90b8208bd3325da5ed1f4a2acabf75939031ac0bdd"
@@ -1025,7 +1025,7 @@ packages:
     source: hosted
     version: "0.6.1"
   themed:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: themed
       sha256: "9621229509fb687ca8250087820b0ca8431026ce85e0b0f9706a1ae14a1aab29"

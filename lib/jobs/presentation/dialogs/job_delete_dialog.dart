@@ -11,11 +11,8 @@ class JobDeletePopup extends ConsumerWidget {
     return BaseDialog(
       child: Column(
         children: [
-          const PopupTitleText(
+          const MainText(
             "Are you sure you want to delete this job?",
-            fontWeight: FontWeight.w600,
-            fontSize: 17,
-            paddingBottom: 36,
           ),
           const MainText(
               "This will delete this job permanently. You cannot undo this action."),

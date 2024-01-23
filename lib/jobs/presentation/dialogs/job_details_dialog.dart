@@ -17,14 +17,12 @@ class JobDetailsDialog extends ConsumerWidget {
     Widget title;
     bool draft = job.isDraft ?? true;
     if (draft) {
-      title = const PopupTitleText(
+      title = const MainText(
         "Job Draft",
-        icon: SvgImage(PixelPerfectIcons.editNormal),
       );
     } else {
-      title = const PopupTitleText(
+      title = const MainText(
         "Job Info",
-        icon: SvgImage(PixelPerfectIcons.info),
       );
     }
 

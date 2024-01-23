@@ -1,13 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+import 'package:gaw_ui/src/utility/dialog_util.dart';
 
 const BeamPage customersBeamPage = BeamPage(
   title: 'Customers',
