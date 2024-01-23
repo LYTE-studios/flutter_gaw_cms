@@ -47,6 +47,16 @@ class _JobCreateForm extends StatefulWidget {
 }
 
 class _JobCreateFormState extends State<_JobCreateForm> {
+  final TextEditingController tecTitle = TextEditingController();
+  final TextEditingController tecNeededWashers = TextEditingController();
+
+  DateTime? applicationRecruitmentPeriodStart = DateTime.now();
+  DateTime? applicationRecruitmentPeriodEnd = DateTime.now().add(
+    const Duration(
+      days: 365,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return GawForm(
@@ -54,10 +64,50 @@ class _JobCreateFormState extends State<_JobCreateForm> {
         FormRow(
           formItems: [
             FormItem(
-              child: InputTextForm(),
+              child: InputTextForm(
+                label: 'Title',
+                controller: tecTitle,
+                hint: 'Enter a job title',
+              ),
             ),
+            FormItem(
+              child: InputTextForm(
+                label: 'Needed washers for the job',
+                controller: tecNeededWashers,
+                hint: 'Enter needed washers',
+                number: true,
+              ),
+            ),
+            const Spacer(),
           ],
         ),
+        FormRow(
+          formItems: [
+            FormItem(
+              child: InputDateRangeForm(
+                label: 'Recruitment Period',
+                start: applicationRecruitmentPeriodStart,
+                end: applicationRecruitmentPeriodEnd,
+                onUpdateDates: (DateTime start, DateTime end) {
+                  setState(() {
+                    applicationRecruitmentPeriodStart = start;
+                    applicationRecruitmentPeriodEnd = end;
+                  });
+                },
+                hint: 'Enter a job title',
+              ),
+            ),
+            FormItem(
+              child: InputTextForm(
+                label: 'Needed washers for the job',
+                controller: tecTitle,
+                hint: 'Enter needed washers',
+                number: true,
+              ),
+            ),
+            const Spacer(),
+          ],
+        )
       ],
     );
   }
