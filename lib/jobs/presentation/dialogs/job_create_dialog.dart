@@ -49,13 +49,17 @@ class _JobCreateForm extends StatefulWidget {
 class _JobCreateFormState extends State<_JobCreateForm> {
   final TextEditingController tecTitle = TextEditingController();
   final TextEditingController tecNeededWashers = TextEditingController();
+  final TextEditingController tecDescription = TextEditingController();
 
-  DateTime? applicationRecruitmentPeriodStart = DateTime.now();
-  DateTime? applicationRecruitmentPeriodEnd = DateTime.now().add(
+  DateTime applicationRecruitmentPeriodStart = DateTime.now();
+  DateTime applicationRecruitmentPeriodEnd = DateTime.now().add(
     const Duration(
       days: 365,
     ),
   );
+
+  DateTime? startTime;
+  DateTime? endTime;
 
   @override
   Widget build(BuildContext context) {
@@ -98,16 +102,63 @@ class _JobCreateFormState extends State<_JobCreateForm> {
               ),
             ),
             FormItem(
-              child: InputTextForm(
-                label: 'Needed washers for the job',
-                controller: tecTitle,
-                hint: 'Enter needed washers',
-                number: true,
+              flex: 2,
+              child: InputDateTimeRangeForm(
+                label: 'Job period',
+                startTime: startTime,
+                endTime: endTime,
+                onSelectTimeRange: (DateTime start, DateTime end) {
+                  startTime ??= DateTime.now();
+
+                  start = DateTime(
+                    startTime!.year,
+                    startTime!.month,
+                    startTime!.day,
+                    start.hour,
+                    start.minute,
+                  );
+
+                  end = DateTime(
+                    startTime!.year,
+                    startTime!.month,
+                    startTime!.day,
+                    end.hour,
+                    end.minute,
+                  );
+
+                  if (end.millisecondsSinceEpoch <
+                      start.millisecondsSinceEpoch) {
+                    end = end.add(
+                      const Duration(days: 1),
+                    );
+                  }
+
+                  setState(() {
+                    startTime = start;
+                    endTime = end;
+                  });
+                },
+                onSelectDate: (DateTime date) {
+                  setState(() {
+                    startTime = date;
+                  });
+                },
               ),
             ),
-            const Spacer(),
           ],
-        )
+        ),
+        FormRow(
+          formItems: [
+            FormItem(
+              child: InputTextForm(
+                label: 'Description',
+                hint: 'Type job description here',
+                lines: 3,
+                controller: tecDescription,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
