@@ -110,7 +110,6 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
   void _toggleMenu(MenuController controller) {
     if (controller.isOpen) {
-      _toggleRotation();
       controller.close();
     } else {
       _toggleRotation();
@@ -129,12 +128,9 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
     //final userState = ref.watch(userProvider);
 
     return MenuAnchor(
-      onClose: _toggleRotation,
-      //onOpen: _toggleRotation,
       alignmentOffset: Offset(0, 4),
       style: MenuStyle(
         backgroundColor: MaterialStateProperty.all(Colors.white),
-        //surfaceTintColor: MaterialStateProperty.all(GawTheme.secondaryTint),
         elevation: MaterialStateProperty.all(1),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(
@@ -142,13 +138,11 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
           ),
         ),
       ),
-      anchorTapClosesMenu: true,
-      //onOpen: _toggleRotation,
+      onClose: _toggleRotation,
       menuChildren: [
         MenuItemButton(
             onPressed: () {
               _toggleLanguage();
-              //_toggleRotation();
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.white),
