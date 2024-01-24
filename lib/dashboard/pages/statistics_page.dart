@@ -4,6 +4,7 @@ import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 const BeamPage statisticsBeamPage = BeamPage(
   title: 'Statistics',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/dialogs/job_delete_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 

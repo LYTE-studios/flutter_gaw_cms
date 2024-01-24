@@ -15,6 +15,8 @@ class BaseLayoutScreen extends StatelessWidget {
 
   final double? bannerHeightOverride;
 
+  final double extraActionButtonPadding;
+
   const BaseLayoutScreen({
     super.key,
     required this.child,
@@ -23,6 +25,7 @@ class BaseLayoutScreen extends StatelessWidget {
     this.actionWidget,
     this.showWelcomeMessage = false,
     this.bannerHeightOverride,
+    this.extraActionButtonPadding = 0,
   });
 
   @override
@@ -40,7 +43,9 @@ class BaseLayoutScreen extends StatelessWidget {
             ),
             child,
             Positioned(
-              top: (bannerHeightOverride ?? CmsHeader.headerHeight) - 56,
+              top: (bannerHeightOverride ?? CmsHeader.headerHeight) -
+                  56 -
+                  extraActionButtonPadding,
               right: 0,
               child: actionWidget == null
                   ? const SizedBox()
