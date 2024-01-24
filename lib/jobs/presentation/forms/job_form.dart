@@ -222,16 +222,6 @@ class JobSettingsWidget extends State<JobSettingsState> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const InputTitleText("Customer"),
-                  DropdownInputField(
-                    callback: (value) {
-                      setState(() {
-                        job.customerId = value;
-                      });
-                    },
-                    value: job.customerId,
-                    hint: "Customer",
-                    options: customers,
-                  ),
                 ],
               ),
             ),

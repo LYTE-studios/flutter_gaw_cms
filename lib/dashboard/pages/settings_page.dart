@@ -54,9 +54,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             "1day": "After one day",
                             "1week": "After one week"
                           },
-                          callback: (String? value) {
-                            ref.read(logOutProvider.notifier).state = value;
-                          },
                         ),
                       ],
                     ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class JobCreatePopup extends ConsumerWidget {
@@ -9,6 +11,7 @@ class JobCreatePopup extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return BaseDialog(
+      height: 564,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -32,24 +35,129 @@ class JobCreatePopup extends ConsumerWidget {
               ],
             ),
           ),
-          _JobCreateForm(),
+          const _JobCreateForm(),
         ],
       ),
     );
   }
 }
 
-class _JobCreateForm extends StatefulWidget {
-  const _JobCreateForm({super.key});
+class _JobCreateForm extends ConsumerStatefulWidget {
+  const _JobCreateForm();
 
   @override
-  State<_JobCreateForm> createState() => _JobCreateFormState();
+  ConsumerState<_JobCreateForm> createState() => _JobCreateFormState();
 }
 
-class _JobCreateFormState extends State<_JobCreateForm> {
+class _JobCreateFormState extends ConsumerState<_JobCreateForm>
+    with ScreenStateMixin {
+  String? customerQueryTerm;
+
+  Map<String, String> options = {};
+
+  void createJob({required bool isDraft}) {
+    if (!validated) {
+      return;
+    }
+
+    setLoading(true);
+
+    JobsApi.createJob(
+      request: CreateJobRequest(
+        (b) => b
+          ..title = tecTitle.text
+          ..startTime = GawDateUtil.toApi(startTime!)
+          ..endTime = GawDateUtil.toApi(endTime!)
+          ..applicationStartTime =
+              GawDateUtil.toApi(applicationRecruitmentPeriodStart)
+          ..applicationEndTime =
+              GawDateUtil.toApi(applicationRecruitmentPeriodEnd)
+          ..customerId = customerId
+          ..maxWashers = int.parse(tecNeededWashers.text)
+          ..isDraft = isDraft
+          // TODO
+          ..address = Address.getDefault().toBuilder()
+          ..description = tecDescription.text,
+      ),
+    ).then((_) {
+      Navigator.pop(context);
+      ref.read(jobsProvider.notifier).loadData();
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(
+      () => setLoading(false),
+    );
+  }
+
+  Map<String, String> loadOptionsByResponse(CustomerListResponse? response) {
+    if (response == null) {
+      return {};
+    }
+
+    Map<String, String> customerOptions = {};
+
+    for (Customer customer in response.customers.toList()) {
+      if (customer.firstName == null || customer.lastName == null) {
+        customerOptions[customer.id!] = customer.email ?? '';
+      } else {
+        customerOptions[customer.id!] =
+            '${customer.firstName ?? ''} ${customer.lastName ?? ''}';
+      }
+    }
+
+    return customerOptions;
+  }
+
+  void getCustomerOptions() {
+    if (customerQueryTerm?.isEmpty ?? true) {
+      CustomerApi.getCustomers().then((CustomerListResponse? response) {
+        setState(() {
+          options = loadOptionsByResponse(response);
+        });
+      }).catchError((error) {
+        ExceptionHandler.show(error);
+      });
+    } else {
+      CustomerApi.getCustomersQuery(query: customerQueryTerm ?? '')
+          .then((CustomerListResponse? response) {
+        setState(() {
+          options = loadOptionsByResponse(response);
+        });
+      }).catchError((error) {
+        ExceptionHandler.show(error);
+      });
+    }
+  }
+
+  void validate() {
+    validated = true;
+
+    List<TextEditingController> controllers = [tecTitle, tecNeededWashers];
+
+    for (TextEditingController controller in controllers) {
+      if (controller.text.isEmpty) {
+        validated = false;
+      }
+    }
+
+    if (customerId == null) {
+      validated = false;
+    }
+
+    if (startTime == null || endTime == null) {
+      validated = false;
+    }
+
+    setState(() {
+      validated = validated;
+    });
+  }
+
   final TextEditingController tecTitle = TextEditingController();
   final TextEditingController tecNeededWashers = TextEditingController();
   final TextEditingController tecDescription = TextEditingController();
+
+  String? customerId;
 
   DateTime applicationRecruitmentPeriodStart = DateTime.now();
   DateTime applicationRecruitmentPeriodEnd = DateTime.now().add(
@@ -61,8 +169,12 @@ class _JobCreateFormState extends State<_JobCreateForm> {
   DateTime? startTime;
   DateTime? endTime;
 
+  bool validated = false;
+
   @override
   Widget build(BuildContext context) {
+    validate();
+
     return GawForm(
       rows: [
         FormRow(
@@ -150,6 +262,26 @@ class _JobCreateFormState extends State<_JobCreateForm> {
         FormRow(
           formItems: [
             FormItem(
+              child: InputSelectionForm(
+                options: options,
+                onChanged: (String? term) {
+                  setState(() {
+                    customerQueryTerm = term;
+                  });
+                  getCustomerOptions();
+                },
+                onSelected: (String? value) {
+                  customerId = value;
+                },
+                label: 'Customer',
+                hint: 'Choose the customer for your job',
+              ),
+            ),
+          ],
+        ),
+        FormRow(
+          formItems: [
+            FormItem(
               child: InputTextForm(
                 label: 'Description',
                 hint: 'Type job description here',
@@ -158,6 +290,47 @@ class _JobCreateFormState extends State<_JobCreateForm> {
               ),
             ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: PaddingSizes.mainPadding,
+          ),
+          child: FormRow(
+            formItems: [
+              Padding(
+                padding: const EdgeInsets.all(
+                  PaddingSizes.smallPadding,
+                ),
+                child: GenericButton(
+                  loading: loading,
+                  onTap: () => createJob(isDraft: true),
+                  outline: true,
+                  color: GawTheme.clearBackground,
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: GawTheme.text,
+                  ),
+                  label: 'Save as draft',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(
+                  PaddingSizes.smallPadding,
+                ),
+                child: GenericButton(
+                  loading: loading,
+                  color: validated
+                      ? GawTheme.mainTint
+                      : GawTheme.unselectedBackground,
+                  onTap: () => createJob(isDraft: false),
+                  minWidth: 156,
+                  label: 'Save & create job',
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: GawTheme.mainTintText,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
