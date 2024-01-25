@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+import 'package:tuple/tuple.dart';
 
 const BeamPage dashboardPageBeamPage = BeamPage(
   title: 'Dashboard',
@@ -30,14 +31,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   void loadData() {
     setLoading(true);
 
+    Tuple2<DateTime, DateTime> dateRange = GawDateUtil.getWeekRange();
+
     StatisticsApi.getAdminStatistics(
       startTime: GawDateUtil.toApi(
-        DateTime.now().subtract(
-          const Duration(days: 7),
-        ),
+        dateRange.item1,
       ),
       endTime: GawDateUtil.toApi(
-        DateTime.now(),
+        dateRange.item2,
       ),
     ).then((adminStats) {
       setState(() {
@@ -97,10 +98,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       isLoading: loading,
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 2,
                     child: TargetStatisticsBlock(
-                      jobsCount: 1,
+                      loading: loading,
+                      jobsCount: adminStatistics?.jobCount ?? 0,
                       increaseAmount: 12.5,
                     ),
                   )

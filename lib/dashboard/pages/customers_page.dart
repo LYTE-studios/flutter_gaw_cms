@@ -79,10 +79,10 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
           title: LocaleKeys.customers.tr(),
           valueName: LocaleKeys.customers.tr().toLowerCase(),
           totalItems: customerListResponse?.total,
-          header: BaseListHeader(
+          header: const BaseListHeader(
             items: {
               'Name': ListUtil.mColumn,
-              'Email': ListUtil.mColumn,
+              'Email': ListUtil.lColumn,
               'Phone': ListUtil.mColumn,
               'Company': ListUtil.sColumn,
               '': ListUtil.xSColumn,
@@ -94,7 +94,7 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                     onTap: () {
                       DialogUtil.show(
                         dialog: CustomerDetailDialog(
-                          customerId: customer.id,
+                          customerId: customer.id!,
                         ),
                         context: context,
                       );
@@ -106,7 +106,7 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                         ): ListUtil.mColumn,
                         SelectableTextRowItem(
                           value: customer.email,
-                        ): ListUtil.mColumn,
+                        ): ListUtil.lColumn,
                         SelectableTextRowItem(
                           value: customer.phoneNumber,
                         ): ListUtil.mColumn,

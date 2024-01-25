@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/customers/forms/customer_details_form.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class CustomerDetailDialog extends StatefulWidget {
-  final String? customerId;
+  final String customerId;
 
   const CustomerDetailDialog({
     super.key,
@@ -14,84 +17,117 @@ class CustomerDetailDialog extends StatefulWidget {
   State<CustomerDetailDialog> createState() => _CustomerDetailDialogState();
 }
 
-class _CustomerDetailDialogState extends State<CustomerDetailDialog> {
+class _CustomerDetailDialogState extends State<CustomerDetailDialog>
+    with ScreenStateMixin {
+  Customer? customer;
+
+  bool canEdit = false;
+
+  void loadData() {
+    setLoading(true);
+
+    CustomerApi.getCustomer(id: widget.customerId).then((Customer? customer) {
+      setState(() {
+        this.customer = customer;
+      });
+    }).catchError(
+      (error) {
+        ExceptionHandler.show(error);
+      },
+    ).whenComplete(() => setLoading(false));
+  }
+
+  @override
+  void initState() {
+    Future(() {
+      loadData();
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseDialog(
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              MainText(
-                'Customer profile',
-                textStyleOverride: TextStyles.mainStyleTitle,
+      height: 680,
+      child: Padding(
+        padding: const EdgeInsets.all(
+          PaddingSizes.bigPadding,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(
+                PaddingSizes.mainPadding,
               ),
-              const Spacer(),
-              GestureDetector(
-                child: const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: SvgIcon(
-                    PixelPerfectIcons.editNormal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  MainText(
+                    'Customer profile',
+                    textStyleOverride: TextStyles.mainStyleTitle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: PaddingSizes.mainPadding,
+                    ),
+                    child: ColorlessInkWell(
+                      onTap: () {
+                        setState(() {
+                          canEdit = !canEdit;
+                        });
+                      },
+                      child: const SizedBox(
+                        width: 21,
+                        height: 21,
+                        child: SvgIcon(
+                          PixelPerfectIcons.editNormal,
+                          color: GawTheme.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: PaddingSizes.bigPadding,
+              ),
+              child: Container(
+                height: 180,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: Borders.mainSide,
+                  ),
+                ),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    height: 120,
+                    width: 120,
+                    child: ProfilePictureAvatar(
+                      canEdit: true,
+                      showCircle: true,
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
-          // // const Row(
-          //   children: [
-          //     // SizedBox(
-          //     //   height: 120,
-          //     //   width: 120,
-          //     //   child: ProfilePictureAvatar(
-          //     //     showCircle: true,
-          //     //   ),
-          //     // ),
-          //     Spacer(),
-          //   ],
-          // ),
-          // Row(
-          //   children: [
-          //     _LabeledField(
-          //       label: 'First name',
-          //       tec: TextEditingController(),
-          //     )
-          //   ],
-          // ),
-        ],
+            ),
+            LoadingSwitcher(
+              loading: loading || customer == null,
+              child: CustomerDetailsForm(
+                customer: customer,
+                canEdit: canEdit,
+                cancelEdit: () {
+                  setState(() {
+                    canEdit = false;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class _LabeledField extends StatelessWidget {
-  final String label;
-
-  final TextEditingController tec;
-
-  final bool enabled;
-
-  const _LabeledField({
-    required this.label,
-    required this.tec,
-    this.enabled = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MainText(
-          label,
-          textStyleOverride: TextStyles.mainStyleTitle,
-        ),
-        CmsInputField(
-          controller: tec,
-          enabled: enabled,
-        ),
-      ],
     );
   }
 }

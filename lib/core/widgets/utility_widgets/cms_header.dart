@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class CmsHeader extends StatelessWidget {
@@ -46,7 +45,7 @@ class CmsHeader extends StatelessWidget {
                         subRoute: subRoute,
                       ),
                       const Spacer(),
-                      LanguageButton(),
+                      const LanguageButton(),
                     ],
                   ),
                   const SizedBox(
@@ -151,7 +150,8 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
               overlayColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
                   if (states.contains(MaterialState.hovered)) {
-                    return GawTheme.secondaryTint.withOpacity(0.3); // Color for hover state
+                    return GawTheme.secondaryTint
+                        .withOpacity(0.3); // Color for hover state
                   }
                   return Colors.white; // Default for other states
                 },
