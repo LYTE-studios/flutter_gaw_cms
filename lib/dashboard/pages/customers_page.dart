@@ -62,10 +62,9 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
     return BaseLayoutScreen(
       mainRoute: LocaleKeys.customers.tr(),
       subRoute: LocaleKeys.customers.tr(),
-      extraActionButtonPadding: 100,
+      extraActionButtonPadding: 156,
       actionWidget: ActionButton(
         label: 'Create new customer',
-        icon: PixelPerfectIcons.plusMedium,
         onTap: () {
           DialogUtil.show(
             dialog: const CustomerCreateDialog(),
@@ -74,7 +73,7 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
         },
       ),
       child: ScreenSheet(
-        topPadding: 180,
+        topPadding: 120,
         child: GenericListView(
           loading: loading,
           title: LocaleKeys.customers.tr(),

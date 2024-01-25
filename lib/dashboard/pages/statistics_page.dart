@@ -109,128 +109,150 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
           }
         },
         behavior: HitTestBehavior.translucent,
-        child: Column(
-          children: [
-            const SizedBox(
-              height: StatisticsPage.bannerHeight,
-            ),
-            Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(
-                  vertical: PaddingSizes.mainPadding,
-                  horizontal: PaddingSizes.bigPadding,
-                ),
-                children: [
-                  SizedBox(
-                    height: 148,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            isLoading: loading,
-                            color: GawTheme.secondaryTint,
-                            value: adminStatistics?.unservicedJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Jobs without candidates',
-                            description: 'Out of all planned jobs',
-                          ),
-                        ),
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            color: GawTheme.mainTint,
-                            value: adminStatistics?.unservicedJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Jobs with no approved candidates',
-                            description: 'Out of all planned jobs',
-                            isLoading: loading,
-                          ),
-                        ),
-                        const Expanded(
-                          flex: 2,
-                          child: TargetStatisticsBlock(
-                            jobsCount: 1,
-                            increaseAmount: 12.5,
-                          ),
-                        ),
-                      ],
+        child: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 860,
+                maxWidth: 1240,
+              ),
+              child: SizedBox(
+                width: constraints.maxWidth,
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: StatisticsPage.bannerHeight,
                     ),
-                  ),
-                  SizedBox(
-                    height: 148,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            isLoading: loading,
-                            color: GawTheme.secondaryTint,
-                            value: adminStatistics?.comingJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Jobs that haven\'t started yet',
-                            description: 'Out of all jobs',
-                          ),
+                    Expanded(
+                      child: ListView(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: PaddingSizes.mainPadding,
+                          horizontal: PaddingSizes.bigPadding,
                         ),
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            isLoading: loading,
-                            color: GawTheme.mainTint,
-                            value: adminStatistics?.ongoingJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Ongoing jobs',
-                            description: 'Out of all jobs',
-                          ),
-                        ),
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            isLoading: loading,
-                            color: GawTheme.success,
-                            value: adminStatistics?.completedJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Jobs completed',
-                            description: 'Out of all planned jobs',
-                          ),
-                        ),
-                        Expanded(
-                          child: CircularProgressOverviewBlock(
-                            isLoading: loading,
-                            color: GawTheme.error,
-                            value: adminStatistics?.unservicedJobCount ?? 0,
-                            maxValue: adminStatistics?.jobCount ?? 0,
-                            title: 'Unserviced jobs',
-                            description: 'Out of all jobs',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 360,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: StatisticsChartContainer(
-                            weeklyStatistics: [],
-                            averageHours: 2,
-                            isTrend: false,
-                            trend: 2,
-                            showWeekly: false,
-                            overriddenPadding: EdgeInsets.all(
-                              PaddingSizes.smallPadding,
+                        children: [
+                          SizedBox(
+                            height: 148,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    isLoading: loading,
+                                    color: GawTheme.secondaryTint,
+                                    value:
+                                        adminStatistics?.unservicedJobCount ??
+                                            0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Jobs without candidates',
+                                    description: 'Out of all planned jobs',
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    color: GawTheme.mainTint,
+                                    value:
+                                        adminStatistics?.unservicedJobCount ??
+                                            0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Jobs with no approved candidates',
+                                    description: 'Out of all planned jobs',
+                                    isLoading: loading,
+                                  ),
+                                ),
+                                const Expanded(
+                                  flex: 2,
+                                  child: TargetStatisticsBlock(
+                                    jobsCount: 1,
+                                    increaseAmount: 12.5,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: ShelfOverviewBlock(),
-                        ),
-                      ],
+                          SizedBox(
+                            height: 148,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    isLoading: loading,
+                                    color: GawTheme.secondaryTint,
+                                    value: adminStatistics?.comingJobCount ?? 0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Jobs that haven\'t started yet',
+                                    description: 'Out of all jobs',
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    isLoading: loading,
+                                    color: GawTheme.mainTint,
+                                    value:
+                                        adminStatistics?.ongoingJobCount ?? 0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Ongoing jobs',
+                                    description: 'Out of all jobs',
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    isLoading: loading,
+                                    color: GawTheme.success,
+                                    value:
+                                        adminStatistics?.completedJobCount ?? 0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Jobs completed',
+                                    description: 'Out of all planned jobs',
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CircularProgressOverviewBlock(
+                                    isLoading: loading,
+                                    color: GawTheme.error,
+                                    value:
+                                        adminStatistics?.unservicedJobCount ??
+                                            0,
+                                    maxValue: adminStatistics?.jobCount ?? 0,
+                                    title: 'Unserviced jobs',
+                                    description: 'Out of all jobs',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 360,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: StatisticsChartContainer(
+                                    weeklyStatistics: [],
+                                    averageHours: 2,
+                                    isTrend: false,
+                                    trend: 2,
+                                    showWeekly: false,
+                                    overriddenPadding: EdgeInsets.all(
+                                      PaddingSizes.smallPadding,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: ShelfOverviewBlock(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }

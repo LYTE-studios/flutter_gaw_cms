@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/core/widgets/dialogs/location_picker_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -12,7 +13,7 @@ class JobCreatePopup extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return BaseDialog(
-      height: 564,
+      height: 640,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -158,6 +159,8 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
   final TextEditingController tecNeededWashers = TextEditingController();
   final TextEditingController tecDescription = TextEditingController();
 
+  Address? address;
+
   String? customerId;
 
   DateTime applicationRecruitmentPeriodStart = DateTime.now();
@@ -263,6 +266,24 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
         FormRow(
           formItems: [
             FormItem(
+              child: InputStaticTextForm(
+                label: 'Location',
+                onTap: () {
+                  DialogUtil.show(
+                    dialog: LocationPickerDialog(),
+                    context: context,
+                  );
+                },
+                text: address?.formattedAddres(),
+                icon: PixelPerfectIcons.placeIndicator,
+                hint: 'Location for the job',
+              ),
+            ),
+          ],
+        ),
+        FormRow(
+          formItems: [
+            FormItem(
               child: InputSelectionForm(
                 options: options,
                 onChanged: (String? term) {
@@ -271,8 +292,8 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                   });
                   getCustomerOptions();
                 },
-                onSelected: (String? value) {
-                  customerId = value;
+                onSelected: (value) {
+                  customerId = value as String;
                 },
                 label: 'Customer',
                 hint: 'Choose the customer for your job',

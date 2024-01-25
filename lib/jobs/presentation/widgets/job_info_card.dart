@@ -7,8 +7,11 @@ import 'package:gaw_ui/gaw_ui.dart';
 class JobInfoCard extends ConsumerWidget {
   final Job info;
 
+  final bool basic;
+
   const JobInfoCard({
     required this.info,
+    this.basic = false,
     super.key,
   });
 
@@ -65,17 +68,22 @@ class JobInfoCard extends ConsumerWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                ColorlessInkWell(
-                  onTap: () {},
-                  child: MainText(
-                    "duplicate draft",
-                    textStyleOverride: TextStyles.mainStyle.copyWith(
-                      decoration: TextDecoration.underline,
-                      fontSize: 12,
-                      color: GawTheme.unselectedText,
-                    ),
-                  ),
-                ),
+                basic
+                    ? _SelectedWashersWidget(
+                        selectedWashers: info.selectedWashers,
+                        maxWashers: info.maxWashers,
+                      )
+                    : ColorlessInkWell(
+                        onTap: () {},
+                        child: MainText(
+                          "duplicate draft",
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            decoration: TextDecoration.underline,
+                            fontSize: 12,
+                            color: GawTheme.unselectedText,
+                          ),
+                        ),
+                      ),
               ],
             ),
             Container(
@@ -121,17 +129,9 @@ class JobInfoCard extends ConsumerWidget {
             const SizedBox(height: PaddingSizes.bigPadding),
             Row(
               children: [
-                const SizedBox(
-                  width: 21,
-                  height: 21,
-                  child: SvgIcon(
-                    PixelPerfectIcons.customUsers,
-                    color: GawTheme.text,
-                  ),
-                ),
-                const SizedBox(width: PaddingSizes.extraSmallPadding),
-                MainText(
-                  "${info.selectedWashers}/${info.maxWashers}",
+                _SelectedWashersWidget(
+                  selectedWashers: info.selectedWashers,
+                  maxWashers: info.maxWashers,
                 ),
                 const SizedBox(width: PaddingSizes.extraBigPadding),
                 Container(
@@ -207,5 +207,36 @@ class JobInfoCard extends ConsumerWidget {
       }
     }
     return locations;
+  }
+}
+
+class _SelectedWashersWidget extends StatelessWidget {
+  final int selectedWashers;
+
+  final int maxWashers;
+
+  const _SelectedWashersWidget({
+    required this.selectedWashers,
+    required this.maxWashers,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: 21,
+          height: 21,
+          child: SvgIcon(
+            PixelPerfectIcons.customUsers,
+            color: GawTheme.text,
+          ),
+        ),
+        const SizedBox(width: PaddingSizes.extraSmallPadding),
+        MainText(
+          "$selectedWashers/$maxWashers",
+        ),
+      ],
+    );
   }
 }

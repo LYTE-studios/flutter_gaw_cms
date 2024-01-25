@@ -34,6 +34,8 @@ class GawApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Configuration.clientSecret = apiSecret;
     Configuration.apiUrl = apiUrl;
+    Configuration.googleApiUrl = googleApiUrl;
+    Configuration.googleApiKey = apiGoogleKey;
 
     return ProviderScope(
       child: Themed(

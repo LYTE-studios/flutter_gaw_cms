@@ -24,7 +24,40 @@ class ApplicationsPage extends StatefulWidget {
 
 class _ApplicationsPageState extends State<ApplicationsPage>
     with ScreenStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    return const BaseLayoutScreen(
+      mainRoute: 'Jobs',
+      subRoute: 'Applications',
+      child: ScreenSheet(
+        topPadding: 120,
+        child: ApplicationsListView(),
+      ),
+    );
+  }
+}
+
+class ApplicationsListView extends StatefulWidget {
+  final bool fullView;
+
+  const ApplicationsListView({
+    super.key,
+    this.fullView = true,
+  });
+
+  @override
+  State<ApplicationsListView> createState() => _ApplicationsListViewState();
+}
+
+class _ApplicationsListViewState extends State<ApplicationsListView>
+    with ScreenStateMixin {
   ApplicationListResponse? applicationsListResponse;
+
+  @override
+  void initState() {
+    Future(loadData);
+    super.initState();
+  }
 
   void loadData() {
     setLoading(true);
@@ -41,65 +74,56 @@ class _ApplicationsPageState extends State<ApplicationsPage>
   }
 
   @override
-  void initState() {
-    Future(loadData);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BaseLayoutScreen(
-      mainRoute: 'Jobs',
-      subRoute: 'Applications',
-      child: ScreenSheet(
-        topPadding: 180,
-        child: GenericListView(
-          loading: loading,
-          title: LocaleKeys.applications.tr(),
-          valueName: LocaleKeys.applications.tr().toLowerCase(),
-          totalItems: 0,
-          header: BaseListHeader(
-            items: {
-              'Washer name': ListUtil.mColumn,
-              'Date': ListUtil.sColumn,
-              'Region': ListUtil.mColumn,
-              'Distance': ListUtil.sColumn,
-              '': ListUtil.sColumn,
-            },
-          ),
-          rows: applicationsListResponse?.applications.map(
-                (application) {
-                  return InkWell(
-                    onTap: () {},
-                    child: BaseListItem(
-                      items: {
-                        TextRowItem(
-                          value: application.washer.getFullName(),
-                        ): ListUtil.mColumn,
-                        SelectableTextRowItem(
-                          value: GawDateUtil.formatDate(
-                            GawDateUtil.tryFromApi(application.createdAt),
-                          ),
-                        ): ListUtil.sColumn,
-                        SelectableTextRowItem(
-                          value: application.address.city ??
-                              application.address.postalCode,
-                        ): ListUtil.mColumn,
-                        TextRowItem(
-                          value: GeoUtil.formatDistance(application.distance),
-                        ): ListUtil.sColumn,
-                        ActionButtonRowItem(
-                          label: 'View application',
-                          onTap: () {},
-                        ): ListUtil.lColumn,
-                      },
-                    ),
-                  );
-                },
-              ).toList() ??
-              [],
-        ),
+    return GenericListView(
+      loading: loading,
+      title: LocaleKeys.applications.tr(),
+      valueName: LocaleKeys.applications.tr().toLowerCase(),
+      totalItems: 0,
+      showFooter: widget.fullView,
+      showHeader: widget.fullView,
+      header: const BaseListHeader(
+        items: {
+          'Washer name': ListUtil.xLColumn,
+          'Date': ListUtil.sColumn,
+          'Region': ListUtil.mColumn,
+          'Distance': ListUtil.sColumn,
+          '': ListUtil.sColumn,
+        },
       ),
+      rows: applicationsListResponse?.applications.map(
+            (application) {
+              return InkWell(
+                onTap: () {},
+                child: BaseListItem(
+                  items: {
+                    ProfileRowItem(
+                      firstName: application.washer.firstName,
+                      lastName: application.washer.lastName,
+                      imageUrl: application.washer.profilePictureUrl,
+                    ): ListUtil.xLColumn,
+                    TextRowItem(
+                      value: GawDateUtil.tryFormatReadableDate(
+                        GawDateUtil.tryFromApi(application.createdAt),
+                      ),
+                    ): ListUtil.sColumn,
+                    SelectableTextRowItem(
+                      value: application.address.city ??
+                          application.address.postalCode,
+                    ): ListUtil.mColumn,
+                    TextRowItem(
+                      value: GeoUtil.formatDistance(application.distance),
+                    ): ListUtil.sColumn,
+                    ActionButtonRowItem(
+                      label: 'View application',
+                      onTap: () {},
+                    ): ListUtil.lColumn,
+                  },
+                ),
+              );
+            },
+          ).toList() ??
+          [],
     );
   }
 }

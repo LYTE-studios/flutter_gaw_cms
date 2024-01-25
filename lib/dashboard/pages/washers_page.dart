@@ -69,9 +69,9 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
           header: const BaseListHeader(
             items: {
               'Name': ListUtil.mColumn,
-              'Email': ListUtil.mColumn,
-              'Phone': ListUtil.mColumn,
-              '': ListUtil.lColumn,
+              'Email': ListUtil.xLColumn,
+              'Phone': ListUtil.lColumn,
+              '': ListUtil.xSColumn,
             },
           ),
           rows: washersListResponse?.washers.map(
@@ -79,21 +79,26 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                   return InkWell(
                     onTap: () {
                       DialogUtil.show(
-                          dialog: CustomerDetailDialog(
-                            customerId: washer.id,
-                          ),
-                          context: context);
+                        dialog: CustomerDetailDialog(
+                          customerId: washer.id,
+                        ),
+                        context: context,
+                      );
                     },
                     child: BaseListItem(
                       items: {
-                        TextRowItem(value: washer.getFullName()):
-                            ListUtil.mColumn,
-                        TextRowItem(value: washer.email): ListUtil.mColumn,
-                        TextRowItem(value: washer.phoneNumber):
-                            ListUtil.mColumn,
+                        TextRowItem(
+                          value: washer.getFullName(),
+                        ): ListUtil.mColumn,
+                        TextRowItem(
+                          value: washer.email,
+                        ): ListUtil.xLColumn,
+                        TextRowItem(
+                          value: washer.phoneNumber,
+                        ): ListUtil.lColumn,
                         const IconRowItem(
                           icon: PixelPerfectIcons.eyeNormal,
-                        ): ListUtil.lColumn,
+                        ): ListUtil.xSColumn,
                       },
                     ),
                   );

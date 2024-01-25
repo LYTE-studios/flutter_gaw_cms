@@ -16,9 +16,11 @@ BeamPage resetPasswordBeamPage(String code, String token) {
 }
 
 class PasswordResetScreen extends StatefulWidget {
-  const PasswordResetScreen({super.key, required this.code, required this.token});
+  const PasswordResetScreen(
+      {super.key, required this.code, required this.token});
 
-  static const String route = '/sign-in/welcome/forgot-password/reset-password/:code/:token';
+  static const String route =
+      '/sign-in/welcome/forgot-password/reset-password/:code/:token';
   final String code;
   final String token;
 
@@ -66,13 +68,6 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
       ),
     ).then((value) {
       setLoading(false);
-      // ScaffoldMessenger.of(context).showSnackBar(
-      // const SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: GawTheme.mainTint,
-      //   content: Text('Password has been reset!', style: TextStyle(color: Colors.black87)),
-      // ),
-      // );
       signInRouter.beamToNamed(
         WelcomeScreen.route,
       );
