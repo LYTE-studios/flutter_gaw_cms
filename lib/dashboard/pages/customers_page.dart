@@ -83,8 +83,8 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
           totalItems: customerListResponse?.total,
           header: const BaseListHeader(
             items: {
-              'Name': ListUtil.mColumn,
-              'Email': ListUtil.lColumn,
+              'Name': ListUtil.lColumn,
+              'Email': ListUtil.xLColumn,
               'Phone': ListUtil.mColumn,
               'Company': ListUtil.sColumn,
               '': ListUtil.xSColumn,
@@ -105,10 +105,10 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                       items: {
                         TextRowItem(
                           value: customer.getFullName(),
-                        ): ListUtil.mColumn,
+                        ): ListUtil.lColumn,
                         SelectableTextRowItem(
                           value: customer.email,
-                        ): ListUtil.lColumn,
+                        ): ListUtil.xLColumn,
                         SelectableTextRowItem(
                           value: customer.phoneNumber,
                         ): ListUtil.mColumn,
