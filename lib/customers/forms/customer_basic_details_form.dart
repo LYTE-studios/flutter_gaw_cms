@@ -13,7 +13,7 @@ class CustomerBasicDetailsForm extends StatelessWidget {
 
   final Address? address;
 
-  final Function()? onUpdateAddress;
+  final Function(Address)? onUpdateAddress;
 
   final Function(bool)? onValidationChange;
 
@@ -41,15 +41,19 @@ class CustomerBasicDetailsForm extends StatelessWidget {
       }
     }
 
-    // if (address == null) {
-    //   valid = false;
-    // }
+    if (address == null) {
+      valid = false;
+    }
 
     onValidationChange?.call(valid);
   }
 
   @override
   Widget build(BuildContext context) {
+    Future(() {
+      validate();
+    });
+
     return GawForm(
       rows: [
         FormRow(
@@ -96,10 +100,14 @@ class CustomerBasicDetailsForm extends StatelessWidget {
                 label: 'Address',
                 onTap: () {
                   DialogUtil.show(
-                    dialog: const LocationPickerDialog(),
+                    dialog: LocationPickerDialog(
+                      address: address,
+                      onAddressSelected: (Address address) {
+                        onUpdateAddress?.call(address);
+                      },
+                    ),
                     context: context,
                   );
-                  validate();
                 },
                 text: address?.formattedAddres(),
                 icon: PixelPerfectIcons.placeIndicator,

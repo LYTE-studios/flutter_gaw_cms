@@ -69,7 +69,9 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
           DialogUtil.show(
             dialog: const CustomerCreateDialog(),
             context: context,
-          );
+          ).then((_) {
+            loadData();
+          });
         },
       ),
       child: ScreenSheet(

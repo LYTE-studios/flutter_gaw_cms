@@ -27,6 +27,8 @@ class _JobTilesTabState extends State<JobTilesTab> {
         width: double.infinity,
         child: SingleChildScrollView(
           child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: buildItems(),
           ),
         ),

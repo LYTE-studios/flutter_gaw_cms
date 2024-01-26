@@ -77,8 +77,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           ..customerId = customerId
           ..maxWashers = int.parse(tecNeededWashers.text)
           ..isDraft = isDraft
-          // TODO
-          ..address = Address.getDefault().toBuilder()
+          ..address = address!.toBuilder()
           ..description = tecDescription.text,
       ),
     ).then((_) {
@@ -110,10 +109,23 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
     return customerOptions;
   }
 
+  List<Customer> knownCustomers = [];
+
+  List<Customer> setCustomerList(List<Customer> customers) {
+    for (Customer customer in customers) {
+      if (!knownCustomers.contains(customer)) {
+        knownCustomers.add(customer);
+      }
+    }
+
+    return knownCustomers;
+  }
+
   void getCustomerOptions() {
     if (customerQueryTerm?.isEmpty ?? true) {
       CustomerApi.getCustomers().then((CustomerListResponse? response) {
         setState(() {
+          knownCustomers = setCustomerList(response?.customers.toList() ?? []);
           options = loadOptionsByResponse(response);
         });
       }).catchError((error) {
@@ -123,6 +135,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
       CustomerApi.getCustomersQuery(query: customerQueryTerm ?? '')
           .then((CustomerListResponse? response) {
         setState(() {
+          knownCustomers = setCustomerList(response?.customers.toList() ?? []);
           options = loadOptionsByResponse(response);
         });
       }).catchError((error) {
@@ -140,6 +153,10 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
       if (controller.text.isEmpty) {
         validated = false;
       }
+    }
+
+    if (address == null) {
+      validated = false;
     }
 
     if (customerId == null) {
@@ -266,24 +283,6 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
         FormRow(
           formItems: [
             FormItem(
-              child: InputStaticTextForm(
-                label: 'Location',
-                onTap: () {
-                  DialogUtil.show(
-                    dialog: LocationPickerDialog(),
-                    context: context,
-                  );
-                },
-                text: address?.formattedAddres(),
-                icon: PixelPerfectIcons.placeIndicator,
-                hint: 'Location for the job',
-              ),
-            ),
-          ],
-        ),
-        FormRow(
-          formItems: [
-            FormItem(
               child: InputSelectionForm(
                 options: options,
                 onChanged: (String? term) {
@@ -293,10 +292,42 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                   getCustomerOptions();
                 },
                 onSelected: (value) {
-                  customerId = value as String;
+                  setState(() {
+                    customerId = value as String;
+                    address = knownCustomers
+                        .firstWhere((customer) => customerId == customer.id)
+                        .address;
+                  });
                 },
                 label: 'Customer',
                 hint: 'Choose the customer for your job',
+              ),
+            ),
+          ],
+        ),
+        FormRow(
+          formItems: [
+            FormItem(
+              child: InputStaticTextForm(
+                label: 'Location',
+                onTap: () {
+                  DialogUtil.show(
+                    dialog: LocationPickerDialog(
+                      address: address,
+                      onAddressSelected: (Address address) {
+                        setState(() {
+                          this.address = address;
+                        });
+                      },
+                    ),
+                    context: context,
+                  );
+                },
+                text: (address?.formattedAddres().isEmpty ?? true)
+                    ? address?.formattedLatLong()
+                    : address?.formattedAddres(),
+                icon: PixelPerfectIcons.placeIndicator,
+                hint: 'Location for the job',
               ),
             ),
           ],

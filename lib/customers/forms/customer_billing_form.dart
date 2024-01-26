@@ -10,7 +10,7 @@ class CustomerBillingForm extends StatelessWidget {
 
   final Address? billingAddress;
 
-  final Function()? onUpdateBillingAddress;
+  final Function(Address)? onUpdateBillingAddress;
 
   const CustomerBillingForm({
     super.key,
@@ -46,16 +46,19 @@ class CustomerBillingForm extends StatelessWidget {
           formItems: [
             FormItem(
               child: InputStaticTextForm(
-                label: 'Address',
+                label: 'Billing address',
                 onTap: () {
                   DialogUtil.show(
-                    dialog: const LocationPickerDialog(),
+                    dialog: LocationPickerDialog(
+                      address: billingAddress,
+                      onAddressSelected: onUpdateBillingAddress,
+                    ),
                     context: context,
                   );
                 },
                 text: billingAddress?.formattedAddres(),
                 icon: PixelPerfectIcons.placeIndicator,
-                hint: 'Customer address',
+                hint: 'Customer billing address',
               ),
             ),
           ],

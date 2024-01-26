@@ -22,28 +22,12 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
   final TextEditingController tecCompany = TextEditingController();
   final TextEditingController tecVat = TextEditingController();
 
+  Address? address;
+  Address? billingAddress;
+
   int index = 0;
 
   bool valid = false;
-
-  late List<Widget> pages = [
-    CustomerBasicDetailsForm(
-      onValidationChange: (bool value) {
-        setState(() {
-          valid = value;
-        });
-      },
-      tecFirstName: tecFirstName,
-      tecLastName: tecLastName,
-      tecEmail: tecEmail,
-      tecPhoneNumber: tecPhoneNumber,
-    ),
-    CustomerBillingForm(
-      tecCompany: tecCompany,
-      tecVat: tecVat,
-    ),
-    SizedBox(),
-  ];
 
   void _next() {
     if (index == 2) {
@@ -54,10 +38,12 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
           ..firstName = tecFirstName.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
-          ..address = Address.getDefault().toBuilder()
-          ..billingAddress = Address.getDefault().toBuilder()
+          ..address = address?.toBuilder()
+          ..billingAddress = billingAddress?.toBuilder()
           ..taxNumber = tecVat.text,
-      )).then((_) {}).catchError((error) {
+      )).then((_) {
+        Navigator.of(context).pop();
+      }).catchError((error) {
         ExceptionHandler.show(error);
         Navigator.of(context).pop();
       }).whenComplete(
@@ -74,6 +60,38 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
 
   @override
   Widget build(BuildContext context) {
+    late List<Widget> pages = [
+      CustomerBasicDetailsForm(
+        onValidationChange: (bool value) {
+          setState(() {
+            valid = value;
+          });
+        },
+        onUpdateAddress: (Address address) {
+          setState(() {
+            this.address = address;
+            billingAddress = address;
+          });
+        },
+        address: address,
+        tecFirstName: tecFirstName,
+        tecLastName: tecLastName,
+        tecEmail: tecEmail,
+        tecPhoneNumber: tecPhoneNumber,
+      ),
+      CustomerBillingForm(
+        onUpdateBillingAddress: (Address address) {
+          setState(() {
+            billingAddress = address;
+          });
+        },
+        billingAddress: billingAddress,
+        tecCompany: tecCompany,
+        tecVat: tecVat,
+      ),
+      SizedBox(),
+    ];
+
     return BaseDialog(
       height: 480,
       child: Column(

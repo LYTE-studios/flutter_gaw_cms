@@ -36,6 +36,7 @@ class JobInfoCard extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.all(PaddingSizes.mainPadding),
       child: Container(
+        height: 280,
         width: 307,
         padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
         decoration: BoxDecoration(
@@ -124,9 +125,11 @@ class JobInfoCard extends ConsumerWidget {
             Row(
               children: locations,
             ),
-            const SizedBox(height: PaddingSizes.bigPadding),
+            const SizedBox(
+              height: PaddingSizes.mainPadding,
+            ),
             MainText(info.description ?? "", fontSize: 12.3),
-            const SizedBox(height: PaddingSizes.bigPadding),
+            const Spacer(),
             Row(
               children: [
                 _SelectedWashersWidget(
@@ -157,9 +160,7 @@ class JobInfoCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(
-              height: PaddingSizes.bigPadding,
-            ),
+            const SizedBox(height: PaddingSizes.bigPadding),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

@@ -1,15 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class BasicMap extends StatefulWidget {
+  final Completer<GoogleMapController>? controller;
+
   final Set<Marker>? markers;
 
   final LatLng? position;
 
   final LatLng startPosition;
+
+  final double? initialZoom;
 
   final bool showCurrentLocation;
 
@@ -21,48 +26,103 @@ class BasicMap extends StatefulWidget {
 
   final bool showRoute;
 
+  final bool setInitialMarker;
+
   const BasicMap({
     super.key,
+    this.controller,
     this.markers,
     this.position,
+    this.initialZoom,
     required this.startPosition,
     this.showCurrentLocation = false,
     this.selectedAddressPosition,
     this.centerOnSelectedAddress = false,
     this.onMoveCamera,
     this.showRoute = false,
+    this.setInitialMarker = true,
   });
 
   @override
-  State<BasicMap> createState() => _BasicMapState();
+  State<BasicMap> createState() => BasicMapState();
 }
 
-class _BasicMapState extends State<BasicMap> with ScreenStateMixin {
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+class BasicMapState extends State<BasicMap> with ScreenStateMixin {
+  late final Completer<GoogleMapController> _controller =
+      widget.controller ?? Completer<GoogleMapController>();
+
+  GoogleMapController? mapController;
 
   Set<Polyline> lines = {};
 
-  late Set<Marker> markers = widget.markers ?? {};
+  late Set<Marker> markers = widget.markers ?? getInitialMarkers();
 
-  void setStyle(BuildContext context) {
-    // DefaultAssetBundle.of(context)
-    //     .loadString(
-    //   'lib/assets/styles/map_style.json',
-    //   cache: true,
-    // )
-    //     .then(
-    //   (asset) {
-    //     _controller.future.then((controller) {
-    //       controller.setMapStyle(asset);
-    //     });
-    //   },
-    // );
+  bool isCompleted = false;
+
+  String? mapTheme;
+
+  Set<Marker> getInitialMarkers() {
+    Set<Marker> markers = {};
+
+    if (widget.setInitialMarker) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('Marker'),
+          position: widget.startPosition,
+        ),
+      );
+      setMarker(widget.startPosition);
+    }
+
+    return markers;
+  }
+
+  void setMarker(LatLng position) {
+    setState(
+      () {
+        markers = {
+          Marker(
+            markerId: const MarkerId('Marker'),
+            position: position,
+          ),
+        };
+      },
+    );
+  }
+
+  void loadTheme() {
+    DefaultAssetBundle.of(context)
+        .loadString(
+      'lib/assets/styles/map_style.json',
+      cache: true,
+    )
+        .then((asset) {
+      mapTheme = asset;
+    });
+  }
+
+  void updateMap(Address address) {
+    mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(address.latitude!, address.longitude!),
+        15,
+      ),
+    );
+    setMarker(
+      LatLng(
+        address.latitude!,
+        address.longitude!,
+      ),
+    );
   }
 
   @override
   void initState() {
-    setStyle(context);
+    loading = true;
+    Future(() {
+      loadTheme();
+    });
+
     super.initState();
   }
 
@@ -76,40 +136,25 @@ class _BasicMapState extends State<BasicMap> with ScreenStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.position != null) {
-      _controller.future.then((controller) {
-        controller.moveCamera(
-          CameraUpdate.newLatLng(
-            LatLng(
-              widget.position!.latitude,
-              widget.position!.longitude,
-            ),
-          ),
-        );
-      });
-    }
-
-    return LoadingSwitcher(
-      loading: loading,
-      child: GoogleMap(
-        onCameraMove: widget.onMoveCamera,
-        myLocationEnabled: widget.showCurrentLocation,
-        myLocationButtonEnabled: widget.showCurrentLocation,
-        markers: markers,
-        onMapCreated: (controller) async {
-          if (!_controller.isCompleted) {
-            _controller.complete(controller);
-          }
-        },
-        polylines: lines,
-        initialCameraPosition: CameraPosition(
-          target: widget.startPosition,
-          zoom: 7,
-        ),
-        compassEnabled: false,
-        mapToolbarEnabled: false,
-        buildingsEnabled: false,
+    return GoogleMap(
+      onCameraMove: widget.onMoveCamera,
+      myLocationEnabled: widget.showCurrentLocation,
+      myLocationButtonEnabled: widget.showCurrentLocation,
+      markers: markers,
+      onMapCreated: (controller) async {
+        setState(() {
+          mapController = controller;
+        });
+        await controller.setMapStyle(mapTheme);
+      },
+      polylines: lines,
+      initialCameraPosition: CameraPosition(
+        target: widget.startPosition,
+        zoom: widget.initialZoom ?? 7,
       ),
+      compassEnabled: false,
+      mapToolbarEnabled: false,
+      buildingsEnabled: false,
     );
   }
 }
