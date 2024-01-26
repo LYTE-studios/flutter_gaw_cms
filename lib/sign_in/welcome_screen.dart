@@ -35,6 +35,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
   bool canLogin = false;
 
   void _login() {
+    if (!canLogin) {
+      return;
+    }
+
     setLoading(true);
     AuthenticationApi.credentialsLogin(
       request: LoginRequest(
@@ -106,6 +110,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
                 hint: 'At least 8 characters',
                 label: 'Password',
                 isPasswordField: true,
+                onSubmitted: _login,
               ),
               const SizedBox(
                 height: PaddingSizes.smallPadding,

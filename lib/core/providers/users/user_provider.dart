@@ -26,7 +26,7 @@ class UserProvider extends StateNotifier<UserProviderState> {
     }
     UsersApi.fetchProfilePicture(
       state.profilePictureUrl!,
-    )?.then((Uint8List bytes) {
+    ).then((Uint8List? bytes) {
       state = state.copyWith(
         profilePicture: bytes,
       );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/core/widgets/maps/basic_map.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationPickerDialog extends StatefulWidget {
   final Function(Address)? onAddressSelected;
@@ -32,7 +34,6 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
     if (query?.isEmpty ?? true) {
       return;
     }
-
     GoogleApi.fetchUrl(
       {
         "query": query!,
@@ -60,6 +61,29 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: PaddingSizes.bigPadding,
+              vertical: PaddingSizes.extraBigPadding,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                height: 360,
+                decoration: const BoxDecoration(
+                  border: Border.fromBorderSide(
+                    Borders.lightSide,
+                  ),
+                ),
+                child: const BasicMap(
+                  startPosition: LatLng(
+                    50.5039,
+                    4.4699,
+                  ),
+                ),
+              ),
+            ),
+          ),
           InputSelectionForm(
             options: options,
             onChanged: placeAutocomplete,

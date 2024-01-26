@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
+import 'package:flutter_gaw_cms/washers/presentation/dialogs/washers_create_dialog.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -55,7 +56,10 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
       actionWidget: ActionButton(
         label: 'Create new washer',
         onTap: () {
-          // TODO
+          DialogUtil.show(
+            dialog: const WasherCreateDialog(),
+            context: context,
+          );
         },
       ),
       child: ScreenSheet(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/location_picker_dialog.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -8,6 +9,8 @@ class CustomerDetailsForm extends StatefulWidget {
 
   final bool canEdit;
 
+  final Function()? onUpdate;
+
   final Function()? cancelEdit;
 
   const CustomerDetailsForm({
@@ -15,6 +18,7 @@ class CustomerDetailsForm extends StatefulWidget {
     required this.customer,
     this.canEdit = false,
     this.cancelEdit,
+    this.onUpdate,
   });
 
   @override
@@ -51,6 +55,10 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
     text: widget.customer?.company,
   );
 
+  late Address? address = widget.customer?.address;
+
+  late Address? billingAddress = widget.customer?.billingAddress;
+
   void _update() {
     setLoading(true);
 
@@ -61,8 +69,19 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
           ..firstName = tecFirstname.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
+          ..company = tecCompany.text
+          ..initials = tecInitials.text
+          ..address = address?.toBuilder()
+          ..billingAddress = billingAddress?.toBuilder()
           ..taxNumber = tecVatNumber.text,
       ),
+    ).then((_) {
+      widget.onUpdate?.call();
+      widget.cancelEdit?.call();
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(
+      () => setLoading(false),
     );
   }
 
@@ -183,10 +202,11 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
               formItems: [
                 GenericButton(
                   label: 'Save changes',
+                  loading: loading,
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     color: GawTheme.clearText,
                   ),
-                  onTap: () {},
+                  onTap: _update,
                 ),
                 const SizedBox(
                   width: PaddingSizes.mainPadding,

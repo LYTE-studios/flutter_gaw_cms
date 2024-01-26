@@ -39,6 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
+    if (!mounted) {
+      reassemble();
+    }
     dashboardRouter.beamToNamed(DashboardPage.route);
     super.initState();
   }

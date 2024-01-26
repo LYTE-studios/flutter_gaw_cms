@@ -6,14 +6,14 @@ import 'package:flutter_gaw_cms/customers/forms/customer_billing_form.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class CustomerCreateDialog extends StatefulWidget {
-  const CustomerCreateDialog({super.key});
+class WasherCreateDialog extends StatefulWidget {
+  const WasherCreateDialog({super.key});
 
   @override
-  State<CustomerCreateDialog> createState() => _CustomerCreateDialogState();
+  State<WasherCreateDialog> createState() => _WasherCreateDialogState();
 }
 
-class _CustomerCreateDialogState extends State<CustomerCreateDialog>
+class _WasherCreateDialogState extends State<WasherCreateDialog>
     with TickerProviderStateMixin, ScreenStateMixin {
   final TextEditingController tecFirstName = TextEditingController();
   final TextEditingController tecLastName = TextEditingController();
@@ -48,15 +48,12 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
   void _next() {
     if (index == 2) {
       setLoading(true);
-      CustomerApi.createCustomer(
-          request: CreateCustomerRequest(
+      WashersApi.registerWasher(
+          request: RegisterRequest(
         (b) => b
           ..firstName = tecFirstName.text
           ..lastName = tecLastName.text
-          ..email = tecEmail.text
-          ..address = Address.getDefault().toBuilder()
-          ..billingAddress = Address.getDefault().toBuilder()
-          ..taxNumber = tecVat.text,
+          ..email = tecEmail.text,
       )).then((_) {}).catchError((error) {
         ExceptionHandler.show(error);
         Navigator.of(context).pop();

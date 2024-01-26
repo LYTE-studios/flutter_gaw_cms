@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
@@ -22,6 +25,8 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
   Customer? customer;
 
   bool canEdit = false;
+
+  Uint8List? bytes;
 
   void loadData() {
     setLoading(true);
@@ -100,7 +105,7 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
                     bottom: Borders.mainSide,
                   ),
                 ),
-                child: const Align(
+                child: Align(
                   alignment: Alignment.centerLeft,
                   child: SizedBox(
                     height: 120,
@@ -108,6 +113,29 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
                     child: ProfilePictureAvatar(
                       canEdit: true,
                       showCircle: true,
+                      imageUrl:
+                          FormattingUtil.formatUrl(customer?.profilePictureUrl),
+                      onEditPressed: () {
+                        FilePicker.platform
+                            .pickFiles(
+                          type: FileType.image,
+                        )
+                            .then((FilePickerResult? result) {
+                          if (result?.files.isEmpty ?? true) {
+                            return;
+                          }
+                          setLoading(true);
+
+                          UsersApi.uploadProfilePicture(
+                            result!.files[0].bytes!,
+                            userId: customer!.id,
+                          ).then((_) {
+                            loadData();
+                          }).catchError((error) {
+                            ExceptionHandler.show(error);
+                          }).whenComplete(() => setLoading(false));
+                        });
+                      },
                     ),
                   ),
                 ),
@@ -118,6 +146,7 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
               child: CustomerDetailsForm(
                 customer: customer,
                 canEdit: canEdit,
+                onUpdate: loadData,
                 cancelEdit: () {
                   setState(() {
                     canEdit = false;
