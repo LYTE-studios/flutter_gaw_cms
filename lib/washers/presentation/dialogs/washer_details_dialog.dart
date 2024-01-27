@@ -250,7 +250,13 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               return;
                             }
                             DialogUtil.show(
-                              dialog: const LocationPickerDialog(),
+                              dialog: LocationPickerDialog(
+                                onAddressSelected: (Address address) {
+                                  setState(() {
+                                    this.address = address;
+                                  });
+                                },
+                              ),
                               context: context,
                             );
                           },
