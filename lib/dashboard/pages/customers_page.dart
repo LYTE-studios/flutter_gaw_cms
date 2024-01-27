@@ -34,13 +34,13 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
   void loadData({int? page, int? itemCount}) {
     setLoading(true);
 
-    setState(() {
+    setData(() {
       page = page;
       itemCount = itemCount;
     });
 
     CustomerApi.getCustomers(page: page, itemCount: itemCount).then((response) {
-      setState(() {
+      setData(() {
         customerListResponse = response;
       });
     }).catchError((error) {

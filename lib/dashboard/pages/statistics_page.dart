@@ -25,13 +25,13 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
-  DateIntervalSelectable? selectable;
+  DateIntervalSelectable? selectable = DateIntervalSelectable.thisMonth;
 
-  DateTime? startTime = DateTime.now().subtract(
-    const Duration(days: 356),
-  );
+  late PickerDateRange? range = selectable?.getDateRange();
 
-  DateTime? endTime = DateTime.now();
+  late DateTime? startTime = range?.startDate;
+
+  late DateTime? endTime = range?.endDate;
 
   AdminStatisticsOverviewResponse? adminStatistics;
 
@@ -48,7 +48,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
       startTime: GawDateUtil.toApi(startTime!),
       endTime: GawDateUtil.toApi(endTime!),
     ).then((adminStats) {
-      setState(() {
+      setData(() {
         adminStatistics = adminStats;
       });
     }).catchError(
@@ -185,11 +185,15 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                                       isLoading: loading,
                                     ),
                                   ),
-                                  const Expanded(
+                                  Expanded(
                                     flex: 2,
                                     child: TargetStatisticsBlock(
-                                      jobsCount: 1,
-                                      increaseAmount: 12.5,
+                                      jobsCount:
+                                          adminStatistics?.completedJobCount ??
+                                              0,
+                                      increaseAmount:
+                                          adminStatistics?.getJobCountTrend() ??
+                                              0,
                                     ),
                                   ),
                                 ],
@@ -249,14 +253,14 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                               ),
                             ),
                             SizedBox(
-                              height: 360,
+                              height: 420,
                               child: Row(
                                 children: [
                                   Expanded(
                                     flex: 3,
                                     child: StatisticsChartContainer(
-                                      weeklyStatistics: [] ??
-                                          adminStatistics?.hoursWorkedStats
+                                      weeklyStatistics: adminStatistics
+                                              ?.hoursWorkedStats
                                               .toSpots() ??
                                           [],
                                       averageHours: adminStatistics
@@ -264,7 +268,9 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                                               .round() ??
                                           0,
                                       isTrend: false,
-                                      trend: 0,
+                                      trend: adminStatistics
+                                              ?.getHoursWorkedTrend() ??
+                                          0,
                                       showWeekly: false,
                                       overriddenPadding: const EdgeInsets.all(
                                         PaddingSizes.smallPadding,

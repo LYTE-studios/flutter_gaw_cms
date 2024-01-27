@@ -106,7 +106,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
     setLoading(true);
 
     JobsApi.getApplications(jobId: widget.jobId).then((response) {
-      setState(() {
+      setData(() {
         applicationsListResponse = response;
       });
     }).catchError((error) {

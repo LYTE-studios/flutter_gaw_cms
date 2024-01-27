@@ -129,15 +129,22 @@ class JobInfoCard extends ConsumerWidget {
             const SizedBox(
               height: PaddingSizes.mainPadding,
             ),
-            MainText(info.description ?? "", fontSize: 12.3),
-            const Spacer(),
+            Expanded(
+              child: MainText(
+                info.description ?? "",
+                alignment: TextAlign.start,
+                fontSize: 12.3,
+              ),
+            ),
             Row(
               children: [
                 _SelectedWashersWidget(
                   selectedWashers: info.selectedWashers,
                   maxWashers: info.maxWashers,
                 ),
-                const SizedBox(width: PaddingSizes.extraBigPadding),
+                const SizedBox(
+                  width: PaddingSizes.extraBigPadding,
+                ),
                 Visibility(
                   visible: !basic,
                   child: Container(

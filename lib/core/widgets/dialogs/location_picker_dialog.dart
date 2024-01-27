@@ -22,7 +22,8 @@ class LocationPickerDialog extends StatefulWidget {
   State<LocationPickerDialog> createState() => _LocationPickerDialogState();
 }
 
-class _LocationPickerDialogState extends State<LocationPickerDialog> {
+class _LocationPickerDialogState extends State<LocationPickerDialog>
+    with ScreenStateMixin {
   GlobalKey<BasicMapState> mapKey = GlobalKey();
 
   bool isLateLoading = false;
@@ -44,7 +45,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
   }
 
   void setLateLoader(String query) {
-    setState(() {
+    setData(() {
       isLateLoading = true;
     });
     Future.delayed(
@@ -52,7 +53,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
         milliseconds: 500,
       ),
     ).then((_) {
-      setState(() {
+      setData(() {
         isLateLoading = false;
       });
       placeAutocomplete(query);
@@ -60,7 +61,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
   }
 
   void setTicker() {
-    setState(() {
+    setData(() {
       canRequest = false;
     });
 
@@ -69,7 +70,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
         milliseconds: 500,
       ),
     ).then((_) {
-      setState(() {
+      setData(() {
         canRequest = true;
       });
     });
@@ -102,7 +103,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
           PlaceAutocompleteResponse response =
               PlaceAutocompleteResponse.fromJson(value);
           if (response.predictions != null) {
-            setState(() {
+            setData(() {
               options = placesToOptions(
                 response.predictions!,
               );
@@ -191,7 +192,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog> {
 
                   updateMap(newAddress);
 
-                  setState(() {
+                  setData(() {
                     address = newAddress;
                   });
                 }

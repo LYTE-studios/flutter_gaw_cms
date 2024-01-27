@@ -41,7 +41,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         dateRange.item2,
       ),
     ).then((adminStats) {
-      setState(() {
+      setData(() {
         adminStatistics = adminStats;
       });
     }).catchError(
