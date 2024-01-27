@@ -6,11 +6,14 @@ import 'package:gaw_ui/gaw_ui.dart';
 class JobTilesTab extends StatefulWidget {
   final List<Job> jobs;
 
+  final bool basicView;
+
   final bool loading;
 
   const JobTilesTab({
     super.key,
     required this.jobs,
+    this.basicView = false,
     this.loading = false,
   });
 
@@ -21,17 +24,22 @@ class JobTilesTab extends StatefulWidget {
 class _JobTilesTabState extends State<JobTilesTab> {
   @override
   Widget build(BuildContext context) {
-    return LoadingSwitcher(
-      loading: widget.loading,
-      child: SizedBox(
-        width: double.infinity,
-        child: SingleChildScrollView(
-          child: Wrap(
-            alignment: WrapAlignment.start,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            children: buildItems(),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LoadingSwitcher(
+            loading: widget.loading,
+            child: SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: buildItems(),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -43,6 +51,7 @@ class _JobTilesTabState extends State<JobTilesTab> {
       items.add(
         JobInfoCard(
           info: job,
+          basic: widget.basicView,
         ),
       );
     }

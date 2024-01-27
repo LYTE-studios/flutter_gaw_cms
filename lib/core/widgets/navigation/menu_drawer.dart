@@ -170,7 +170,7 @@ class MenuDrawer extends StatelessWidget {
 
               mainRouter.beamToNamed(SignInScreen.route);
             },
-            active: WashersPage.route == route,
+            active: false,
           ),
         ],
       ),

@@ -27,11 +27,11 @@ class StatisticsPage extends StatefulWidget {
 class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
   DateIntervalSelectable? selectable;
 
-  DateTime startTime = DateTime.now().subtract(
+  DateTime? startTime = DateTime.now().subtract(
     const Duration(days: 356),
   );
 
-  DateTime endTime = DateTime.now();
+  DateTime? endTime = DateTime.now();
 
   AdminStatisticsOverviewResponse? adminStatistics;
 
@@ -40,9 +40,13 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
   void loadData() {
     setLoading(true);
 
+    if (startTime == null || endTime == null) {
+      return;
+    }
+
     StatisticsApi.getAdminStatistics(
-      startTime: GawDateUtil.toApi(startTime),
-      endTime: GawDateUtil.toApi(endTime),
+      startTime: GawDateUtil.toApi(startTime!),
+      endTime: GawDateUtil.toApi(endTime!),
     ).then((adminStats) {
       setState(() {
         adminStatistics = adminStats;
@@ -69,36 +73,56 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
       subRoute: 'Statistics',
       showWelcomeMessage: true,
       bannerHeightOverride: StatisticsPage.bannerHeight,
-      actionWidget: CmsExpandableDateRangePicker(
-        expanded: showPicker,
-        initialStart: startTime,
-        initialEnd: endTime,
-        selectable: selectable,
-        onUpdateSelectable: (DateIntervalSelectable selectable) {
-          PickerDateRange range = selectable.getDateRange();
+      actionWidget: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: PaddingSizes.extraBigPadding,
+        ),
+        child: CmsExpandableDateRangePicker(
+          expanded: showPicker,
+          initialStart: startTime,
+          initialEnd: endTime,
+          selectable: selectable,
+          onUpdateSelectable: (DateIntervalSelectable? selectable) {
+            if (selectable == null) {
+              setState(() {
+                this.selectable = null;
+              });
+              return;
+            }
+            if (selectable == this.selectable) {
+              setState(() {
+                this.selectable = null;
+                startTime = null;
+                endTime = null;
+              });
+              return;
+            }
 
-          setState(() {
-            this.selectable = selectable;
-            startTime = range.startDate!;
-            endTime = range.endDate!;
-          });
-        },
-        toggleExpand: () {
-          setState(() {
-            showPicker = !showPicker;
-          });
-        },
-        onUpdateDates: (DateTime start, DateTime end) {
-          setState(() {
-            selectable = null;
-            startTime = start;
-            endTime = end;
-            showPicker = !showPicker;
-          });
-          Future(() {
-            loadData();
-          });
-        },
+            PickerDateRange range = selectable.getDateRange();
+
+            setState(() {
+              this.selectable = selectable;
+              startTime = range.startDate!;
+              endTime = range.endDate!;
+            });
+          },
+          toggleExpand: () {
+            setState(() {
+              showPicker = !showPicker;
+            });
+          },
+          onUpdateDates: (DateTime start, DateTime end) {
+            setState(() {
+              selectable = null;
+              startTime = start;
+              endTime = end;
+              showPicker = !showPicker;
+            });
+            Future(() {
+              loadData();
+            });
+          },
+        ),
       ),
       child: GestureDetector(
         onTap: () {

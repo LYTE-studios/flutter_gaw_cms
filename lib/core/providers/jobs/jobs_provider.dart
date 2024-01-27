@@ -44,7 +44,7 @@ class JobsProvider extends StateNotifier<JobsProviderState> {
   }
 
   Future<void> loadUpcomingJobs() async {
-    JobListResponse? response = await JobsApi.getUpcomingJobs();
+    JobListResponse? response = await JobsApi.getUpcomingJobs(isAdmin: true);
 
     state = state.copyWith(upcomingJobs: response);
   }

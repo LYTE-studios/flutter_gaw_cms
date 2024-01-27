@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/application_review_screen.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/dialogs/job_delete_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+
+import '../../../core/routing/dashboard_router.dart';
 
 class JobInfoCard extends ConsumerWidget {
   final Job info;
@@ -69,22 +72,20 @@ class JobInfoCard extends ConsumerWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                basic
-                    ? _SelectedWashersWidget(
-                        selectedWashers: info.selectedWashers,
-                        maxWashers: info.maxWashers,
-                      )
-                    : ColorlessInkWell(
-                        onTap: () {},
-                        child: MainText(
-                          "duplicate draft",
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            decoration: TextDecoration.underline,
-                            fontSize: 12,
-                            color: GawTheme.unselectedText,
-                          ),
-                        ),
+                Visibility(
+                  visible: !basic,
+                  child: ColorlessInkWell(
+                    onTap: () {},
+                    child: MainText(
+                      "duplicate draft",
+                      textStyleOverride: TextStyles.mainStyle.copyWith(
+                        decoration: TextDecoration.underline,
+                        fontSize: 12,
+                        color: GawTheme.unselectedText,
                       ),
+                    ),
+                  ),
+                ),
               ],
             ),
             Container(
@@ -137,56 +138,115 @@ class JobInfoCard extends ConsumerWidget {
                   maxWashers: info.maxWashers,
                 ),
                 const SizedBox(width: PaddingSizes.extraBigPadding),
-                Container(
-                  width: 72,
-                  height: 22,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.fromBorderSide(
-                      Borders.mainSide.copyWith(
-                        color: statusColour,
-                        width: 1.8,
+                Visibility(
+                  visible: !basic,
+                  child: Container(
+                    width: 72,
+                    height: 22,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.fromBorderSide(
+                        Borders.mainSide.copyWith(
+                          color: statusColour,
+                          width: 1.8,
+                        ),
                       ),
                     ),
-                  ),
-                  child: MainText(
-                    statusString,
-                    textStyleOverride: TextStyles.mainStyle.copyWith(
-                      color: statusColour,
-                      fontSize: 12,
+                    child: MainText(
+                      statusString,
+                      textStyleOverride: TextStyles.mainStyle.copyWith(
+                        color: statusColour,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: PaddingSizes.bigPadding),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GenericButton(
-                  label: "Delete",
-                  fontSize: 12,
-                  minHeight: 35,
-                  color: GawTheme.error,
-                  onTap: () {
-                    DialogUtil.show(
-                      dialog: JobDeletePopup(
-                        id: info.id!,
+            basic
+                ? ColorlessInkWell(
+                    onTap: () {
+                      dashboardRouter.beamToNamed(
+                        ApplicationReviewScreen.route.replaceFirst(
+                          ApplicationReviewScreen.kJobId,
+                          info.id ?? '',
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: GawTheme.secondaryTint,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      context: context,
-                    );
-                  },
-                ),
-                EditButton(
-                  onTap: () {},
-                  label: "Edit",
-                  fontSize: 12,
-                  minHeight: 35,
-                  color: Colors.transparent,
-                ),
-              ],
-            ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: PaddingSizes.smallPadding,
+                        ),
+                        child: Row(
+                          children: [
+                            const Spacer(),
+                            MainText(
+                              'View applications for this job',
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: GawTheme.clearText,
+                              ),
+                            ),
+                            const Spacer(),
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                right: PaddingSizes.mainPadding,
+                              ),
+                              child: SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: SvgIcon(
+                                  PixelPerfectIcons.arrowRightMedium,
+                                  color: GawTheme.clearText,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GenericButton(
+                        label: "Delete",
+                        fontSize: 12,
+                        minHeight: 35,
+                        color: GawTheme.error,
+                        onTap: () {
+                          DialogUtil.show(
+                            dialog: JobDeletePopup(
+                              id: info.id!,
+                            ),
+                            context: context,
+                          );
+                        },
+                      ),
+                      EditButton(
+                        onTap: () {
+                          DialogUtil.show(
+                            dialog: JobDeletePopup(
+                              id: info.id!,
+                            ),
+                            context: context,
+                          );
+                        },
+                        label: "Edit",
+                        fontSize: 12,
+                        minHeight: 35,
+                        color: Colors.transparent,
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),

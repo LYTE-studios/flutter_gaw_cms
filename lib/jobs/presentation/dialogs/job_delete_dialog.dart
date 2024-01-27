@@ -24,6 +24,7 @@ class _JobDeletePopupState extends ConsumerState<JobDeletePopup>
     if (loading) {
       return;
     }
+
     setLoading(true);
 
     JobsApi.deleteJob(

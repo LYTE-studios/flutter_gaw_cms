@@ -10,7 +10,7 @@ BeamPage resetPasswordBeamPage(String code, String token) {
   return BeamPage(
     title: 'Reset Passord',
     key: const ValueKey('reset-password'),
-    type: BeamPageType.slideRightTransition,
+    type: BeamPageType.slideLeftTransition,
     child: PasswordResetScreen(code: code, token: token),
   );
 }
@@ -132,6 +132,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
                 label: 'Password',
                 controller: tecPassword,
                 isPasswordField: true,
+                onSubmitted: () => onResetPassword(context),
               ),
               const SizedBox(
                 height: PaddingSizes.bigPadding,
@@ -141,6 +142,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
                 label: 'Password',
                 controller: tecPasswordCheck,
                 isPasswordField: true,
+                onSubmitted: () => onResetPassword(context),
               ),
               const SizedBox(
                 height: PaddingSizes.extraBigPadding,

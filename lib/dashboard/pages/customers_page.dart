@@ -25,20 +25,21 @@ class CustomersPage extends StatefulWidget {
 }
 
 class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
-  final TextEditingController tecItemsPerPage = TextEditingController(
-    text: 12.toString(),
-  );
+  int itemCount = 25;
 
-  final TextEditingController tecPages = TextEditingController(
-    text: 1.toString(),
-  );
+  int page = 1;
 
   CustomerListResponse? customerListResponse;
 
-  void loadData() {
+  void loadData({int? page, int? itemCount}) {
     setLoading(true);
 
-    CustomerApi.getCustomers().then((response) {
+    setState(() {
+      page = page;
+      itemCount = itemCount;
+    });
+
+    CustomerApi.getCustomers(page: page, itemCount: itemCount).then((response) {
       setState(() {
         customerListResponse = response;
       });
@@ -52,7 +53,10 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
   @override
   void initState() {
     Future(() {
-      loadData();
+      loadData(
+        page: page,
+        itemCount: itemCount,
+      );
     });
     super.initState();
   }
@@ -80,13 +84,21 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
           loading: loading,
           title: LocaleKeys.customers.tr(),
           valueName: LocaleKeys.customers.tr().toLowerCase(),
+          onEditItemCount: (int index) {
+            loadData(itemCount: index, page: page);
+          },
+          onChangePage: (int index) {
+            loadData(itemCount: itemCount, page: index);
+          },
+          page: page,
+          itemsPerPage: itemCount,
           totalItems: customerListResponse?.total,
           header: const BaseListHeader(
             items: {
               'Name': ListUtil.lColumn,
               'Email': ListUtil.xLColumn,
               'Phone': ListUtil.mColumn,
-              'Company': ListUtil.sColumn,
+              'Company': ListUtil.mColumn,
               '': ListUtil.xSColumn,
             },
           ),
@@ -114,7 +126,7 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                         ): ListUtil.mColumn,
                         TextRowItem(
                           value: customer.company,
-                        ): ListUtil.sColumn,
+                        ): ListUtil.mColumn,
                         const IconRowItem(
                           icon: PixelPerfectIcons.eyeNormal,
                         ): ListUtil.xSColumn,

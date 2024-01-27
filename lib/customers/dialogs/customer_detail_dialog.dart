@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -25,8 +23,6 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
   Customer? customer;
 
   bool canEdit = false;
-
-  Uint8List? bytes;
 
   void loadData() {
     setLoading(true);

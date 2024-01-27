@@ -1,8 +1,11 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/tabs/job_tiles_tab.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -13,25 +16,62 @@ const BeamPage applicationsBeamPage = BeamPage(
   child: ApplicationsPage(),
 );
 
-class ApplicationsPage extends StatefulWidget {
+class ApplicationsPage extends ConsumerStatefulWidget {
   const ApplicationsPage({super.key});
 
   static const String route = '/dashboard/washers/applications';
 
   @override
-  State<ApplicationsPage> createState() => _ApplicationsPageState();
+  ConsumerState<ApplicationsPage> createState() => _ApplicationsPageState();
 }
 
-class _ApplicationsPageState extends State<ApplicationsPage>
+class _ApplicationsPageState extends ConsumerState<ApplicationsPage>
     with ScreenStateMixin {
   @override
   Widget build(BuildContext context) {
-    return const BaseLayoutScreen(
+    final jobsProviderState = ref.watch(jobsProvider);
+
+    List<Job> jobs = jobsProviderState.upcomingJobs?.jobs?.toList() ?? [];
+
+    return BaseLayoutScreen(
       mainRoute: 'Jobs',
       subRoute: 'Applications',
       child: ScreenSheet(
         topPadding: 120,
-        child: ApplicationsListView(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: Borders.lightSide,
+                ),
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: PaddingSizes.mainPadding,
+                    horizontal: PaddingSizes.bigPadding,
+                  ),
+                  child: MainText(
+                    'All jobs up for application',
+                    textStyleOverride: TextStyles.titleStyle.copyWith(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: JobTilesTab(
+                jobs: jobs,
+                basicView: true,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -40,9 +80,12 @@ class _ApplicationsPageState extends State<ApplicationsPage>
 class ApplicationsListView extends StatefulWidget {
   final bool fullView;
 
+  final String? jobId;
+
   const ApplicationsListView({
     super.key,
     this.fullView = true,
+    this.jobId,
   });
 
   @override
@@ -62,7 +105,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
   void loadData() {
     setLoading(true);
 
-    JobsApi.getApplications().then((response) {
+    JobsApi.getApplications(jobId: widget.jobId).then((response) {
       setState(() {
         applicationsListResponse = response;
       });
@@ -81,7 +124,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       valueName: LocaleKeys.applications.tr().toLowerCase(),
       totalItems: 0,
       showFooter: widget.fullView,
-      showHeader: widget.fullView,
+      showHeader: widget.fullView || widget.jobId != null,
       header: const BaseListHeader(
         items: {
           'Washer name': ListUtil.xLColumn,

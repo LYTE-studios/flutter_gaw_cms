@@ -11,7 +11,7 @@ import 'package:gaw_ui/gaw_ui.dart';
 const BeamPage welcomeBeamPage = BeamPage(
   title: 'Welcome!',
   key: ValueKey('login'),
-  type: BeamPageType.noTransition,
+  type: BeamPageType.slideLeftTransition,
   child: WelcomeScreen(),
 );
 
