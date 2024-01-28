@@ -1,13 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
+import 'package:flutter_gaw_cms/secrets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart' as api;
 import 'package:gaw_ui/gaw_ui.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_gaw_cms/secrets.dart';
 
 class CmsHeader extends StatelessWidget {
   final String mainRoute;
@@ -139,7 +136,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
     return MenuAnchor(
       onClose: _toggleRotation,
-      alignmentOffset: Offset(0, 4),
+      alignmentOffset: const Offset(0, 4),
       style: MenuStyle(
         backgroundColor: MaterialStateProperty.all(Colors.white),
         elevation: MaterialStateProperty.all(1),
@@ -237,34 +234,24 @@ class NotificationButton extends ConsumerStatefulWidget {
 
 class _NotificationButtonState extends ConsumerState<NotificationButton> {
   bool isDialogOpen = false;
-  Uint8List? bytes;
-
-  void loadData() {
-    api.UsersApi.me().then((response) {
-      api.UsersApi.fetchProfilePicture(response?.profilePictureUrl ?? '')
-          ?.then((response) {
-        setState(() {
-          bytes = response;
-        });
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    //loadData();
+    final imageUrl = ref.watch(userProvider).profilePictureUrl;
+
     return Container(
-        width: 80,
-        height: 42,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24.0),
-          border: Border.all(
-            color: GawTheme.mainTint,
-            width: 0.2,
-          ),
+      width: 80,
+      height: 42,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24.0),
+        border: Border.all(
+          color: GawTheme.mainTint,
+          width: 0.2,
         ),
-        child: Row(children: [
+      ),
+      child: Row(
+        children: [
           Expanded(
               child: InkWell(
             onTap: () {
@@ -311,24 +298,27 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
               ],
             ),
           )),
-          Stack(children: [
-            const Expanded(
+          Stack(
+            children: [
+              const Expanded(
                 child: Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: SizedBox(
-                  height: 42,
-                  width: 42,
-                  // child: ProfilePictureAvatar(
-                  //   bytes: bytes,
-                  // ))
-            ))),
-            SizedBox(
-              child: ProfilePictureAvatar(
-                bytes: bytes,
+                  padding: EdgeInsets.only(left: 0),
+                  child: SizedBox(
+                    height: 42,
+                    width: 42,
+                  ),
+                ),
               ),
-            )
-          ]),
-        ]));
+              SizedBox(
+                child: ProfilePictureAvatar(
+                  imageUrl: imageUrl,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _dialogBuilder(BuildContext context) {
@@ -445,10 +435,13 @@ class _NotificationDialogState extends State<NotificationDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      backgroundColor: Colors.grey.shade300, //Color.fromRGBO(235, 231, 228, 1)
+      backgroundColor: Colors.grey.shade300,
+      //Color.fromRGBO(235, 231, 228, 1)
       surfaceTintColor: GawTheme.clearBackground,
-      shadowColor: GawTheme.darkShadow, // Replace with your theme color
-      elevation: 6.0, // Adjust the shadow elevation
+      shadowColor: GawTheme.darkShadow,
+      // Replace with your theme color
+      elevation: 6.0,
+      // Adjust the shadow elevation
       child: Container(
         height: dialogHeight,
         width: dialogWidth,
@@ -580,10 +573,8 @@ class _NotificationDialogState extends State<NotificationDialog> {
                 //   bottom: PaddingSizes.mainPadding,
                 // ),
                 child: ListView.builder(
-              itemCount: current == 0
-                  ? all?.length ?? 0
-                  : archive?.length ??
-                      0, // Determine the number of items based on the current tab
+              itemCount: current == 0 ? all?.length ?? 0 : archive?.length ?? 0,
+              // Determine the number of items based on the current tab
               itemBuilder: (context, index) {
                 // Select the list based on the current tab
                 final list = current == 0 ? all : archive;
@@ -593,8 +584,8 @@ class _NotificationDialogState extends State<NotificationDialog> {
                   return CmsNotificationTile(
                     label: notification.title,
                     date: DateTime.fromMillisecondsSinceEpoch(
-                        notification.sent! *
-                            1000), // Assuming 'sent' is in seconds
+                        notification.sent! * 1000),
+                    // Assuming 'sent' is in seconds
                     imageUrl: notification.profilePicture,
                     notificationId: notification.id!,
                     isArchived: notification.archived,
