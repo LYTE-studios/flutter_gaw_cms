@@ -33,11 +33,11 @@ dependencies:
   image_picker: ^1.0.7
   dotted_border: ^2.1.0
 
-dependency_overrides:
-  gaw_ui:
-    path: ../flutter_package_gaw_ui
-  gaw_api:
-    path: ../flutter_package_gaw_api
+# dependency_overrides:
+#   gaw_ui:
+#     path: ../flutter_package_gaw_ui
+#   gaw_api:
+#     path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
