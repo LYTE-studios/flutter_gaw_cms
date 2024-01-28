@@ -113,7 +113,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
               Row(
                 children: [
                   const Spacer(),
-                  InkWell(
+                  ColorlessInkWell(
                     onTap: () {
                       signInRouter.beamToNamed(ForgotPasswordScreen.route);
                     },

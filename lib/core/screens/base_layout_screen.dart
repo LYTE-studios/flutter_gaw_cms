@@ -9,26 +9,51 @@ class BaseLayoutScreen extends StatelessWidget {
 
   final Widget child;
 
+  final Widget? actionWidget;
+
+  final bool showWelcomeMessage;
+
+  final double? bannerHeightOverride;
+
   const BaseLayoutScreen({
     super.key,
     required this.child,
     required this.mainRoute,
     required this.subRoute,
+    this.actionWidget,
+    this.showWelcomeMessage = false,
+    this.bannerHeightOverride,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: GawTheme.background,
-      body: Stack(
-        children: [
-          CmsHeader(
-            mainRoute: mainRoute,
-            subRoute: subRoute,
-          ),
-          child,
-        ],
-      ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Stack(
+          children: [
+            CmsHeader(
+              heightOverride: bannerHeightOverride,
+              mainRoute: mainRoute,
+              subRoute: subRoute,
+              showWelcomeMessage: showWelcomeMessage,
+            ),
+            child,
+            Positioned(
+              top: (bannerHeightOverride ?? CmsHeader.headerHeight) - 56,
+              right: 0,
+              child: actionWidget == null
+                  ? const SizedBox()
+                  : SizedBox(
+                      height: constraints.maxHeight -
+                          (bannerHeightOverride ?? CmsHeader.headerHeight) +
+                          56,
+                      child: actionWidget!,
+                    ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

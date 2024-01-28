@@ -16,20 +16,21 @@ class CmsHeader extends StatelessWidget {
 
   final bool showWelcomeMessage;
 
-  const CmsHeader({
-    super.key,
-    required this.mainRoute,
-    required this.subRoute,
-    this.showWelcomeMessage = false,
-  });
+  final double? heightOverride;
+
+  const CmsHeader(
+      {super.key,
+      required this.mainRoute,
+      required this.subRoute,
+      this.showWelcomeMessage = false,
+      this.heightOverride});
 
   static const double headerHeight = 280;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: CmsHeader.headerHeight,
-      //width: MediaQuery.of(context).size.width,
+      height: heightOverride ?? CmsHeader.headerHeight,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
       child: Row(
         children: [
@@ -141,7 +142,6 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
       alignmentOffset: Offset(0, 4),
       style: MenuStyle(
         backgroundColor: MaterialStateProperty.all(Colors.white),
-        //surfaceTintColor: MaterialStateProperty.all(GawTheme.secondaryTint),
         elevation: MaterialStateProperty.all(1),
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(

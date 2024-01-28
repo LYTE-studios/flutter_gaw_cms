@@ -40,19 +40,27 @@ class AddCustomerWizardItem extends StatelessWidget {
                     hint: 'Last name',
                   ),
                 ),
-                SizedBox(
-                  width: PaddingSizes.mainPadding,
-                ),
-                Expanded(
-                  child: InputTextForm(
-                    hint: 'Username',
-                  ),
-                ),
               ],
             ),
           ),
         ),
-        Row(),
+        Padding(
+          padding: EdgeInsets.only(
+            top: PaddingSizes.mainPadding,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: InputTextForm(
+                  hint: 'Email',
+                ),
+              ),
+              SizedBox(
+                width: 240,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

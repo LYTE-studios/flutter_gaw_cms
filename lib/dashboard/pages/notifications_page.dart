@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 BeamPage notificationsBeamPage = const BeamPage(
@@ -39,7 +40,8 @@ final notificationsProvider =
 final inAppNotificationProvider = StateProvider<bool>((ref) => false);
 final pushAppNotificationProvider = StateProvider<bool>((ref) => false);
 
-class _NotificationsPageState extends ConsumerState<NotificationsPage> {
+class _NotificationsPageState extends ConsumerState<NotificationsPage>
+    with ScreenStateMixin {
   int selectedLanguageIndex = 0;
 
   final Map<String, Widget> notifications = {
@@ -128,7 +130,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   }
 
   /// Callback when user presses the 'send' button
-  Future<void> onSubmit() async {
+  void onSubmit() {
     bool inApp = ref.read(inAppNotificationProvider.notifier).state;
     bool pushApp = ref.read(pushAppNotificationProvider.notifier).state;
 
@@ -136,8 +138,23 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     print("In App: $inApp");
     print("Push App: $pushApp");
     print("Languages");
-    print(ref.read(notificationsProvider));
-    // TODO: implement
+    Map<String, NotificationInfo> notifications =
+        ref.read(notificationsProvider);
+
+    NotificationInfo english = notifications['EN']!;
+
+    setLoading(true);
+
+    NotificationsApi.postNotification(
+        request: NotificationsRequest(
+      (b) => b
+        ..title = 'New notification!'
+        ..description = english.text
+        ..isGlobal = true
+        ..sendMail = false,
+    )).catchError((error) {
+      setLoading(false);
+    });
   }
 
   @override
@@ -175,8 +192,11 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                           padding: const EdgeInsets.only(top: 20),
                           child: SizedBox(
                             width: 161,
-                            child:
-                                GenericButton(label: "Send", onTap: onSubmit),
+                            child: GenericButton(
+                              label: "Send",
+                              loading: loading,
+                              onTap: onSubmit,
+                            ),
                           ),
                         ),
                       ],
