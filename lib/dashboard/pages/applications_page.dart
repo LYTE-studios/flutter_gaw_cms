@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/dialogs/application_details_dialog.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/tabs/job_tiles_tab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
@@ -98,7 +99,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
 
   @override
   void initState() {
-    Future(loadData);
+    Future(() {
+      loadData();
+    });
     super.initState();
   }
 
@@ -114,6 +117,15 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
     }).whenComplete(
       () => setLoading(false),
     );
+  }
+
+  void onSelected(JobApplication application) {
+    DialogUtil.show(
+      dialog: ApplicationDetailsDialog(
+        application: application,
+      ),
+      context: context,
+    ).then((_) => loadData());
   }
 
   @override
@@ -137,7 +149,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       rows: applicationsListResponse?.applications.map(
             (application) {
               return InkWell(
-                onTap: () {},
+                onTap: () {
+                  onSelected(application);
+                },
                 child: BaseListItem(
                   items: {
                     ProfileRowItem(
@@ -157,9 +171,61 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                     TextRowItem(
                       value: GeoUtil.formatDistance(application.distance),
                     ): ListUtil.sColumn,
+                    BaseRowItem(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: PaddingSizes.mainPadding,
+                          vertical: PaddingSizes.mainPadding,
+                        ),
+                        child: GenericButton(
+                          onTap: () {
+                            setLoading(true);
+                            JobsApi.approveApplication(id: application.id!)
+                                .then((_) {
+                              loadData();
+                            }).catchError((error) {
+                              ExceptionHandler.show(error);
+                            }).whenComplete(() => setLoading(false));
+                          },
+                          label: 'Approve',
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            color: GawTheme.clearText,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ): ListUtil.mColumn,
+                    BaseRowItem(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: PaddingSizes.mainPadding,
+                          vertical: PaddingSizes.mainPadding,
+                        ),
+                        child: GenericButton(
+                          label: 'Deny',
+                          outline: true,
+                          onTap: () {
+                            setLoading(true);
+                            JobsApi.denyApplication(id: application.id!)
+                                .then((_) {
+                              loadData();
+                            }).catchError((error) {
+                              ExceptionHandler.show(error);
+                            }).whenComplete(() => setLoading(false));
+                          },
+                          color: GawTheme.clearText,
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            color: GawTheme.text,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ): ListUtil.mColumn,
                     ActionButtonRowItem(
                       label: 'View application',
-                      onTap: () {},
+                      onTap: () {
+                        onSelected(application);
+                      },
                     ): ListUtil.lColumn,
                   },
                 ),

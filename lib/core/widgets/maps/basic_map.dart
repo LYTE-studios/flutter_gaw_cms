@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/utils/location_utils.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:widget_to_marker/widget_to_marker.dart';
 
 class BasicMap extends StatefulWidget {
   final Completer<GoogleMapController>? controller;
@@ -24,6 +26,8 @@ class BasicMap extends StatefulWidget {
 
   final Function(CameraPosition)? onMoveCamera;
 
+  final String? profileImageUrl;
+
   final bool showRoute;
 
   final bool setInitialMarker;
@@ -38,6 +42,7 @@ class BasicMap extends StatefulWidget {
     this.showCurrentLocation = false,
     this.selectedAddressPosition,
     this.centerOnSelectedAddress = false,
+    this.profileImageUrl,
     this.onMoveCamera,
     this.showRoute = false,
     this.setInitialMarker = true,
@@ -65,29 +70,60 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     Set<Marker> markers = {};
 
     if (widget.setInitialMarker) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('Marker'),
-          position: widget.startPosition,
-        ),
-      );
       setMarker(widget.startPosition);
+    }
+    if (widget.selectedAddressPosition != null) {
+      SizedBox(
+        height: 16,
+        width: 16,
+        child: ProfilePictureAvatar(
+          imageUrl: widget.profileImageUrl,
+        ),
+      ).toBitmapDescriptor().then(
+        (value) {
+          LatLng position = LatLng(
+              widget.selectedAddressPosition?.latitude ?? 0,
+              //?? defaultAddress.latitude ?? 0,
+              widget.selectedAddressPosition?.longitude ??
+                  0 //?? defaultAddress.longitude ?? 0,
+              );
+          markers.add(
+            Marker(
+              markerId: const MarkerId(
+                'user-location',
+              ),
+              position: position,
+              icon: value,
+            ),
+          );
+          setLines();
+        },
+      );
     }
 
     return markers;
   }
 
   void setMarker(LatLng position) {
-    setState(
-      () {
-        markers = {
+    const SizedBox(
+      height: 16,
+      width: 16,
+      child: SvgIcon(
+        PixelPerfectIcons.placeIndicator,
+      ),
+    ).toBitmapDescriptor().then((value) {
+      setState(() {
+        markers.add(
           Marker(
-            markerId: const MarkerId('Marker'),
+            markerId: const MarkerId(
+              'job-location',
+            ),
             position: position,
+            icon: value,
           ),
-        };
-      },
-    );
+        );
+      });
+    });
   }
 
   void loadTheme() {
@@ -98,6 +134,35 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     )
         .then((asset) {
       mapTheme = asset;
+    });
+  }
+
+  void setLines() {
+    GoogleApi.getDirections(
+      from: widget.selectedAddressPosition!,
+      to: widget.startPosition,
+    ).then((coordinates) {
+      setState(() {
+        lines.add(
+          Polyline(
+            polylineId: const PolylineId('_'),
+            visible: true,
+            points: coordinates,
+            width: 4,
+            color: Colors.blue,
+            startCap: Cap.roundCap,
+            endCap: Cap.buttCap,
+          ),
+        );
+      });
+    });
+    _controller.future.then((controller) {
+      controller.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          LocationUtils.linesToFit(lines),
+          100,
+        ),
+      );
     });
   }
 
