@@ -164,6 +164,7 @@ class MenuDrawer extends StatelessWidget {
           ),
           DrawerNavigationItem(
             label: 'Logout',
+            hoverColor: GawTheme.error,
             iconUrl: PixelPerfectIcons.logoutMedium,
             onTap: () {
               LocalStorageUtil.setTokens(null, null);

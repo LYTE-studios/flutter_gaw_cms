@@ -172,9 +172,12 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
     });
   }
 
-  final TextEditingController tecTitle = TextEditingController();
-  final TextEditingController tecNeededWashers = TextEditingController();
-  final TextEditingController tecDescription = TextEditingController();
+  late final TextEditingController tecTitle = TextEditingController()
+    ..addListener(validate);
+  late final TextEditingController tecNeededWashers = TextEditingController()
+    ..addListener(validate);
+  late final TextEditingController tecDescription = TextEditingController()
+    ..addListener(validate);
 
   Address? address;
 

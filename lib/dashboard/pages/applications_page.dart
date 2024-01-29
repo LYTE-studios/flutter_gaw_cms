@@ -140,8 +140,8 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       header: const BaseListHeader(
         items: {
           'Washer name': ListUtil.xLColumn,
-          'Date': ListUtil.sColumn,
-          'Region': ListUtil.mColumn,
+          'Date': ListUtil.mColumn,
+          'Region': ListUtil.lColumn,
           'Distance': ListUtil.sColumn,
           '': ListUtil.sColumn,
         },
@@ -163,11 +163,11 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                       value: GawDateUtil.tryFormatReadableDate(
                         GawDateUtil.tryFromApi(application.createdAt),
                       ),
-                    ): ListUtil.sColumn,
+                    ): ListUtil.mColumn,
                     SelectableTextRowItem(
                       value: application.address.city ??
                           application.address.postalCode,
-                    ): ListUtil.mColumn,
+                    ): ListUtil.lColumn,
                     TextRowItem(
                       value: GeoUtil.formatDistance(application.distance),
                     ): ListUtil.sColumn,
@@ -178,8 +178,10 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                           vertical: PaddingSizes.mainPadding,
                         ),
                         child: GenericButton(
+                          radius: 16,
                           onTap: () {
                             setLoading(true);
+
                             JobsApi.approveApplication(id: application.id!)
                                 .then((_) {
                               loadData();
@@ -188,9 +190,12 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                             }).whenComplete(() => setLoading(false));
                           },
                           label: 'Approve',
+                          icon: PixelPerfectIcons.checkMedium,
+                          textColor: GawTheme.clearText,
                           textStyleOverride: TextStyles.mainStyle.copyWith(
                             color: GawTheme.clearText,
-                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -204,6 +209,8 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                         child: GenericButton(
                           label: 'Deny',
                           outline: true,
+                          radius: 16,
+                          icon: PixelPerfectIcons.xNormal,
                           onTap: () {
                             setLoading(true);
                             JobsApi.denyApplication(id: application.id!)
@@ -213,10 +220,12 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                               ExceptionHandler.show(error);
                             }).whenComplete(() => setLoading(false));
                           },
+                          textColor: GawTheme.mainTint,
                           color: GawTheme.clearText,
                           textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.text,
-                            fontSize: 12,
+                            color: GawTheme.mainTint,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -226,7 +235,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                       onTap: () {
                         onSelected(application);
                       },
-                    ): ListUtil.lColumn,
+                    ): ListUtil.mColumn,
                   },
                 ),
               );

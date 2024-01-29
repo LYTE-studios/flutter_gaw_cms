@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/utils/location_utils.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -126,17 +127,6 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     });
   }
 
-  void loadTheme() {
-    DefaultAssetBundle.of(context)
-        .loadString(
-      'lib/assets/styles/map_style.json',
-      cache: true,
-    )
-        .then((asset) {
-      mapTheme = asset;
-    });
-  }
-
   void setLines() {
     GoogleApi.getDirections(
       from: widget.selectedAddressPosition!,
@@ -183,11 +173,7 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
 
   @override
   void initState() {
-    loading = true;
-    Future(() {
-      loadTheme();
-    });
-
+    setLoading(true);
     super.initState();
   }
 
@@ -199,27 +185,77 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     super.dispose();
   }
 
+  void setStyle(BuildContext context) {
+    DefaultAssetBundle.of(context)
+        .loadString(
+      'lib/assets/styles/map_style.json',
+      cache: true,
+    )
+        .then(
+      (asset) {
+        _controller.future.then((controller) {
+          controller.setMapStyle(asset).then((_) {
+            Future.delayed(
+              const Duration(
+                milliseconds: 500,
+              ),
+            ).then((_) {
+              setLoading(false);
+            });
+          }).catchError((error) {
+            ExceptionHandler.show(error);
+          });
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      onCameraMove: widget.onMoveCamera,
-      myLocationEnabled: widget.showCurrentLocation,
-      myLocationButtonEnabled: widget.showCurrentLocation,
-      markers: markers,
-      onMapCreated: (controller) async {
-        setState(() {
-          mapController = controller;
-        });
-        await controller.setMapStyle(mapTheme);
-      },
-      polylines: lines,
-      initialCameraPosition: CameraPosition(
-        target: widget.startPosition,
-        zoom: widget.initialZoom ?? 7,
+    setStyle(context);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border.fromBorderSide(
+            Borders.lightSide,
+          ),
+        ),
+        child: Stack(
+          children: [
+            Focus(
+              focusNode: FocusNode(
+                canRequestFocus: false,
+              ),
+              child: GoogleMap(
+                onCameraMove: widget.onMoveCamera,
+                myLocationEnabled: widget.showCurrentLocation,
+                myLocationButtonEnabled: widget.showCurrentLocation,
+                markers: markers,
+                polylines: lines,
+                onMapCreated: (controller) async {
+                  if (!_controller.isCompleted) {
+                    _controller.complete(controller);
+                  }
+                },
+                initialCameraPosition: CameraPosition(
+                  target: widget.startPosition,
+                  zoom: widget.initialZoom ?? 7,
+                ),
+                compassEnabled: false,
+                mapToolbarEnabled: false,
+                buildingsEnabled: false,
+              ),
+            ),
+            LoadingSwitcher(
+              loading: loading || !_controller.isCompleted,
+              backgroundColor: GawTheme.background,
+              child: const SizedBox.expand(),
+            ),
+          ],
+        ),
       ),
-      compassEnabled: false,
-      mapToolbarEnabled: false,
-      buildingsEnabled: false,
     );
   }
 }

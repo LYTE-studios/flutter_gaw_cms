@@ -83,7 +83,6 @@ class _JobDeletePopupState extends ConsumerState<JobDeletePopup>
                   label: "Delete",
                   color: GawTheme.error,
                   onTap: deleteJob,
-                  minWidth: 156,
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     color: GawTheme.mainTintText,
                     fontSize: 14,
@@ -95,7 +94,6 @@ class _JobDeletePopupState extends ConsumerState<JobDeletePopup>
                 GenericButton(
                   loading: loading,
                   label: "Cancel",
-                  minWidth: 156,
                   outline: true,
                   color: GawTheme.clearBackground,
                   textStyleOverride: TextStyles.mainStyle.copyWith(

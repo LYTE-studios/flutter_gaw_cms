@@ -132,7 +132,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
             });
           }
         },
-        behavior: HitTestBehavior.translucent,
+        behavior: HitTestBehavior.opaque,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(

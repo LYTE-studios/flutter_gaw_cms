@@ -103,74 +103,82 @@ class _ApplicationDetailsDialogState
             ),
           ),
           Expanded(
-            child: ListView(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              children: [
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: PaddingSizes.mainPadding,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: PaddingSizes.bigPadding,
-                        left: PaddingSizes.extraBigPadding,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: PaddingSizes.bigPadding,
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                children: [
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: PaddingSizes.mainPadding,
                       ),
-                      child: MainText(
-                        'DATE & TIME',
-                        textStyleOverride: TextStyles.mainStyle.copyWith(
-                          color: GawTheme.unselectedText,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: PaddingSizes.bigPadding,
+                          left: PaddingSizes.extraBigPadding,
+                        ),
+                        child: MainText(
+                          'DATE & TIME',
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            color: GawTheme.unselectedText,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  _InfoRow(
+                    leading: const SvgIcon(
+                      PixelPerfectIcons.timeIndicator,
+                      color: GawTheme.secondaryTint,
                     ),
-                  ],
-                ),
-                _InfoRow(
-                  leading: const SvgIcon(
-                    PixelPerfectIcons.timeIndicator,
-                    color: GawTheme.secondaryTint,
+                    first: GawDateUtil.formatDate(
+                      GawDateUtil.fromApi(widget.application.job.startTime),
+                    ),
+                    last: GawDateUtil.formatTimeInterval(
+                      GawDateUtil.fromApi(widget.application.job.startTime),
+                      GawDateUtil.fromApi(widget.application.job.endTime),
+                    ),
+                    isTime: true,
                   ),
-                  first: GawDateUtil.formatDate(
-                    GawDateUtil.fromApi(widget.application.job.startTime),
-                  ),
-                  last: GawDateUtil.formatTimeInterval(
-                    GawDateUtil.fromApi(widget.application.job.startTime),
-                    GawDateUtil.fromApi(widget.application.job.endTime),
-                  ),
-                  isTime: true,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: PaddingSizes.bigPadding,
-                    left: PaddingSizes.extraBigPadding,
-                  ),
-                  child: MainText(
-                    'LOCATION',
-                    textStyleOverride: TextStyles.mainStyle.copyWith(
-                      color: GawTheme.unselectedText,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: PaddingSizes.bigPadding,
+                      left: PaddingSizes.extraBigPadding,
+                    ),
+                    child: MainText(
+                      'LOCATION',
+                      textStyleOverride: TextStyles.mainStyle.copyWith(
+                        color: GawTheme.unselectedText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
                   ),
-                ),
-                _InfoRow(
-                  leading: const SvgIcon(
-                    PixelPerfectIcons.placeIndicator,
-                    color: GawTheme.mainTint,
+                  _InfoRow(
+                    leading: const SvgIcon(
+                      PixelPerfectIcons.placeIndicator,
+                      color: GawTheme.mainTint,
+                    ),
+                    first: widget.application.address.formattedStreetAddress(),
+                    last: widget.application.address.shortAddress(),
                   ),
-                  first: widget.application.address.formattedStreetAddress(),
-                  last: widget.application.address.shortAddress(),
-                ),
-                _NoTransportCosts(
-                  noTravelCosts: widget.application.noTravelCosts,
-                ),
-                const SizedBox(
-                  height: PaddingSizes.extraBigPadding,
-                ),
-              ],
+                  const SizedBox(
+                    height: PaddingSizes.bigPadding,
+                  ),
+                  _NoTransportCosts(
+                    noTravelCosts: widget.application.noTravelCosts,
+                  ),
+                  const SizedBox(
+                    height: PaddingSizes.extraBigPadding,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -186,31 +194,13 @@ class _NoTransportCosts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: PaddingSizes.extraBigPadding,
-      ),
-      child: Row(
-        children: [
-          noTravelCosts
-              ? const Padding(
-                  padding: EdgeInsets.only(
-                    right: PaddingSizes.mainPadding,
-                  ),
-                  child: SvgIcon(
-                    PixelPerfectIcons.checkNormal,
-                    color: GawTheme.text,
-                  ),
-                )
-              : const SizedBox(width: PaddingSizes.mainPadding),
-          noTravelCosts
-              ? const MainText(
-                  'I am paying for my own transport.',
-                )
-              : const MainText(
-                  'I am not paying for my own transport.',
-                ),
-        ],
+    return SizedBox(
+      height: 56,
+      child: BigCheckBox(
+        label: noTravelCosts
+            ? 'Is paying for transport'
+            : 'Is not paying for transport',
+        value: noTravelCosts,
       ),
     );
   }

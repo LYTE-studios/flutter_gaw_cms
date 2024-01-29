@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/core/widgets/dialogs/location_picker_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class JobDetailsPopup extends ConsumerWidget {
+class JobEditPopup extends ConsumerWidget {
   final Job job;
 
-  const JobDetailsPopup({
+  const JobEditPopup({
     super.key,
     required this.job,
   });
@@ -233,7 +234,6 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             FormItem(
               child: InputTextForm(
                 label: 'Title',
-                frozen: true,
                 controller: tecTitle,
                 hint: 'Enter a job title',
               ),
@@ -241,7 +241,6 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             FormItem(
               child: InputTextForm(
                 label: 'Needed washers for the job',
-                frozen: true,
                 controller: tecNeededWashers,
                 hint: 'Enter needed washers',
                 number: true,
@@ -254,20 +253,60 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           formItems: [
             FormItem(
               child: InputDateRangeForm(
-                enabled: false,
                 label: 'Recruitment Period',
                 start: applicationRecruitmentPeriodStart,
                 end: applicationRecruitmentPeriodEnd,
+                onUpdateDates: (DateTime start, DateTime end) {
+                  setState(() {
+                    applicationRecruitmentPeriodStart = start;
+                    applicationRecruitmentPeriodEnd = end;
+                  });
+                },
                 hint: 'Enter a job title',
               ),
             ),
             FormItem(
               flex: 2,
               child: InputDateTimeRangeForm(
-                enabled: false,
                 label: 'Job period',
                 startTime: startTime,
                 endTime: endTime,
+                onSelectTimeRange: (DateTime start, DateTime end) {
+                  startTime ??= DateTime.now();
+
+                  start = DateTime(
+                    startTime!.year,
+                    startTime!.month,
+                    startTime!.day,
+                    start.hour,
+                    start.minute,
+                  );
+
+                  end = DateTime(
+                    startTime!.year,
+                    startTime!.month,
+                    startTime!.day,
+                    end.hour,
+                    end.minute,
+                  );
+
+                  if (end.millisecondsSinceEpoch <
+                      start.millisecondsSinceEpoch) {
+                    end = end.add(
+                      const Duration(days: 1),
+                    );
+                  }
+
+                  setState(() {
+                    startTime = start;
+                    endTime = end;
+                  });
+                },
+                onSelectDate: (DateTime date) {
+                  setState(() {
+                    startTime = date;
+                  });
+                },
               ),
             ),
           ],
@@ -277,8 +316,21 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             FormItem(
               child: InputSelectionForm(
                 options: options,
-                enabled: false,
                 value: widget.job.customer.id,
+                onChanged: (String? term) {
+                  setState(() {
+                    customerQueryTerm = term;
+                  });
+                  getCustomerOptions();
+                },
+                onSelected: (value) {
+                  setState(() {
+                    customerId = value as String;
+                    address = knownCustomers
+                        .firstWhere((customer) => customerId == customer.id)
+                        .address;
+                  });
+                },
                 label: 'Customer',
                 hint: 'Choose the customer for your job',
               ),
@@ -290,7 +342,19 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             FormItem(
               child: InputStaticTextForm(
                 label: 'Location',
-                frozen: true,
+                onTap: () {
+                  DialogUtil.show(
+                    dialog: LocationPickerDialog(
+                      address: address,
+                      onAddressSelected: (Address address) {
+                        setState(() {
+                          this.address = address;
+                        });
+                      },
+                    ),
+                    context: context,
+                  );
+                },
                 text: (address?.formattedAddres().isEmpty ?? true)
                     ? address?.formattedLatLong()
                     : address?.formattedAddres(),
@@ -307,11 +371,36 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                 label: 'Description',
                 hint: 'Type job description here',
                 lines: 3,
-                frozen: true,
                 controller: tecDescription,
               ),
             ),
           ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: PaddingSizes.mainPadding,
+          ),
+          child: FormRow(
+            formItems: [
+              Padding(
+                padding: const EdgeInsets.all(
+                  PaddingSizes.smallPadding,
+                ),
+                child: GenericButton(
+                  loading: loading,
+                  color: validated
+                      ? GawTheme.mainTint
+                      : GawTheme.unselectedBackground,
+                  onTap: () => createJob(isDraft: false),
+                  minWidth: 156,
+                  label: 'Save job',
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: GawTheme.mainTintText,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

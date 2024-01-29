@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/routing/dashboard_router.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/application_review_screen.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/dialogs/job_delete_dialog.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/dialogs/job_details_dialog.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/dialogs/job_edit_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
-
-import '../../../core/routing/dashboard_router.dart';
 
 class JobInfoCard extends ConsumerWidget {
   final Job info;
@@ -31,6 +32,9 @@ class JobInfoCard extends ConsumerWidget {
     } else if (info.state == JobState.pending) {
       statusString = "Active";
       statusColour = GawTheme.success;
+    } else if (info.state == JobState.done) {
+      statusString = "Done";
+      statusColour = GawTheme.text;
     }
 
     String abbreviation =
@@ -221,39 +225,57 @@ class JobInfoCard extends ConsumerWidget {
                       ),
                     ),
                   )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GenericButton(
-                        label: "Delete",
-                        fontSize: 12,
-                        minHeight: 35,
-                        color: GawTheme.error,
+                : info.state == JobState.done
+                    ? EditButton(
                         onTap: () {
                           DialogUtil.show(
-                            dialog: JobDeletePopup(
-                              id: info.id!,
+                            dialog: JobDetailsPopup(
+                              job: info,
                             ),
                             context: context,
                           );
                         },
-                      ),
-                      EditButton(
-                        onTap: () {
-                          DialogUtil.show(
-                            dialog: JobDeletePopup(
-                              id: info.id!,
-                            ),
-                            context: context,
-                          );
-                        },
-                        label: "Edit",
+                        icon: PixelPerfectIcons.info,
+                        label: "Info",
                         fontSize: 12,
                         minHeight: 35,
                         color: Colors.transparent,
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          EditButton(
+                            label: "Delete",
+                            fontSize: 12,
+                            minHeight: 35,
+                            color: GawTheme.error,
+                            textColor: GawTheme.clearText,
+                            onTap: () {
+                              DialogUtil.show(
+                                dialog: JobDeletePopup(
+                                  id: info.id!,
+                                ),
+                                context: context,
+                              );
+                            },
+                          ),
+                          EditButton(
+                            onTap: () {
+                              DialogUtil.show(
+                                dialog: JobEditPopup(
+                                  job: info,
+                                ),
+                                context: context,
+                              );
+                            },
+                            icon: PixelPerfectIcons.editNormal,
+                            label: "Edit",
+                            fontSize: 12,
+                            minHeight: 35,
+                            color: Colors.transparent,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
           ],
         ),
       ),
