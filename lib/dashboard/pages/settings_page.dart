@@ -40,7 +40,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 34, vertical: 45),
+                      horizontal: 34,
+                      vertical: 45,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -53,9 +55,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             "1hour": "After one hour",
                             "1day": "After one day",
                             "1week": "After one week"
-                          },
-                          callback: (String? value) {
-                            ref.read(logOutProvider.notifier).state = value;
                           },
                         ),
                       ],

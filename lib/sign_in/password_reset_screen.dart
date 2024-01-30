@@ -10,15 +10,17 @@ BeamPage resetPasswordBeamPage(String code, String token) {
   return BeamPage(
     title: 'Reset Passord',
     key: const ValueKey('reset-password'),
-    type: BeamPageType.slideRightTransition,
+    type: BeamPageType.slideLeftTransition,
     child: PasswordResetScreen(code: code, token: token),
   );
 }
 
 class PasswordResetScreen extends StatefulWidget {
-  const PasswordResetScreen({super.key, required this.code, required this.token});
+  const PasswordResetScreen(
+      {super.key, required this.code, required this.token});
 
-  static const String route = '/sign-in/welcome/forgot-password/reset-password/:code/:token';
+  static const String route =
+      '/sign-in/welcome/forgot-password/reset-password/:code/:token';
   final String code;
   final String token;
 
@@ -66,13 +68,6 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
       ),
     ).then((value) {
       setLoading(false);
-      // ScaffoldMessenger.of(context).showSnackBar(
-      // const SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   backgroundColor: GawTheme.mainTint,
-      //   content: Text('Password has been reset!', style: TextStyle(color: Colors.black87)),
-      // ),
-      // );
       signInRouter.beamToNamed(
         WelcomeScreen.route,
       );
@@ -137,6 +132,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
                 label: 'Password',
                 controller: tecPassword,
                 isPasswordField: true,
+                onSubmitted: () => onResetPassword(context),
               ),
               const SizedBox(
                 height: PaddingSizes.bigPadding,
@@ -146,6 +142,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
                 label: 'Password',
                 controller: tecPasswordCheck,
                 isPasswordField: true,
+                onSubmitted: () => onResetPassword(context),
               ),
               const SizedBox(
                 height: PaddingSizes.extraBigPadding,

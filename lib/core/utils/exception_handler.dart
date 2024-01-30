@@ -2,8 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_gaw_cms/core/screens/base_dialog_screen.dart';
-import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
 import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
+import 'package:gaw_ui/src/utility/dialog_util.dart';
 
 class ExceptionHandler {
   static Future<void> show(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
-import 'package:flutter_gaw_cms/customers/dialogs/wizard_items/add_customer_wizard_item.dart';
+import 'package:flutter_gaw_cms/customers/forms/customer_basic_details_form.dart';
+import 'package:flutter_gaw_cms/customers/forms/customer_billing_form.dart';
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
-import 'package:tuple/tuple.dart';
 
 class CustomerCreateDialog extends StatefulWidget {
   const CustomerCreateDialog({super.key});
@@ -12,163 +14,171 @@ class CustomerCreateDialog extends StatefulWidget {
 }
 
 class _CustomerCreateDialogState extends State<CustomerCreateDialog>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, ScreenStateMixin {
+  final TextEditingController tecFirstName = TextEditingController();
+  final TextEditingController tecLastName = TextEditingController();
+  final TextEditingController tecEmail = TextEditingController();
+  final TextEditingController tecPhoneNumber = TextEditingController();
+  final TextEditingController tecCompany = TextEditingController();
+  final TextEditingController tecVat = TextEditingController();
+
+  Address? address;
+  Address? billingAddress;
+
   int index = 0;
 
-  List<Tuple2<AnimationController, Animation>> pageControllers = [];
+  bool valid = false;
 
-  void _createControllers() {
-    for (int i = 0; i < 4; i++) {
-      AnimationController controller = AnimationController(
-        duration: const Duration(milliseconds: 200),
-        vsync: this,
+  void _next() {
+    if (index == 2) {
+      setLoading(true);
+      CustomerApi.createCustomer(
+          request: CreateCustomerRequest(
+        (b) => b
+          ..firstName = tecFirstName.text
+          ..lastName = tecLastName.text
+          ..email = tecEmail.text
+          ..address = address?.toBuilder()
+          ..billingAddress = billingAddress?.toBuilder()
+          ..taxNumber = tecVat.text,
+      )).then((_) {
+        Navigator.of(context).pop();
+      }).catchError((error) {
+        ExceptionHandler.show(error);
+        Navigator.of(context).pop();
+      }).whenComplete(
+        () => setLoading(false),
       );
 
-      pageControllers.add(
-        Tuple2(
-          controller,
-          CurvedAnimation(
-            parent: controller,
-            curve: Curves.fastOutSlowIn,
-          ),
-        ),
-      );
+      return;
     }
-  }
 
-  @override
-  void initState() {
-    Future(() {
-      pageControllers.first.item1.forward();
+    setState(() {
+      index = index + 1;
     });
-    _createControllers();
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    late List<Widget> pages = [
+      CustomerBasicDetailsForm(
+        onValidationChange: (bool value) {
+          setState(() {
+            valid = value;
+          });
+        },
+        onUpdateAddress: (Address address) {
+          setState(() {
+            this.address = address;
+            billingAddress = address;
+          });
+        },
+        address: address,
+        tecFirstName: tecFirstName,
+        tecLastName: tecLastName,
+        tecEmail: tecEmail,
+        tecPhoneNumber: tecPhoneNumber,
+      ),
+      CustomerBillingForm(
+        onUpdateBillingAddress: (Address address) {
+          setState(() {
+            billingAddress = address;
+          });
+        },
+        billingAddress: billingAddress,
+        tecCompany: tecCompany,
+        tecVat: tecVat,
+      ),
+      SizedBox(),
+    ];
+
     return BaseDialog(
+      height: 480,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
-            height: 100,
-            child: WizardHeader(
-              items: const [
-                'Information',
-                'Address',
-                'Picture',
-                'Billing',
-              ],
-              selectedIndex: index,
+          Center(
+            child: SizedBox(
+              height: 100,
+              width: 720,
+              child: WizardHeader(
+                items: const [
+                  'Information',
+                  'Billing',
+                  'Picture',
+                ],
+                selectedIndex: index,
+              ),
             ),
           ),
           Expanded(
-            child: LayoutBuilder(builder: (context, constraints) {
-              double width =
-                  constraints.maxWidth - PaddingSizes.extraBigPadding;
-
-              return SizedBox(
-                height: 360,
-                width: width,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: PaddingSizes.mainPadding,
-                  ),
-                  child: Row(
-                    children: [
-                      SizeTransition(
-                        axisAlignment: -1,
-                        axis: Axis.horizontal,
-                        sizeFactor: pageControllers[0].item1,
-                        child: SizedBox(
-                          width: index == 0 ? width : 0,
-                          child: const AddCustomerWizardItem(),
-                        ),
-                      ),
-                      SizeTransition(
-                        axisAlignment: -1,
-                        axis: Axis.horizontal,
-                        sizeFactor: pageControllers[1].item1,
-                        child: Container(
-                          height: 100,
-                          width: index == 1 ? width : 0,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      SizeTransition(
-                        sizeFactor: pageControllers[2].item1,
-                        child: Expanded(
-                          child: Container(color: Colors.green),
-                        ),
-                      ),
-                      SizeTransition(
-                        sizeFactor: pageControllers[3].item1,
-                        child: Expanded(
-                          child: Container(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: PaddingSizes.bigPadding,
+              ),
+              child: pages[index],
+            ),
           ),
-          SizedBox(
-            height: 120,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      index = index + 1;
-                    });
-                    return;
-                  },
-                  child: Container(
-                    height: 42,
-                    width: 156,
-                    decoration: BoxDecoration(
-                      color: GawTheme.mainTint,
-                      borderRadius: BorderRadius.circular(
-                        8,
-                      ),
-                      boxShadow: const [
-                        Shadows.lightShadow,
-                      ],
-                    ),
-                    child: Center(
-                      child: MainText(
-                        'Next',
-                        textStyleOverride: TextStyles.titleStyle.copyWith(
-                          color: GawTheme.mainTintText,
-                          fontSize: 16,
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: PaddingSizes.extraBigPadding,
+            ),
+            child: SizedBox(
+              height: 86,
+              child: Row(
+                children: [
+                  ColorlessInkWell(
+                    onTap: !valid ? null : _next,
+                    child: Container(
+                      height: 42,
+                      width: 156,
+                      decoration: BoxDecoration(
+                        color: !valid
+                            ? GawTheme.unselectedMainTint
+                            : GawTheme.mainTint,
+                        borderRadius: BorderRadius.circular(
+                          8,
                         ),
+                        boxShadow: const [
+                          Shadows.lightShadow,
+                        ],
                       ),
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: index > 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        index = index - 1;
-                      });
-                      return;
-                    },
-                    child: const SizedBox(
-                      width: 72,
                       child: Center(
-                        child: MainText(
-                          'Back',
+                        child: LoadingSwitcher(
+                          loading: loading,
+                          child: MainText(
+                            index == 2 ? 'Create' : 'Next',
+                            textStyleOverride: TextStyles.titleStyle.copyWith(
+                              color: GawTheme.mainTintText,
+                              fontSize: 16,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Visibility(
+                    visible: index > 0,
+                    child: ColorlessInkWell(
+                      onTap: () {
+                        setState(() {
+                          index = index - 1;
+                        });
+                        return;
+                      },
+                      child: const SizedBox(
+                        width: 72,
+                        child: Center(
+                          child: MainText(
+                            'Back',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           )
         ],

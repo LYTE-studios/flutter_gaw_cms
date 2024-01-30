@@ -30,3 +30,4 @@ lib/secrets.dart
 
 .idea/
 .DS_Store
+.firebase/

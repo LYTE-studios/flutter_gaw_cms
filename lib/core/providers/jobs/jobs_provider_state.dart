@@ -1,5 +1,5 @@
-import 'package:gaw_api/gaw_api.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:gaw_api/gaw_api.dart';
 
 part 'jobs_provider_state.freezed.dart';
 
@@ -7,11 +7,9 @@ part 'jobs_provider_state.freezed.dart';
 class JobsProviderState with _$JobsProviderState {
   factory JobsProviderState({
     @Default(true) bool loading,
-    @Default(true) bool loadingUpcomingJobs,
-    @Default(true) bool loadingMyJobs,
+    JobListResponse? activeJobs,
+    JobListResponse? doneJobs,
+    JobListResponse? draftJobs,
     JobListResponse? upcomingJobs,
-    JobListResponse? archiveJobs,
-    ApplicationListResponse? myJobs,
-    Job? currentJob,
   }) = jobsProviderState;
 }

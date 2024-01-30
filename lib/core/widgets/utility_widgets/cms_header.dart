@@ -1,13 +1,11 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_gaw_cms/core/providers/notifications/notifications_provider.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
+import 'package:flutter_gaw_cms/secrets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart' as api;
 import 'package:gaw_ui/gaw_ui.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_gaw_cms/secrets.dart';
 
 class CmsHeader extends StatelessWidget {
   final String mainRoute;
@@ -32,64 +30,58 @@ class CmsHeader extends StatelessWidget {
     return Container(
       height: heightOverride ?? CmsHeader.headerHeight,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: PaddingSizes.extraBigPadding + PaddingSizes.smallPadding,
-                top: PaddingSizes.bigPadding,
-              ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: PaddingSizes.extraBigPadding + PaddingSizes.smallPadding,
+          top: PaddingSizes.bigPadding,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                RouteDescription(
+                  mainRoute: mainRoute,
+                  subRoute: subRoute,
+                ),
+                const Spacer(),
+                const LanguageButton(),
+                const SizedBox(
+                  width: PaddingSizes.extraBigPadding,
+                ),
+                const NotificationButton(),
+                const SizedBox(
+                  width: PaddingSizes.extraBigPadding * 2,
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 48,
+            ),
+            Visibility(
+              visible: showWelcomeMessage,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      RouteDescription(
-                        mainRoute: mainRoute,
-                        subRoute: subRoute,
-                      ),
-                      const Spacer(),
-                      LanguageButton(),
-                      const SizedBox(
-                        width: PaddingSizes.extraBigPadding,
-                      ),
-                      NotificationButton(),
-                    ],
+                  MainText(
+                    'Welcome back, Stieg',
+                    textStyleOverride: TextStyles.titleStyle.copyWith(
+                      color: GawTheme.clearText,
+                    ),
                   ),
-                  const SizedBox(
-                    height: 48,
-                  ),
-                  Visibility(
-                    visible: showWelcomeMessage,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MainText(
-                          'Welcome back, Stieg',
-                          textStyleOverride: TextStyles.titleStyle.copyWith(
-                            color: GawTheme.clearText,
-                          ),
-                        ),
-                        MainText(
-                          GawDateUtil.formatReadableDate(
-                            DateTime.now(),
-                          ),
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.mainTintUnselectedText,
-                          ),
-                        ),
-                      ],
+                  MainText(
+                    GawDateUtil.formatReadableDate(
+                      DateTime.now(),
+                    ),
+                    textStyleOverride: TextStyles.mainStyle.copyWith(
+                      color: GawTheme.mainTintUnselectedText,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          SizedBox(
-            width: 240,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -139,7 +131,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
     return MenuAnchor(
       onClose: _toggleRotation,
-      alignmentOffset: Offset(0, 4),
+      alignmentOffset: const Offset(0, 4),
       style: MenuStyle(
         backgroundColor: MaterialStateProperty.all(Colors.white),
         elevation: MaterialStateProperty.all(1),
@@ -151,50 +143,50 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
       ),
       menuChildren: [
         MenuItemButton(
-            onPressed: () {
-              _toggleLanguage();
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.white),
-              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered)) {
-                    return GawTheme.secondaryTint
-                        .withOpacity(0.3); // Color for hover state
-                  }
-                  return Colors.white; // Default for other states
-                },
-              ),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+          onPressed: () {
+            _toggleLanguage();
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(GawTheme.clearText),
+            overlayColor: MaterialStateProperty.resolveWith<Color>(
+              (Set<MaterialState> states) {
+                if (states.contains(MaterialState.hovered)) {
+                  return GawTheme.secondaryTint
+                      .withOpacity(0.3); // Color for hover state
+                }
+                return GawTheme.clearText; // Default for other states
+              },
+            ),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            child: Padding(
-              padding:
-                  const EdgeInsets.only(left: 0, right: 24, top: 6, bottom: 6),
-              child: SizedBox(
-                width: 40,
-                height: 32,
-                child: SvgIcon(
-                  _english
-                      ? PixelPerfectIcons.netherlands
-                      : PixelPerfectIcons.unitedKingdom,
-                  color: Colors.transparent,
-                ),
+          ),
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 0, right: 24, top: 6, bottom: 6),
+            child: SizedBox(
+              width: 40,
+              height: 32,
+              child: SvgIcon(
+                _english
+                    ? PixelPerfectIcons.netherlands
+                    : PixelPerfectIcons.unitedKingdom,
+                color: Colors.transparent,
               ),
-            ))
+            ),
+          ),
+        )
       ],
       builder: (context, controller, child) {
-        return InkWell(
-          hoverColor: GawTheme.secondaryTint,
+        return ColorlessInkWell(
           onTap: () => _toggleMenu(controller),
           child: Container(
             width: 80.0,
             height: 44.0,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: GawTheme.clearText,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
@@ -237,104 +229,89 @@ class NotificationButton extends ConsumerStatefulWidget {
 
 class _NotificationButtonState extends ConsumerState<NotificationButton> {
   bool isDialogOpen = false;
-  Uint8List? bytes;
-
-  void loadData() {
-    api.UsersApi.me().then((response) {
-      api.UsersApi.fetchProfilePicture(response?.profilePictureUrl ?? '')
-          ?.then((response) {
-        setState(() {
-          bytes = response;
-        });
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    //loadData();
+    final imageUrl = ref.watch(userProvider).profilePictureUrl;
+
+    final notificationState = ref.watch(notificationsTickerProvider);
+
     return Container(
-        width: 80,
-        height: 42,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(24.0),
-          border: Border.all(
-            color: GawTheme.mainTint,
-            width: 0.2,
-          ),
+      width: 86,
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24.0),
+        border: Border.all(
+          color: GawTheme.mainTint,
+          width: 0.2,
         ),
-        child: Row(children: [
+      ),
+      child: Row(
+        children: [
           Expanded(
-              child: InkWell(
-            onTap: () {
-              setState(() => isDialogOpen = true);
-              _dialogBuilder(context)
-                  .whenComplete(() => setState(() => isDialogOpen = false));
-            },
-            child: Stack(
-              children: [
-                Container(
-                  height: 42,
-                  //width: 42,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
+            child: ColorlessInkWell(
+              onTap: () {
+                setState(() => isDialogOpen = true);
+                _dialogBuilder(context).whenComplete(
+                  () => setState(() => isDialogOpen = false),
+                );
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    height: 42,
+                    //width: 42,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(24),
-                        topLeft: Radius.circular(24)),
-                    boxShadow:
-                        isDialogOpen // Use the state to conditionally add the shadow
-                            ? [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  spreadRadius: 0,
-                                  blurRadius: 0,
-                                  offset: Offset(0, 0),
-                                ),
-                              ]
-                            : [],
+                        topLeft: Radius.circular(24),
+                      ),
+                      boxShadow:
+                          isDialogOpen // Use the state to conditionally add the shadow
+                              ? [
+                                  Shadows.heavyShadow,
+                                ]
+                              : [],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: PaddingSizes.smallPadding),
-                  child: Center(
+                  Center(
                     child: SizedBox(
-                      height: 24,
-                      child: SvgIcon(
-                        PixelPerfectIcons.bellMedium,
-                        color: GawTheme.background.withOpacity(0.8),
-                        fit: BoxFit.contain,
+                      width: 20,
+                      height: 20,
+                      child: NotificationIcon(
+                        openNotifications: notificationState.notifications
+                                ?.map((e) => e.seen)
+                                .contains(false) ??
+                            false,
                       ),
                     ),
                   ),
-                )
-              ],
-            ),
-          )),
-          Stack(children: [
-            const Expanded(
-                child: Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: SizedBox(
-                  height: 42,
-                  width: 42,
-                  // child: ProfilePictureAvatar(
-                  //   bytes: bytes,
-                  // ))
-            ))),
-            SizedBox(
-              child: ProfilePictureAvatar(
-                bytes: bytes,
+                ],
               ),
-            )
-          ]),
-        ]));
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              right: PaddingSizes.extraSmallPadding,
+            ),
+            child: SizedBox(
+              height: 36,
+              width: 36,
+              child: ProfilePictureAvatar(
+                imageUrl: imageUrl,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _dialogBuilder(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    const dialogHeight = 330.0;
-    const dialogWidth = 426.0;
+    const double dialogHeight = 330;
+    const double dialogWidth = 520;
 
     return showGeneralDialog<void>(
       context: context,
@@ -368,7 +345,7 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
   }
 }
 
-class NotificationDialog extends StatefulWidget {
+class NotificationDialog extends ConsumerStatefulWidget {
   final double dialogWidth;
   final double dialogHeight;
 
@@ -379,56 +356,51 @@ class NotificationDialog extends StatefulWidget {
   });
 
   @override
-  State<NotificationDialog> createState() => _NotificationDialogState();
+  ConsumerState<NotificationDialog> createState() => _NotificationDialogState();
 }
 
-class _NotificationDialogState extends State<NotificationDialog> {
+class _NotificationDialogState extends ConsumerState<NotificationDialog>
+    with ScreenStateMixin {
   int current = 0;
-  api.NotificationsListResponse? notificationListResponse;
   List<api.Notification>? all;
   List<api.Notification>? archive;
 
   void loadData() {
-    api.UsersApi.me().then((response) {
-      print(response?.profilePictureUrl);
-    });
-    api.NotificationsApi.getNotifications().then((response) {
-      setState(() {
-        notificationListResponse = response;
-      });
-      api.NotificationsApi.readAllNotifications();
-      loadArrays();
-    });
+    reload();
+    api.NotificationsApi.readAllNotifications();
+  }
+
+  void reload() {
+    setLoading(true);
+    ref.read(notificationsTickerProvider.notifier)
+      ..addListener((state) {
+        loadArrays();
+      })
+      ..loadData().then((_) => setLoading(false));
   }
 
   void loadArrays() {
-    if (notificationListResponse != null) {
-      setState(() {
-        all = notificationListResponse!.notifications
-            ?.where((notification) => !notification.archived)
-            .toList();
-        archive = notificationListResponse!.notifications
-            ?.where((notification) => notification.archived)
-            .toList();
-      });
-    }
+    List<api.Notification> notifications =
+        ref.read(notificationsTickerProvider).notifications ?? [];
+    setState(() {
+      all = notifications
+          .where((notification) => !notification.archived)
+          .toList();
+      archive =
+          notifications.where((notification) => notification.archived).toList();
+    });
   }
 
   void toggleNotificationArchive(String id, bool shouldBeArchived) async {
-    try {
-      final updateRequest = api.NotificationsUpdateRequest((b) => b
+    final updateRequest = api.NotificationsUpdateRequest(
+      (b) => b
         ..id = id
         ..seen = true // Setting seen to true by default
-        ..archived = shouldBeArchived);
+        ..archived = shouldBeArchived,
+    );
 
-      await api.NotificationsApi.updateNotification(request: updateRequest);
-      loadData(); // Reload the data to reflect changes
-    } catch (e) {
-      // Handle exceptions, e.g., by showing a snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update notification: $e')),
-      );
-    }
+    await api.NotificationsApi.updateNotification(request: updateRequest);
+    reload();
   }
 
   @override
@@ -441,50 +413,51 @@ class _NotificationDialogState extends State<NotificationDialog> {
   Widget build(BuildContext context) {
     final dialogWidth = widget.dialogWidth;
     final dialogHeight = widget.dialogHeight;
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      backgroundColor: Colors.grey.shade300, //Color.fromRGBO(235, 231, 228, 1)
-      surfaceTintColor: GawTheme.clearBackground,
-      shadowColor: GawTheme.darkShadow, // Replace with your theme color
-      elevation: 6.0, // Adjust the shadow elevation
       child: Container(
         height: dialogHeight,
         width: dialogWidth,
         decoration: BoxDecoration(
-          color: GawTheme.clearBackground, //Color.fromRGBO(235, 231, 228, 1),
+          color: GawTheme.clearText,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.grey.shade400, //Color.fromRGBO(235, 231, 228, 1),
-            width: 1.5,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
+          boxShadow: const [
+            Shadows.heavyShadow,
+          ],
+          border: const Border.fromBorderSide(Borders.lightSide),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(
-                  left: PaddingSizes.mainPadding + 2,
-                  top: PaddingSizes.bigPadding - 2,
-                  bottom: PaddingSizes.mainPadding - 2),
+                left: PaddingSizes.mainPadding + 2,
+                top: PaddingSizes.bigPadding - 2,
+                bottom: PaddingSizes.mainPadding - 2,
+              ),
               child: MainText(
                 'Notifications',
-                textStyleOverride: TextStyles.mainStyle.copyWith(
-                  color: Colors.black,
-                  fontSize: 20.75,
-                  fontWeight: FontWeight.w700,
+                textStyleOverride: TextStyles.titleStyle.copyWith(
+                  color: GawTheme.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ), // Replace with your MainText widget
             Container(
-                width: dialogWidth,
-                height: dialogHeight * 0.12,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400.withOpacity(0.6),
+              width: dialogWidth,
+              height: dialogHeight * 0.12,
+              decoration: const BoxDecoration(
+                color: GawTheme.clearText,
+                border: Border(
+                  bottom: Borders.mainSide,
                 ),
-                child: Stack(children: [
+              ),
+              child: Stack(
+                children: [
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.easeInOut,
@@ -501,7 +474,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: GawTheme.secondaryTint,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(0.1),
                       ),
                     ),
                   ),
@@ -510,17 +483,18 @@ class _NotificationDialogState extends State<NotificationDialog> {
                     child: Container(
                       width: dialogWidth,
                       height: dialogHeight * 0.114,
-                      decoration: BoxDecoration(
-                        color: GawTheme.clearBackground,
+                      decoration: const BoxDecoration(
+                        color: GawTheme.clearText,
                         border: Border(
                           top: BorderSide(
-                            color: GawTheme.clearBackground,
+                            color: GawTheme.clearText,
                             width: 1,
                           ),
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingSizes.mainPadding),
+                        horizontal: PaddingSizes.mainPadding,
+                      ),
                       //color: Colors.red,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -528,13 +502,13 @@ class _NotificationDialogState extends State<NotificationDialog> {
                           const SizedBox(
                             width: PaddingSizes.extraBigPadding,
                           ),
-                          InkWell(
+                          ColorlessInkWell(
                             onTap: () {
                               setState(() {
                                 current = 0;
                               });
                             },
-                            child: Container(
+                            child: SizedBox(
                               width: dialogWidth * 0.15,
                               child: MainText(
                                 'All',
@@ -549,13 +523,13 @@ class _NotificationDialogState extends State<NotificationDialog> {
                               ),
                             ),
                           ),
-                          InkWell(
+                          ColorlessInkWell(
                             onTap: () {
                               setState(() {
                                 current = 1;
                               });
                             },
-                            child: Container(
+                            child: SizedBox(
                               width: dialogWidth * 0.15,
                               child: MainText(
                                 'Archive',
@@ -574,38 +548,42 @@ class _NotificationDialogState extends State<NotificationDialog> {
                       ),
                     ),
                   ),
-                ])),
+                ],
+              ),
+            ),
             Expanded(
-                // padding: const EdgeInsets.only(
-                //   bottom: PaddingSizes.mainPadding,
-                // ),
+              // padding: const EdgeInsets.only(
+              //   bottom: PaddingSizes.mainPadding,
+              // ),
+              child: LoadingSwitcher(
+                loading: loading,
                 child: ListView.builder(
-              itemCount: current == 0
-                  ? all?.length ?? 0
-                  : archive?.length ??
-                      0, // Determine the number of items based on the current tab
-              itemBuilder: (context, index) {
-                // Select the list based on the current tab
-                final list = current == 0 ? all : archive;
-                final notification = list?[index];
+                  itemCount:
+                      current == 0 ? all?.length ?? 0 : archive?.length ?? 0,
+                  // Determine the number of items based on the current tab
+                  itemBuilder: (context, index) {
+                    // Select the list based on the current tab
+                    final list = current == 0 ? all : archive;
+                    final notification = list?[index];
 
-                if (notification != null) {
-                  return CmsNotificationTile(
-                    label: notification.title,
-                    date: DateTime.fromMillisecondsSinceEpoch(
-                        notification.sent! *
-                            1000), // Assuming 'sent' is in seconds
-                    imageUrl: notification.profilePicture,
-                    notificationId: notification.id!,
-                    isArchived: notification.archived,
-                    onArchiveToggle: toggleNotificationArchive,
-                  );
-                } else {
-                  return const SizedBox
-                      .shrink(); // In case of null notification, return an empty space
-                }
-              },
-            ))
+                    if (notification != null) {
+                      return CmsNotificationTile(
+                        label: notification.title,
+                        description: notification.body,
+                        date: GawDateUtil.fromApi(notification.sent!),
+                        imageUrl: notification.profilePicture,
+                        notificationId: notification.id!,
+                        isArchived: notification.archived,
+                        onArchiveToggle: toggleNotificationArchive,
+                      );
+                    } else {
+                      return const SizedBox
+                          .shrink(); // In case of null notification, return an empty space
+                    }
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -615,6 +593,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
 
 class CmsNotificationTile extends StatelessWidget {
   final String label;
+  final String description;
   final DateTime date;
   final String? imageUrl;
   final String notificationId;
@@ -625,6 +604,7 @@ class CmsNotificationTile extends StatelessWidget {
     super.key,
     required this.label,
     required this.date,
+    required this.description,
     this.imageUrl,
     required this.notificationId,
     required this.isArchived,
@@ -650,21 +630,19 @@ class CmsNotificationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: 26,
+        horizontal: PaddingSizes.bigPadding,
       ),
       child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: PaddingSizes.mainPadding,
+        padding: const EdgeInsets.symmetric(
+          vertical: PaddingSizes.mainPadding,
+        ),
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: Borders.lightSide,
           ),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.shade400.withOpacity(0.6),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Row(children: [
+        ),
+        child: Row(
+          children: [
             Container(
               height: 35,
               width: 35,
@@ -683,14 +661,11 @@ class CmsNotificationTile extends StatelessWidget {
                         fit: BoxFit
                             .cover, // This ensures the image covers the bounds of the container
                       )
-                    : const SizedBox(
-                        width: 35,
-                        height: 35,
-                      ),
+                    : const MainLogoSmall(),
               ),
             ),
             const SizedBox(
-              width: PaddingSizes.smallPadding,
+              width: PaddingSizes.mainPadding,
             ),
             Expanded(
               child: Column(
@@ -699,15 +674,15 @@ class CmsNotificationTile extends StatelessWidget {
                   MainText(
                     label,
                     textStyleOverride: TextStyles.mainStyle.copyWith(
-                      color: Colors.black,
+                      color: GawTheme.text,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   MainText(
-                    timeAgo(date),
+                    description,
                     textStyleOverride: TextStyles.mainStyle.copyWith(
-                      color: Colors.black.withOpacity(0.6),
+                      color: GawTheme.unselectedText,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -715,18 +690,41 @@ class CmsNotificationTile extends StatelessWidget {
                 ],
               ),
             ),
-            InkWell(
-              onTap: () => onArchiveToggle(notificationId, !isArchived),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: SvgIcon(
-                  PixelPerfectIcons.trashMedium,
-                  color: Colors.black.withOpacity(0.6),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ColorlessInkWell(
+                  onTap: () => onArchiveToggle(notificationId, !isArchived),
+                  child: SizedBox(
+                    height: 16,
+                    width: 16,
+                    child: SvgIcon(
+                      isArchived
+                          ? PixelPerfectIcons.arrowBack
+                          : PixelPerfectIcons.trashMedium,
+                      color: GawTheme.text,
+                    ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: PaddingSizes.mainPadding,
+                  ),
+                  child: MainText(
+                    '${timeAgo(date)} ago',
+                    textStyleOverride: TextStyles.mainStyle.copyWith(
+                      color: GawTheme.unselectedText,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+              ],
             )
-          ])),
+          ],
+        ),
+      ),
     );
   }
 }

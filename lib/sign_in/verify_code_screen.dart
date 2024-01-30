@@ -9,7 +9,7 @@ BeamPage verifyCodeBeamPage(String email) {
   return BeamPage(
     title: 'Verify Code',
     key: const ValueKey('verify-code'),
-    type: BeamPageType.slideRightTransition,
+    type: BeamPageType.slideLeftTransition,
     child: VerifyCodeScreen(email: email),
   );
 }
@@ -57,14 +57,6 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen>
       ),
     ).then((value) {
       setLoading(false);
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     behavior: SnackBarBehavior.floating,
-      //     backgroundColor: GawTheme.clearBackground,
-      //     content: Text('Code verified!', style: TextStyle(color: Colors.black87)),
-      //   ),
-      // );
-      print(value!.token);
       signInRouter.beamToNamed(
           '/sign-in/welcome/forgot-password/reset-password/${tecCode.text}/${value!.token}');
     }).catchError((error) {
@@ -126,6 +118,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen>
                 hint: '012345',
                 label: 'Code',
                 controller: tecCode,
+                onSubmitted: () => onVerifyCode(context),
               ),
               const SizedBox(
                 height: PaddingSizes.extraBigPadding,

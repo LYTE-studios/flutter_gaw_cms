@@ -5,13 +5,15 @@ import 'package:gaw_ui/gaw_ui.dart';
 class CmsBanner extends StatelessWidget {
   const CmsBanner({super.key});
 
+  static const double height = 480;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: GawTheme.unselectedMainTint.withOpacity(0.15),
       ),
-      width: 480,
+      width: height,
       child: Stack(
         fit: StackFit.expand,
         children: [

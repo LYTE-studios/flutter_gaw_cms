@@ -12,6 +12,8 @@ class DrawerNavigationItem extends StatefulWidget {
 
   final Function()? onTap;
 
+  final Color? hoverColor;
+
   const DrawerNavigationItem({
     super.key,
     required this.label,
@@ -19,6 +21,7 @@ class DrawerNavigationItem extends StatefulWidget {
     this.active = false,
     this.subItems,
     this.onTap,
+    this.hoverColor,
   });
 
   @override
@@ -37,6 +40,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
     duration: const Duration(milliseconds: 200),
     vsync: this,
   );
+
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
     curve: Curves.fastOutSlowIn,
@@ -85,7 +89,8 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: widget.active || hover
-                    ? GawTheme.mainTint.withOpacity(0.2)
+                    ? widget.hoverColor?.withOpacity(0.2) ??
+                        GawTheme.mainTint.withOpacity(0.2)
                     : Colors.transparent,
               ),
               child: Row(
@@ -104,7 +109,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
                       child: SvgIcon(
                         widget.iconUrl,
                         color: widget.active || hover
-                            ? GawTheme.secondaryTint
+                            ? widget.hoverColor ?? GawTheme.secondaryTint
                             : GawTheme.text,
                       ),
                     ),
@@ -112,7 +117,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
                   MainText(
                     widget.label,
                     color: widget.active || hover
-                        ? GawTheme.secondaryTint
+                        ? widget.hoverColor ?? GawTheme.secondaryTint
                         : GawTheme.text,
                   ),
                   const Spacer(),

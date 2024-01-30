@@ -4,17 +4,22 @@ import 'package:gaw_ui/gaw_ui.dart';
 class BaseDialog extends StatelessWidget {
   final Widget child;
 
+  final double height;
+  final double width;
+
   const BaseDialog({
     super.key,
     required this.child,
+    this.height = 520,
+    this.width = 860,
   });
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        height: 520,
-        width: 860,
+        height: height,
+        width: width,
         decoration: BoxDecoration(
           color: GawTheme.clearBackground,
           borderRadius: BorderRadius.circular(12),

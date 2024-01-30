@@ -11,7 +11,7 @@ import 'package:gaw_ui/gaw_ui.dart';
 const BeamPage welcomeBeamPage = BeamPage(
   title: 'Welcome!',
   key: ValueKey('login'),
-  type: BeamPageType.noTransition,
+  type: BeamPageType.slideLeftTransition,
   child: WelcomeScreen(),
 );
 
@@ -35,6 +35,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
   bool canLogin = false;
 
   void _login() {
+    if (!canLogin) {
+      return;
+    }
+
     setLoading(true);
     AuthenticationApi.credentialsLogin(
       request: LoginRequest(
@@ -106,6 +110,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
                 hint: 'At least 8 characters',
                 label: 'Password',
                 isPasswordField: true,
+                onSubmitted: _login,
               ),
               const SizedBox(
                 height: PaddingSizes.smallPadding,

@@ -1,11 +1,10 @@
 import 'package:beamer/beamer.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/utils/dialog_util.dart';
+import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
-import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
-import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
-import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
+import 'package:flutter_gaw_cms/washers/presentation/dialogs/washer_details_dialog.dart';
+import 'package:flutter_gaw_cms/washers/presentation/dialogs/washers_create_dialog.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -27,6 +26,8 @@ class WashersPage extends StatefulWidget {
 
 class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   WashersListResponse? washersListResponse;
+
+  List<Washer> selectedWashers = [];
 
   void loadData() {
     setLoading(true);
@@ -51,106 +52,64 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const Column(
-            children: [
-              CmsHeader(
-                mainRoute: 'Washers',
-                subRoute: 'Registered',
-              ),
-            ],
+    return BaseLayoutScreen(
+      mainRoute: 'Washers',
+      subRoute: 'Washers',
+      extraActionButtonPadding: 156,
+      actionWidget: ActionButton(
+        label: 'Create new washer',
+        onTap: () {
+          DialogUtil.show(
+            dialog: const WasherCreateDialog(),
+            context: context,
+          );
+        },
+      ),
+      child: ScreenSheet(
+        topPadding: 120,
+        child: GenericListView(
+          loading: loading,
+          title: LocaleKeys.washers.tr(),
+          valueName: LocaleKeys.washers.tr().toLowerCase(),
+          totalItems: washersListResponse?.total,
+          header: const BaseListHeader(
+            items: {
+              'Name': ListUtil.lColumn,
+              'Email': ListUtil.xLColumn,
+              'Phone': ListUtil.mColumn,
+              '': ListUtil.xSColumn,
+            },
           ),
-          Column(
-            children: [
-              SizedBox(
-                height: 180,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Spacer(),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => const CustomerCreateDialog(),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(PaddingSizes.mainPadding),
-                        child: Container(
-                          height: 36,
-                          width: 120,
-                          decoration: BoxDecoration(
-                            color: GawTheme.clearBackground,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: MainText(
-                              'Add new washer',
-                              textStyleOverride: TextStyles.mainStyle.copyWith(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+          rows: washersListResponse?.washers.map(
+                (washer) {
+                  return SelectableListItem(
+                    onSelected: () {
+                      DialogUtil.show(
+                        dialog: WasherDetailsDialog(
+                          washerId: washer.id,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ScreenSheet(
-                  child: LoadingSwitcher(
-                    loading: loading,
-                    child: GenericListView(
-                      title: LocaleKeys.washers.tr(),
-                      valueName: LocaleKeys.customers.tr().toLowerCase(),
-                      totalItems: washersListResponse?.total,
-                      header: BaseListHeader(
-                        items: {
-                          'Name': ListUtil.mColumn,
-                          'Email': ListUtil.mColumn,
-                          'Phone': ListUtil.mColumn,
-                          '': ListUtil.lColumn,
-                        },
-                      ),
-                      rows: washersListResponse?.washers.map(
-                            (washer) {
-                              return InkWell(
-                                onTap: () {
-                                  DialogUtil.show(
-                                      dialog: CustomerDetailDialog(
-                                        customerId: washer.id,
-                                      ),
-                                      context: context);
-                                },
-                                child: BaseListItem(
-                                  items: {
-                                    TextRowItem(value: washer.getFullName()):
-                                        ListUtil.mColumn,
-                                    TextRowItem(value: washer.email):
-                                        ListUtil.mColumn,
-                                    TextRowItem(value: washer.phoneNumber):
-                                        ListUtil.mColumn,
-                                    const IconRowItem(
-                                      icon: PixelPerfectIcons.eyeNormal,
-                                    ): ListUtil.lColumn,
-                                  },
-                                ),
-                              );
-                            },
-                          ).toList() ??
-                          [],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+                        context: context,
+                      );
+                    },
+                    items: {
+                      TextRowItem(
+                        value: washer.getFullName(),
+                      ): ListUtil.lColumn,
+                      SelectableTextRowItem(
+                        value: washer.email,
+                      ): ListUtil.xLColumn,
+                      SelectableTextRowItem(
+                        value: washer.phoneNumber,
+                      ): ListUtil.lColumn,
+                      const IconRowItem(
+                        icon: PixelPerfectIcons.eyeNormal,
+                      ): ListUtil.xSColumn,
+                    },
+                  );
+                },
+              ).toList() ??
+              [],
+        ),
       ),
     );
   }

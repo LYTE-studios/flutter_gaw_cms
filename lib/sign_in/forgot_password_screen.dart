@@ -1,9 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/routing/router.dart';
 import 'package:flutter_gaw_cms/core/routing/sign_in_router.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
-import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
 import 'package:flutter_gaw_cms/sign_in/verify_code_screen.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -99,7 +97,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               const SizedBox(
                 height: PaddingSizes.bigPadding,
               ),
-              MainText( 
+              MainText(
                 'Enter the email associated with your account. We will send you an email with the instructions to reset your password.',
                 alignment: TextAlign.start,
                 textStyleOverride: TextStyles.mainStyleTitle.copyWith(
@@ -115,6 +113,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                 hint: 'you@getawash.be',
                 label: 'Email',
                 controller: tecEmail,
+                onSubmitted: () => onSendEmail(context),
               ),
               const SizedBox(
                 height: PaddingSizes.extraBigPadding,

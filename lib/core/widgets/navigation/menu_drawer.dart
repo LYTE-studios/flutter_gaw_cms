@@ -164,13 +164,14 @@ class MenuDrawer extends StatelessWidget {
           ),
           DrawerNavigationItem(
             label: 'Logout',
+            hoverColor: GawTheme.error,
             iconUrl: PixelPerfectIcons.logoutMedium,
             onTap: () {
               LocalStorageUtil.setTokens(null, null);
 
               mainRouter.beamToNamed(SignInScreen.route);
             },
-            active: WashersPage.route == route,
+            active: false,
           ),
         ],
       ),
