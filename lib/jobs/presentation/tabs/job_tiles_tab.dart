@@ -26,6 +26,7 @@ class _JobTilesTabState extends State<JobTilesTab> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           LoadingSwitcher(
             loading: widget.loading,

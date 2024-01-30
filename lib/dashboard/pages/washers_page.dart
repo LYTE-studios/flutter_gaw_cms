@@ -27,6 +27,8 @@ class WashersPage extends StatefulWidget {
 class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   WashersListResponse? washersListResponse;
 
+  List<Washer> selectedWashers = [];
+
   void loadData() {
     setLoading(true);
 
@@ -68,7 +70,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
         child: GenericListView(
           loading: loading,
           title: LocaleKeys.washers.tr(),
-          valueName: LocaleKeys.customers.tr().toLowerCase(),
+          valueName: LocaleKeys.washers.tr().toLowerCase(),
           totalItems: washersListResponse?.total,
           header: const BaseListHeader(
             items: {
@@ -80,8 +82,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
           ),
           rows: washersListResponse?.washers.map(
                 (washer) {
-                  return InkWell(
-                    onTap: () {
+                  return SelectableListItem(
+                    onSelected: () {
                       DialogUtil.show(
                         dialog: WasherDetailsDialog(
                           washerId: washer.id,
@@ -89,22 +91,20 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                         context: context,
                       );
                     },
-                    child: BaseListItem(
-                      items: {
-                        TextRowItem(
-                          value: washer.getFullName(),
-                        ): ListUtil.lColumn,
-                        SelectableTextRowItem(
-                          value: washer.email,
-                        ): ListUtil.xLColumn,
-                        SelectableTextRowItem(
-                          value: washer.phoneNumber,
-                        ): ListUtil.lColumn,
-                        const IconRowItem(
-                          icon: PixelPerfectIcons.eyeNormal,
-                        ): ListUtil.xSColumn,
-                      },
-                    ),
+                    items: {
+                      TextRowItem(
+                        value: washer.getFullName(),
+                      ): ListUtil.lColumn,
+                      SelectableTextRowItem(
+                        value: washer.email,
+                      ): ListUtil.xLColumn,
+                      SelectableTextRowItem(
+                        value: washer.phoneNumber,
+                      ): ListUtil.lColumn,
+                      const IconRowItem(
+                        icon: PixelPerfectIcons.eyeNormal,
+                      ): ListUtil.xSColumn,
+                    },
                   );
                 },
               ).toList() ??

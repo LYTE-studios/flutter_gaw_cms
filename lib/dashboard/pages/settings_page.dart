@@ -40,7 +40,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 34, vertical: 45),
+                      horizontal: 34,
+                      vertical: 45,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

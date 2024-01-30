@@ -140,7 +140,6 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(
                   minWidth: 860,
-                  maxWidth: 1240,
                 ),
                 child: SizedBox(
                   width: constraints.maxWidth,

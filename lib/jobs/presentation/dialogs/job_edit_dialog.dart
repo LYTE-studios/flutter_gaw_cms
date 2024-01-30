@@ -391,11 +391,31 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                   color: validated
                       ? GawTheme.mainTint
                       : GawTheme.unselectedBackground,
-                  onTap: () => createJob(isDraft: false),
+                  onTap: () => createJob(isDraft: widget.job.isDraft ?? true),
                   minWidth: 156,
                   label: 'Save job',
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     color: GawTheme.mainTintText,
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: widget.job.isDraft == true,
+                child: Padding(
+                  padding: const EdgeInsets.all(
+                    PaddingSizes.smallPadding,
+                  ),
+                  child: GenericButton(
+                    loading: loading,
+                    color: GawTheme.clearBackground,
+                    textColor: GawTheme.text,
+                    outline: true,
+                    onTap: () => createJob(isDraft: false),
+                    minWidth: 156,
+                    label: 'Schedule job',
+                    textStyleOverride: TextStyles.mainStyle.copyWith(
+                      color: GawTheme.text,
+                    ),
                   ),
                 ),
               ),
