@@ -14,6 +14,12 @@ class ExceptionHandler {
   }) async {
     developer.log(exception.toString());
 
+    bool emptyContext = (globalScaffoldKey.currentContext ?? context) == null;
+
+    if (emptyContext) {
+      return;
+    }
+
     await DialogUtil.show(
       dialog: BaseDialogScreen(
         exception: exception,
