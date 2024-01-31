@@ -34,6 +34,7 @@ dependencies:
   flutter_image_compress: ^2.1.0
   geolocator: ^10.1.0
   widget_to_marker: ^1.0.4
+  page_transition: ^2.1.0
 
 
   # Get-a-Wash

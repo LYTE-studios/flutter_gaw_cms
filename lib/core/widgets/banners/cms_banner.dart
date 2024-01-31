@@ -1,39 +1,48 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/banners/base_banner_item.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class CmsBanner extends StatelessWidget {
-  const CmsBanner({super.key});
-
-  static const double height = 480;
+  const CmsBanner({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+
     return Container(
-      decoration: BoxDecoration(
-        color: GawTheme.unselectedMainTint.withOpacity(0.15),
+      constraints: const BoxConstraints(
+        minWidth: 480,
       ),
-      width: height,
+      decoration: const BoxDecoration(
+        color: GawTheme.mainTint,
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const Positioned(
-            top: 0,
-            left: 0,
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: PaddingSizes.extraBigPadding * 2,
-                vertical: PaddingSizes.bigPadding * 2,
+          Positioned(
+            bottom: -91,
+            left: -180,
+            child: SizedBox(
+              height: 720,
+              width: 540,
+              child: MainLogoSmall(
+                fit: BoxFit.fitHeight,
+                color: GawTheme.secondaryTint.withOpacity(0.05),
               ),
-              child: MainLogoBig(),
             ),
           ),
-          const Positioned(
+          Positioned(
             top: 120,
             left: 0,
             right: 0,
-            child: SizedBox(
-              height: 520,
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 720,
+              ),
+              height: height,
               child: _HoveringItems(),
             ),
           ),
@@ -48,6 +57,7 @@ class CmsBanner extends StatelessWidget {
                   '© 2023 GET-A-WASH',
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     fontSize: 12,
+                    color: GawTheme.clearText,
                   ),
                 ),
               ),
@@ -59,67 +69,143 @@ class CmsBanner extends StatelessWidget {
   }
 }
 
-class _HoveringItems extends StatelessWidget {
+class _HoveringItems extends StatefulWidget {
   const _HoveringItems();
 
   @override
+  State<_HoveringItems> createState() => _HoveringItemsState();
+}
+
+class _HoveringItemsState extends State<_HoveringItems> {
+  double x1 = 0;
+  double y1 = 0;
+
+  double x2 = 0;
+  double y2 = 0;
+
+  double x3 = 0;
+  double y3 = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return const Stack(
-      children: [
-        Positioned(
-          top: 64,
-          left: 140,
-          child: SizedBox(
-            height: 120,
-            width: 120,
-            child: BaseBannerItem(
+    return LayoutBuilder(builder: (context, constraints) {
+      return Stack(
+        children: [
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: (MediaQuery.of(context).size.width / 20) - y1,
+            left: (MediaQuery.of(context).size.width / 6) - x1,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width / 10,
+              width: MediaQuery.of(context).size.width / 9,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return MouseRegion(
+                  cursor: MouseCursor.uncontrolled,
+                  onExit: (_) {
+                    setState(() {
+                      x1 = 0;
+                      y1 = 0;
+                    });
+                  },
+                  onHover: (PointerHoverEvent event) {
+                    setState(() {
+                      x1 = event.localPosition.dx - (constraints.maxWidth / 2);
+                      y1 = event.localPosition.dy - (constraints.maxHeight / 2);
+                    });
+                  },
+                  child: const BaseBannerItem(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: PaddingSizes.mainPadding,
+                      ),
+                      child: SvgImage(
+                        'assets/images/banner/banner_item_1.svg',
+                        fit: BoxFit.fitWidth,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 500),
+            top: (MediaQuery.of(context).size.width / 6) - y2,
+            left: (MediaQuery.of(context).size.width / 8) - x2,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width / 9,
+              width: MediaQuery.of(context).size.width / 6,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return MouseRegion(
+                  cursor: MouseCursor.uncontrolled,
+                  onExit: (_) {
+                    setState(() {
+                      x2 = 0;
+                      y2 = 0;
+                    });
+                  },
+                  onHover: (PointerHoverEvent event) {
+                    setState(() {
+                      x2 = event.localPosition.dx - (constraints.maxWidth / 2);
+                      y2 = event.localPosition.dy - (constraints.maxHeight / 2);
+                    });
+                  },
+                  child: const BaseBannerItem(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: PaddingSizes.bigPadding,
+                      ),
+                      child: SvgImage(
+                        'assets/images/banner/banner_item_3.svg',
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            top: (MediaQuery.of(context).size.width / 8) - y3,
+            left: (MediaQuery.of(context).size.width / 4) - x3,
+            child: MouseRegion(
               child: SizedBox(
-                height: 96,
-                width: 96,
-                child: SvgImage(
-                  'assets/images/banner/banner_item_1.svg',
-                ),
+                height: MediaQuery.of(context).size.width / 10,
+                width: MediaQuery.of(context).size.width / 10,
+                child: LayoutBuilder(builder: (context, constraints) {
+                  return MouseRegion(
+                    cursor: MouseCursor.uncontrolled,
+                    onExit: (_) {
+                      setState(() {
+                        x3 = 0;
+                        y3 = 0;
+                      });
+                    },
+                    onHover: (PointerHoverEvent event) {
+                      setState(() {
+                        x3 =
+                            event.localPosition.dx - (constraints.maxWidth / 2);
+                        y3 = event.localPosition.dy -
+                            (constraints.maxHeight / 2);
+                      });
+                    },
+                    child: const BaseBannerItem(
+                      child: Padding(
+                        padding: EdgeInsets.all(
+                          PaddingSizes.mainPadding,
+                        ),
+                        child: SvgImage(
+                          'assets/images/banner/banner_item_2.svg',
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ),
           ),
-        ),
-        Positioned(
-          top: 208,
-          left: 90,
-          child: SizedBox(
-            height: 140,
-            width: 200,
-            child: BaseBannerItem(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: PaddingSizes.bigPadding,
-                ),
-                child: SvgImage(
-                  'assets/images/banner/banner_item_3.svg',
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 136,
-          left: 240,
-          child: SizedBox(
-            height: 140,
-            width: 140,
-            child: BaseBannerItem(
-              child: Padding(
-                padding: EdgeInsets.all(
-                  PaddingSizes.mainPadding,
-                ),
-                child: SvgImage(
-                  'assets/images/banner/banner_item_2.svg',
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }

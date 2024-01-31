@@ -11,7 +11,6 @@ import 'package:gaw_ui/gaw_ui.dart';
 const BeamPage welcomeBeamPage = BeamPage(
   title: 'Welcome!',
   key: ValueKey('login'),
-  type: BeamPageType.slideLeftTransition,
   child: WelcomeScreen(),
 );
 
@@ -77,74 +76,86 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: GawTheme.clearBackground,
+      backgroundColor: GawTheme.clearText,
       body: Center(
-        child: SizedBox(
-          height: 480,
-          width: 320,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MainText(
-                'Welcome back!',
-                alignment: TextAlign.start,
-                textStyleOverride: TextStyles.mainStyleTitle.copyWith(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 21,
+        child: Container(
+          height: 360,
+          width: 420,
+          decoration: BoxDecoration(
+            color: GawTheme.clearText,
+            boxShadow: const [
+              Shadows.topSheetShadow,
+            ],
+            borderRadius: BorderRadius.circular(
+              12,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: PaddingSizes.extraBigPadding,
+              vertical: PaddingSizes.extraBigPadding + PaddingSizes.bigPadding,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MainText(
+                  'Welcome back!',
+                  alignment: TextAlign.start,
+                  textStyleOverride: TextStyles.mainStyleTitle.copyWith(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 21,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              CmsInputField(
-                hint: 'you@getawash.be',
-                label: 'Email',
-                controller: tecEmail,
-              ),
-              const SizedBox(
-                height: PaddingSizes.bigPadding,
-              ),
-              CmsInputField(
-                controller: tecPassword,
-                hint: 'At least 8 characters',
-                label: 'Password',
-                isPasswordField: true,
-                onSubmitted: _login,
-              ),
-              const SizedBox(
-                height: PaddingSizes.smallPadding,
-              ),
-              Row(
-                children: [
-                  const Spacer(),
-                  ColorlessInkWell(
-                    onTap: () {
-                      signInRouter.beamToNamed(ForgotPasswordScreen.route);
-                    },
-                    child: const Text(
-                      'Forgot password?',
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        color: GawTheme.mainTint,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w200,
+                const SizedBox(
+                  height: PaddingSizes.extraBigPadding,
+                ),
+                CmsInputField(
+                  label: 'Email',
+                  controller: tecEmail,
+                ),
+                const SizedBox(
+                  height: PaddingSizes.bigPadding,
+                ),
+                CmsInputField(
+                  controller: tecPassword,
+                  label: 'Password',
+                  isPasswordField: true,
+                  onSubmitted: _login,
+                ),
+                const SizedBox(
+                  height: PaddingSizes.smallPadding,
+                ),
+                Row(
+                  children: [
+                    const Spacer(),
+                    ColorlessInkWell(
+                      onTap: () {
+                        signInRouter.beamToNamed(ForgotPasswordScreen.route);
+                      },
+                      child: const Text(
+                        'Forgot password?',
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          color: GawTheme.mainTint,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w200,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              GenericButton(
-                label: 'Login',
-                onTap: !canLogin ? null : _login,
-                loading: loading,
-                color:
-                    canLogin ? GawTheme.mainTint : GawTheme.unselectedMainTint,
-              ),
-            ],
+                  ],
+                ),
+                const Spacer(),
+                GenericButton(
+                  label: 'Login',
+                  onTap: !canLogin ? null : _login,
+                  loading: loading,
+                  color: canLogin
+                      ? GawTheme.mainTint
+                      : GawTheme.unselectedMainTint,
+                ),
+              ],
+            ),
           ),
         ),
       ),
