@@ -4,27 +4,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
+import 'package:flutter_gaw_cms/customers/dialogs/customer_delete_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-const BeamPage customersBeamPage = BeamPage(
-  title: 'Customers',
-  key: ValueKey('customers'),
+BeamPage customersBeamPage = BeamPage(
+  title: LocaleKeys.customers.tr(),
+  key: const ValueKey('customers'),
   type: BeamPageType.noTransition,
-  child: CustomersPage(),
+  child: const CustomersPage(),
 );
 
-class CustomersPage extends StatefulWidget {
+class CustomersPage extends ConsumerStatefulWidget {
   const CustomersPage({super.key});
 
   static const String route = '/dashboard/customers';
 
   @override
-  State<CustomersPage> createState() => _CustomersPageState();
+  ConsumerState<CustomersPage> createState() => _CustomersPageState();
 }
 
-class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
+class _CustomersPageState extends ConsumerState<CustomersPage>
+    with ScreenStateMixin {
   int itemCount = 25;
 
   int page = 1;
@@ -35,7 +38,15 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
 
   bool allSelected = false;
 
-  void loadData({int? page, int? itemCount, String? term}) {
+  String? sortingValue;
+
+  void loadData({
+    int? page,
+    int? itemCount,
+    String? term,
+    String? sortTerm,
+    bool ascending = true,
+  }) {
     setLoading(true);
 
     setData(() {
@@ -47,6 +58,8 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
       page: page,
       itemCount: itemCount,
       searchTerm: term,
+      sortTerm: sortTerm,
+      ascending: ascending,
     ).then((response) {
       setData(() {
         customerListResponse = response;
@@ -76,14 +89,17 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
       subRoute: LocaleKeys.customers.tr(),
       extraActionButtonPadding: 156,
       actionWidget: ActionButton(
-        label: 'Create new customer',
+        label: LocaleKeys.createNewCustomer.tr(),
         icon: PixelPerfectIcons.customAdd,
         onTap: () {
           DialogUtil.show(
             dialog: const CustomerCreateDialog(),
             context: context,
           ).then((_) {
-            loadData();
+            loadData(
+              page: 1,
+              itemCount: itemCount,
+            );
           });
         },
       ),
@@ -103,15 +119,30 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
             loadData(itemCount: itemCount, page: index);
           },
           page: page,
+          onDelete: () {
+            if (selection.isEmpty) {
+              return;
+            }
+            DialogUtil.show(
+              dialog: CustomerDeleteDialog(
+                  ids: selection.map((e) => e.id ?? '').toList()),
+              context: context,
+            ).then((_) {
+              loadData(
+                page: 1,
+                itemCount: itemCount,
+              );
+            });
+          },
           itemsPerPage: itemCount,
           totalItems: customerListResponse?.total,
           header: BaseListHeader(
             selected: allSelected,
             onUpdate: (bool? value) {
-              if (value == null) {
-                return;
-              }
               setState(() {
+                if (value == null) {
+                  return;
+                }
                 if (value) {
                   selection.addAll(customerListResponse?.customers ?? []);
                   allSelected = true;
@@ -122,13 +153,89 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
               });
             },
             items: {
-              'Customer name': ListUtil.lColumn,
-              'Email': ListUtil.xLColumn,
-              'Phone': ListUtil.lColumn,
-              'Hours': ListUtil.mColumn,
-              '': ListUtil.sColumn,
-              'Company': ListUtil.mColumn,
-              ' ': ListUtil.xSColumn,
+              BaseHeaderItem(
+                label: LocaleKeys.customerName.tr(),
+                sorting: sortingValue == 'first_name',
+                onSort: (bool? ascending) {
+                  if (ascending == null) {
+                    setState(() {
+                      sortingValue = null;
+                    });
+                    loadData(
+                      page: 1,
+                      itemCount: itemCount,
+                    );
+                    return;
+                  }
+                  setState(() {
+                    sortingValue = 'first_name';
+                  });
+                  loadData(
+                    page: 1,
+                    itemCount: itemCount,
+                    sortTerm: 'first_name',
+                    ascending: !ascending,
+                  );
+                },
+              ): ListUtil.lColumn,
+              BaseHeaderItem(
+                label: LocaleKeys.email.tr(),
+              ): ListUtil.xLColumn,
+              BaseHeaderItem(
+                label: LocaleKeys.phoneNumber.tr(),
+              ): ListUtil.lColumn,
+              BaseHeaderItem(
+                label: LocaleKeys.hours.tr(),
+                sorting: sortingValue == 'hours',
+                onSort: (bool? ascending) {
+                  if (ascending == null) {
+                    setState(() {
+                      sortingValue = null;
+                    });
+                    return;
+                  }
+                  setState(() {
+                    sortingValue = 'hours';
+                  });
+                  loadData(
+                    page: 1,
+                    itemCount: itemCount,
+                    sortTerm: 'hours',
+                    ascending: ascending,
+                  );
+                },
+              ): ListUtil.mColumn,
+              BaseHeaderItem(
+                label: 'Company',
+                sorting: sortingValue == 'company_name',
+                onSort: (bool? ascending) {
+                  if (ascending == null) {
+                    setState(() {
+                      sortingValue = null;
+                    });
+                    loadData(
+                      page: 1,
+                      itemCount: itemCount,
+                    );
+                    return;
+                  }
+                  setState(() {
+                    sortingValue = 'company_name';
+                  });
+                  loadData(
+                    page: 1,
+                    itemCount: itemCount,
+                    sortTerm: 'company_name',
+                    ascending: !ascending,
+                  );
+                },
+              ): ListUtil.lColumn,
+              const BaseHeaderItem(
+                label: '',
+              ): ListUtil.sColumn,
+              const BaseHeaderItem(
+                label: '  ',
+              ): ListUtil.miniColumn,
             },
           ),
           rows: customerListResponse?.customers.map(
@@ -155,7 +262,9 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                           customerId: customer.id!,
                         ),
                         context: context,
-                      );
+                      ).then((_) {
+                        loadData();
+                      });
                     },
                     items: {
                       ProfileRowItem(
@@ -163,18 +272,26 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                         lastName: customer.lastName,
                         initials: customer.initials,
                         imageUrl: customer.profilePictureUrl,
+                        fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
                       SelectableTextRowItem(
                         value: customer.email,
+                        fixedWidth: ListUtil.lColumn,
                       ): ListUtil.xLColumn,
                       SelectableTextRowItem(
                         value: customer.phoneNumber,
+                        fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
-                      const TextRowItem(
-                        value: '',
+                      TextRowItem(
+                        value: customer.formatHours(),
+                        fixedWidth: ListUtil.xSColumn,
                       ): ListUtil.mColumn,
+                      TextRowItem(
+                        value: customer.company,
+                        fixedWidth: ListUtil.mColumn,
+                      ): ListUtil.lColumn,
                       StatusRowItem(
-                        value: 'New',
+                        value: LocaleKeys.newCopy.tr(),
                         color: GawTheme.success,
                         visible:
                             GawDateUtil.tryFromApi(customer.createdAt)?.isAfter(
@@ -185,13 +302,10 @@ class _CustomersPageState extends State<CustomersPage> with ScreenStateMixin {
                                   ),
                                 ) ??
                                 false,
-                      ): ListUtil.sColumn,
-                      TextRowItem(
-                        value: customer.company,
-                      ): ListUtil.mColumn,
-                      const IconRowItem(
-                        icon: PixelPerfectIcons.eyeNormal,
                       ): ListUtil.xSColumn,
+                      const IconRowItem(
+                        icon: PixelPerfectIcons.customEye,
+                      ): ListUtil.miniColumn,
                     },
                   );
                 },

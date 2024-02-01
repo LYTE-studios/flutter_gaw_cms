@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
@@ -38,6 +39,8 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
           ..firstName = tecFirstName.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
+          ..phoneNumber = tecPhoneNumber.text
+          ..company = tecCompany.text
           ..address = address?.toBuilder()
           ..billingAddress = billingAddress?.toBuilder()
           ..taxNumber = tecVat.text,
@@ -147,6 +150,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                       child: Center(
                         child: LoadingSwitcher(
                           loading: loading,
+                          color: GawTheme.clearText,
                           child: MainText(
                             index == 2 ? 'Create' : 'Next',
                             textStyleOverride: TextStyles.titleStyle.copyWith(
@@ -167,11 +171,11 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                         });
                         return;
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 72,
                         child: Center(
                           child: MainText(
-                            'Back',
+                            LocaleKeys.back.tr(),
                           ),
                         ),
                       ),

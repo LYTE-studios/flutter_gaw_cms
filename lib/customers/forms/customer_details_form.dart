@@ -69,6 +69,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
           ..firstName = tecFirstname.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
+          ..phoneNumber = tecPhoneNumber.text
           ..company = tecCompany.text
           ..initials = tecInitials.text
           ..address = address?.toBuilder()

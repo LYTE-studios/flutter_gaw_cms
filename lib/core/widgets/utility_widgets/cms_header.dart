@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/notifications/notifications_provider.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
@@ -106,6 +107,11 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
     setState(() {
       _english = !_english;
     });
+
+    EasyLocalization.of(context)?.setLocale(
+      Locale(_english ? 'en' : 'nl'),
+    );
+
     //UsersApi.updateLanguage(UpdateLanguageRequest((b) => b..language = _english ? 'en' : 'nl'));
     //loadData();
   }

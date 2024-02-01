@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
@@ -146,11 +147,11 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
                         });
                         return;
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 72,
                         child: Center(
                           child: MainText(
-                            'Back',
+                            LocaleKeys.back.tr(),
                           ),
                         ),
                       ),

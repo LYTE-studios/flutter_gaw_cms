@@ -106,7 +106,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     child: TargetStatisticsBlock(
                       loading: loading,
                       jobsCount: adminStatistics?.jobCount ?? 0,
-                      increaseAmount: 12.5,
+                      increaseAmount: adminStatistics?.getJobCountTrend() ?? 0,
                     ),
                   )
                 ],

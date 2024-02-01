@@ -72,12 +72,17 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
           title: LocaleKeys.washers.tr(),
           valueName: LocaleKeys.washers.tr().toLowerCase(),
           totalItems: washersListResponse?.total,
-          header: const BaseListHeader(
+          header: BaseListHeader(
             items: {
-              'Name': ListUtil.lColumn,
-              'Email': ListUtil.xLColumn,
-              'Phone': ListUtil.mColumn,
-              '': ListUtil.xSColumn,
+              const BaseHeaderItem(
+                label: 'Name',
+              ): ListUtil.lColumn,
+              const BaseHeaderItem(
+                label: 'Email',
+              ): ListUtil.xLColumn,
+              const BaseHeaderItem(
+                label: 'Phone',
+              ): ListUtil.lColumn,
             },
           ),
           rows: washersListResponse?.washers.map(

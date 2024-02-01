@@ -137,13 +137,20 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       totalItems: 0,
       showFooter: widget.fullView,
       showHeader: widget.fullView || widget.jobId != null,
-      header: const BaseListHeader(
+      header: BaseListHeader(
         items: {
-          'Washer name': ListUtil.xLColumn,
-          'Date': ListUtil.mColumn,
-          'Region': ListUtil.lColumn,
-          'Distance': ListUtil.sColumn,
-          '': ListUtil.sColumn,
+          const BaseHeaderItem(
+            label: 'Washer name',
+          ): ListUtil.lColumn,
+          const BaseHeaderItem(
+            label: 'Date',
+          ): ListUtil.xLColumn,
+          const BaseHeaderItem(
+            label: 'Region',
+          ): ListUtil.lColumn,
+          const BaseHeaderItem(
+            label: 'Distance',
+          ): ListUtil.sColumn,
         },
       ),
       rows: applicationsListResponse?.applications.map(
