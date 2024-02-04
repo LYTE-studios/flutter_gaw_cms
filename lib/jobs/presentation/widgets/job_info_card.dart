@@ -45,9 +45,6 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
       statusColour = GawTheme.text;
     }
 
-    String abbreviation =
-        (widget.info.title ?? " ").split(" ").map((e) => e[0]).join();
-
     return Padding(
       padding: const EdgeInsets.all(PaddingSizes.mainPadding),
       child: LoadingSwitcher(
@@ -71,19 +68,13 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
+                  SizedBox(
                     height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: GawTheme.darkBackground,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: MainText(
-                      abbreviation,
-                      color: GawTheme.clearText,
-                      fontWeight: FontWeight.w600,
+                    width: 40,
+                    child: InitialsAvatar(
+                      isBlock: true,
+                      initials: widget.info.customer.initials ?? '',
+                      imageUrl: widget.info.customer.profilePictureUrl,
                     ),
                   ),
                   Visibility(

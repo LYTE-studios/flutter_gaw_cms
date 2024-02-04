@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/routing/router.dart';
+import 'package:flutter_gaw_cms/core/widgets/dialogs/confirm_logout_dialog.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_item.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_sub_item.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
@@ -8,8 +8,6 @@ import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
-import 'package:flutter_gaw_cms/sign_in/sign_in_screen.dart';
-import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 import '../../../dashboard/pages/customers_page.dart';
@@ -167,9 +165,10 @@ class MenuDrawer extends StatelessWidget {
             hoverColor: GawTheme.error,
             iconUrl: PixelPerfectIcons.logoutMedium,
             onTap: () {
-              LocalStorageUtil.setTokens(null, null);
-
-              mainRouter.beamToNamed(SignInScreen.route);
+              DialogUtil.show(
+                dialog: const ConfirmLogoutDialog(),
+                context: context,
+              );
             },
             active: false,
           ),

@@ -31,7 +31,6 @@ dependencies:
   google_map_polyline_new: ^0.3.0+2
   file_picker: ^6.1.1
   dio: ^5.3.3
-  flutter_image_compress: ^2.1.0
   geolocator: ^10.1.0
   widget_to_marker: ^1.0.4
   page_transition: ^2.1.0

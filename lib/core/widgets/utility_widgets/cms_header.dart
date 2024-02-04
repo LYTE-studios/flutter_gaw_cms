@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart' as api;
 import 'package:gaw_ui/gaw_ui.dart';
 
-class CmsHeader extends StatelessWidget {
+class CmsHeader extends ConsumerWidget {
   final String mainRoute;
 
   final String subRoute;
@@ -27,7 +27,9 @@ class CmsHeader extends StatelessWidget {
   static const double headerHeight = 280;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+
     return Container(
       height: heightOverride ?? CmsHeader.headerHeight,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
@@ -64,10 +66,15 @@ class CmsHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  MainText(
-                    'Welcome back, Stieg',
-                    textStyleOverride: TextStyles.titleStyle.copyWith(
-                      color: GawTheme.clearText,
+                  AnimatedSwitcher(
+                    duration: const Duration(
+                      milliseconds: 300,
+                    ),
+                    child: MainText(
+                      'Welcome back, ${user.firstName ?? ''}',
+                      textStyleOverride: TextStyles.titleStyle.copyWith(
+                        color: GawTheme.clearText,
+                      ),
                     ),
                   ),
                   MainText(
@@ -170,8 +177,12 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
             ),
           ),
           child: Padding(
-            padding:
-                const EdgeInsets.only(left: 0, right: 24, top: 6, bottom: 6),
+            padding: const EdgeInsets.only(
+              left: 0,
+              right: 24,
+              top: 6,
+              bottom: 6,
+            ),
             child: SizedBox(
               width: 40,
               height: 32,

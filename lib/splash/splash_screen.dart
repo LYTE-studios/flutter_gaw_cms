@@ -66,14 +66,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     Configuration.clientSecret = apiSecret;
     Configuration.apiUrl = apiUrl;
 
-    if (Configuration.accessToken != null &&
-        Configuration.refreshToken != null) {
-      _goToDashboard();
-      return;
-    }
-    
     Future(() async {
-      await PixelPerfectIcons.loadIcons();
+      Future<void> loadFuture = PixelPerfectIcons.loadIcons();
+
+      await Future.delayed(
+        const Duration(
+          milliseconds: 1500,
+        ),
+      );
+
+      await loadFuture;
+
+      if (Configuration.accessToken != null &&
+          Configuration.refreshToken != null) {
+        _goToDashboard();
+        return;
+      }
+      
       getTokens();
     });
     super.initState();

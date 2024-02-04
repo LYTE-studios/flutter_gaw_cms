@@ -87,9 +87,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
     return BaseLayoutScreen(
       mainRoute: LocaleKeys.customers.tr(),
       subRoute: LocaleKeys.customers.tr(),
-      extraActionButtonPadding: 156,
+      extraActionButtonPadding: 128,
       actionWidget: ActionButton(
-        label: LocaleKeys.createNewCustomer.tr(),
+        label: 'New customer',
         icon: PixelPerfectIcons.customAdd,
         onTap: () {
           DialogUtil.show(
@@ -104,9 +104,10 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
         },
       ),
       child: ScreenSheet(
-        topPadding: 120,
+        topPadding: 156,
         child: GenericListView(
           loading: loading,
+          canDelete: selection.isNotEmpty,
           title: LocaleKeys.customers.tr(),
           valueName: LocaleKeys.customers.tr().toLowerCase(),
           onSearch: (String? value) {
@@ -182,7 +183,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                 label: LocaleKeys.email.tr(),
               ): ListUtil.xLColumn,
               BaseHeaderItem(
-                label: LocaleKeys.phoneNumber.tr(),
+                label: LocaleKeys.phone.tr(),
               ): ListUtil.lColumn,
               BaseHeaderItem(
                 label: LocaleKeys.hours.tr(),

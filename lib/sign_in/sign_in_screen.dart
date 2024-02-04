@@ -28,10 +28,10 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Visibility(
-              visible: MediaQuery.of(context).size.width > 960,
-              child: const CmsBanner(),
+          Visibility(
+            visible: MediaQuery.of(context).size.width > 960,
+            child: const Expanded(
+              child: CmsBanner(),
             ),
           ),
           Expanded(
