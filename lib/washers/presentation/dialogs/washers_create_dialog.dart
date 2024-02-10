@@ -2,8 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
-import 'package:flutter_gaw_cms/customers/forms/customer_basic_details_form.dart';
-import 'package:flutter_gaw_cms/customers/forms/customer_billing_form.dart';
+import 'package:flutter_gaw_cms/core/widgets/forms/file_upload_form.dart';
+import 'package:flutter_gaw_cms/washers/presentation/forms/washer_basic_details_form.dart';
+import 'package:flutter_gaw_cms/washers/presentation/forms/washer_billing_form.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -23,27 +24,37 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
   final TextEditingController tecCompany = TextEditingController();
   final TextEditingController tecVat = TextEditingController();
 
+  Address? address;
+  Address? billingAddress;
+
   int index = 0;
 
   bool valid = false;
 
   late List<Widget> pages = [
-    CustomerBasicDetailsForm(
+    WasherBasicDetailsForm(
       onValidationChange: (bool value) {
         setState(() {
           valid = value;
         });
       },
+      onUpdateAddress: (Address address) {
+        setState(() {
+          this.address = address;
+          billingAddress = address;
+        });
+      },
+      address: address,
       tecFirstName: tecFirstName,
       tecLastName: tecLastName,
       tecEmail: tecEmail,
       tecPhoneNumber: tecPhoneNumber,
     ),
-    CustomerBillingForm(
+    WasherBillingForm(
       tecCompany: tecCompany,
       tecVat: tecVat,
     ),
-    SizedBox(),
+    const FileUploadForm(),
   ];
 
   void _next() {

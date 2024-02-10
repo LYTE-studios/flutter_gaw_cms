@@ -46,6 +46,7 @@ dependencies:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
+  flutter_dropzone: ^3.0.7
 
 dependency_overrides:
   dio: ^5.3.3

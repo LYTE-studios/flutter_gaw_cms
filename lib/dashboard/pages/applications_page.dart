@@ -141,10 +141,10 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
         items: {
           const BaseHeaderItem(
             label: 'Washer name',
-          ): ListUtil.lColumn,
+          ): ListUtil.xLColumn,
           const BaseHeaderItem(
             label: 'Date',
-          ): ListUtil.xLColumn,
+          ): ListUtil.mColumn,
           const BaseHeaderItem(
             label: 'Region',
           ): ListUtil.lColumn,
@@ -164,7 +164,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                     ProfileRowItem(
                       firstName: application.washer.firstName,
                       lastName: application.washer.lastName,
-                      imageUrl: application.washer.profilePictureUrl,
+                      imageUrl: FormattingUtil.formatUrl(
+                        application.washer.profilePictureUrl,
+                      ),
                     ): ListUtil.xLColumn,
                     TextRowItem(
                       value: GawDateUtil.tryFormatReadableDate(
@@ -179,76 +181,166 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                       value: GeoUtil.formatDistance(application.distance),
                     ): ListUtil.sColumn,
                     BaseRowItem(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingSizes.mainPadding,
-                          vertical: PaddingSizes.mainPadding,
-                        ),
-                        child: GenericButton(
-                          radius: 16,
-                          onTap: () {
-                            setLoading(true);
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 128,
+                            child: _ApprovalButton(
+                              label: 'Approve',
+                              icon: PixelPerfectIcons.checkMedium,
+                              backgroundColor: GawTheme.mainTint,
+                              textColor: GawTheme.clearText,
+                              onTap: () {
+                                setLoading(true);
 
-                            JobsApi.approveApplication(id: application.id!)
-                                .then((_) {
-                              loadData();
-                            }).catchError((error) {
-                              ExceptionHandler.show(error);
-                            }).whenComplete(() => setLoading(false));
-                          },
-                          label: 'Approve',
-                          icon: PixelPerfectIcons.checkMedium,
-                          textColor: GawTheme.clearText,
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.clearText,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                                JobsApi.approveApplication(id: application.id!)
+                                    .then((_) {
+                                  loadData();
+                                }).catchError((error) {
+                                  ExceptionHandler.show(error);
+                                }).whenComplete(() => setLoading(false));
+                              },
+                            ),
                           ),
-                        ),
-                      ),
-                    ): ListUtil.mColumn,
-                    BaseRowItem(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingSizes.mainPadding,
-                          vertical: PaddingSizes.mainPadding,
-                        ),
-                        child: GenericButton(
-                          label: 'Deny',
-                          outline: true,
-                          radius: 16,
-                          icon: PixelPerfectIcons.xNormal,
-                          onTap: () {
-                            setLoading(true);
-                            JobsApi.denyApplication(id: application.id!)
-                                .then((_) {
-                              loadData();
-                            }).catchError((error) {
-                              ExceptionHandler.show(error);
-                            }).whenComplete(() => setLoading(false));
-                          },
-                          textColor: GawTheme.mainTint,
-                          color: GawTheme.clearText,
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.mainTint,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                          SizedBox(
+                            width: 105,
+                            child: _ApprovalButton(
+                              label: 'Deny',
+                              icon: PixelPerfectIcons.xMedium,
+                              backgroundColor: GawTheme.clearText,
+                              textColor: GawTheme.mainTint,
+                              onTap: () {
+                                setLoading(true);
+                                JobsApi.denyApplication(id: application.id!)
+                                    .then((_) {
+                                  loadData();
+                                }).catchError((error) {
+                                  ExceptionHandler.show(error);
+                                }).whenComplete(() => setLoading(false));
+                              },
+                            ),
                           ),
-                        ),
+                          ColorlessInkWell(
+                            onTap: () {
+                              onSelected(application);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  PaddingSizes.mainPadding),
+                              child: Container(
+                                height: 32,
+                                width: 128,
+                                decoration: BoxDecoration(
+                                  color: GawTheme.clearText,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: const Border.fromBorderSide(
+                                    Borders.lightSide,
+                                  ),
+                                ),
+                                child: const IntrinsicWidth(
+                                  child: IntrinsicWidth(
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: PaddingSizes.smallPadding,
+                                        ),
+                                        child: MainText(
+                                          'View application',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ): ListUtil.mColumn,
-                    ActionButtonRowItem(
-                      label: 'View application',
-                      onTap: () {
-                        onSelected(application);
-                      },
-                    ): ListUtil.mColumn,
+                    ): 390,
                   },
                 ),
               );
             },
           ).toList() ??
           [],
+    );
+  }
+}
+
+class _ApprovalButton extends StatelessWidget {
+  final String label;
+
+  final String icon;
+
+  final bool outline;
+
+  final Color backgroundColor;
+
+  final Color textColor;
+
+  final Function()? onTap;
+
+  const _ApprovalButton({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.backgroundColor,
+    required this.textColor,
+    this.outline = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: PaddingSizes.mainPadding,
+      ),
+      child: ColorlessInkWell(
+        onTap: onTap,
+        child: Container(
+          height: 32,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: outline
+                ? null
+                : const Border.fromBorderSide(
+                    Borders.thickMainTintSide,
+                  ),
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: PaddingSizes.mainPadding,
+                ),
+                child: MainText(
+                  label,
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: PaddingSizes.smallPadding,
+                ),
+                child: SizedBox(
+                  height: 21,
+                  width: 21,
+                  child: SvgIcon(
+                    icon,
+                    color: textColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

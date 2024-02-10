@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
-import 'package:flutter_gaw_cms/core/utils/location_utils.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:widget_to_marker/widget_to_marker.dart';
+
+import '../../utils/location_utils.dart';
 
 class BasicMap extends StatefulWidget {
   final Completer<GoogleMapController>? controller;
@@ -144,15 +145,15 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
             endCap: Cap.buttCap,
           ),
         );
+        _controller.future.then((controller) {
+          controller.animateCamera(
+            CameraUpdate.newLatLngBounds(
+              LocationUtils.linesToFit(lines),
+              100,
+            ),
+          );
+        });
       });
-    });
-    _controller.future.then((controller) {
-      controller.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          LocationUtils.linesToFit(lines),
-          100,
-        ),
-      );
     });
   }
 
@@ -218,16 +219,15 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: const BoxDecoration(
-          border: Border.fromBorderSide(
-            Borders.lightSide,
-          ),
+          boxShadow: [
+            Shadows.mainShadow,
+          ],
         ),
         child: Stack(
           children: [
-            Focus(
-              focusNode: FocusNode(
-                canRequestFocus: false,
-              ),
+            FractionallySizedBox(
+              widthFactor: 1.02,
+              heightFactor: 1.02,
               child: GoogleMap(
                 onCameraMove: widget.onMoveCamera,
                 myLocationEnabled: widget.showCurrentLocation,
@@ -249,9 +249,9 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
               ),
             ),
             LoadingSwitcher(
-              loading: loading || !_controller.isCompleted,
-              backgroundColor: GawTheme.background,
-              child: const SizedBox.expand(),
+              loading: loading,
+              backgroundColor: GawTheme.clearBackground,
+              child: const SizedBox(),
             ),
           ],
         ),

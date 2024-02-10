@@ -129,6 +129,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                   ids: selection.map((e) => e.id ?? '').toList()),
               context: context,
             ).then((_) {
+              selection = [];
               loadData(
                 page: 1,
                 itemCount: itemCount,
@@ -272,7 +273,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                         firstName: customer.firstName,
                         lastName: customer.lastName,
                         initials: customer.initials,
-                        imageUrl: customer.profilePictureUrl,
+                        imageUrl: FormattingUtil.formatUrl(
+                          customer.profilePictureUrl,
+                        ),
                         fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
                       SelectableTextRowItem(

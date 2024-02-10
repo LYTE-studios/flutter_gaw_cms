@@ -3,7 +3,7 @@ import 'package:flutter_gaw_cms/core/widgets/dialogs/location_picker_dialog.dart
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class CustomerBillingForm extends StatelessWidget {
+class WasherBillingForm extends StatelessWidget {
   final TextEditingController tecVat;
 
   final TextEditingController tecCompany;
@@ -12,7 +12,7 @@ class CustomerBillingForm extends StatelessWidget {
 
   final Function(Address)? onUpdateBillingAddress;
 
-  const CustomerBillingForm({
+  const WasherBillingForm({
     super.key,
     required this.tecCompany,
     required this.tecVat,
@@ -29,7 +29,7 @@ class CustomerBillingForm extends StatelessWidget {
             FormItem(
               child: InputTextForm(
                 label: 'Company',
-                hint: 'Customers company',
+                hint: 'Washer company',
                 controller: tecCompany,
               ),
             ),

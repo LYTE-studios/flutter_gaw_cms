@@ -112,15 +112,18 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
                       imageUrl:
                           FormattingUtil.formatUrl(customer?.profilePictureUrl),
                       onEditPressed: () {
+                        setLoading(true);
+
                         FilePicker.platform
                             .pickFiles(
                           type: FileType.image,
                         )
                             .then((FilePickerResult? result) {
                           if (result?.files.isEmpty ?? true) {
+                            setLoading(false);
+
                             return;
                           }
-                          setLoading(true);
 
                           UsersApi.uploadProfilePicture(
                             result!.files[0].bytes!,

@@ -21,7 +21,7 @@ class BaseDialog extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-          color: GawTheme.clearBackground,
+          color: GawTheme.clearText,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(

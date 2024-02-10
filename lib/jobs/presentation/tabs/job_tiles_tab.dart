@@ -32,7 +32,8 @@ class _JobTilesTabState extends State<JobTilesTab> {
             loading: widget.loading,
             child: SizedBox(
               width: double.infinity,
-              child: Center(
+              child: Align(
+                alignment: Alignment.topLeft,
                 child: Wrap(
                   alignment: WrapAlignment.start,
                   crossAxisAlignment: WrapCrossAlignment.start,

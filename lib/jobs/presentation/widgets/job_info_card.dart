@@ -74,11 +74,13 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                     child: InitialsAvatar(
                       isBlock: true,
                       initials: widget.info.customer.initials ?? '',
-                      imageUrl: widget.info.customer.profilePictureUrl,
+                      imageUrl: FormattingUtil.formatUrl(
+                        widget.info.customer.profilePictureUrl,
+                      ),
                     ),
                   ),
                   Visibility(
-                    visible: !widget.basic,
+                    visible: !widget.basic && (widget.info.isDraft ?? false),
                     child: ColorlessInkWell(
                       onTap: () {
                         setLoading(true);

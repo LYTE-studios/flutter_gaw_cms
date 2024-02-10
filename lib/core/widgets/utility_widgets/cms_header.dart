@@ -105,6 +105,7 @@ class LanguageButton extends ConsumerStatefulWidget {
 class _LanguageButtonState extends ConsumerState<LanguageButton> {
   bool _english = true;
   bool _menuOpen = false;
+  bool _hover = false;
 
   void loadData() {
     ref.invalidate(userProvider);
@@ -199,6 +200,16 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
       builder: (context, controller, child) {
         return ColorlessInkWell(
           onTap: () => _toggleMenu(controller),
+          onHover: () {
+            setState(() {
+              _hover = true;
+            });
+          },
+          onExitHover: () {
+            setState(() {
+              _hover = false;
+            });
+          },
           child: Container(
             width: 80.0,
             height: 44.0,
@@ -224,7 +235,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
                 ),
                 RotatingIcon(
                   iconUrl: PixelPerfectIcons.arrowRightMedium,
-                  rotate: _menuOpen,
+                  rotate: _menuOpen || _hover,
                   turns: 0.5,
                   rotation: 1,
                 ),
@@ -316,7 +327,7 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
               height: 36,
               width: 36,
               child: ProfilePictureAvatar(
-                imageUrl: imageUrl,
+                imageUrl: api.FormattingUtil.formatUrl(imageUrl),
               ),
             ),
           ),

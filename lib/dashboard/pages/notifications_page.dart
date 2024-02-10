@@ -1,7 +1,6 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
-import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -67,26 +66,56 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
       mainRoute: 'Notifications',
       subRoute: 'Notifications',
       child: ScreenSheet(
-        topPadding: CmsHeader.headerHeight + PaddingSizes.smallPadding,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(PaddingSizes.bigPadding),
-                    child: SizedBox(
-                      height: 390,
-                      child: TabbedView(
-                        tabs: notifications.keys.toList(),
-                        pages: notifications.values.toList(),
-                        selectedIndex: selectedLanguageIndex,
-                        onPageIndexChange: pageIndexChange,
-                      ),
-                    ),
+        topPadding: 136,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(
+            horizontal: PaddingSizes.bigPadding * 2,
+            vertical: PaddingSizes.extraBigPadding * 2,
+          ),
+          children: const [
+            FormTitle(
+              label: 'Send notification',
+            ),
+            FormSubTitle(
+              label: 'Notification will be sent out instantly',
+            ),
+            SizedBox(
+              height: PaddingSizes.bigPadding,
+            ),
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputTextForm(
+                    label: 'Title',
+                    hint: 'Notification title...',
                   ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: PaddingSizes.mainPadding,
+            ),
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputTextForm(
+                    label: 'Description',
+                    hint: 'Write a description',
+                    lines: 3,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: PaddingSizes.mainPadding,
+            ),
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputMultiSelectionForm(),
                 ),
               ],
             ),

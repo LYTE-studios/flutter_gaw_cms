@@ -123,6 +123,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
               ),
               context: context,
             ).then((_) {
+              selection = [];
+
               loadData(
                 page: 1,
                 itemCount: itemCount,
@@ -241,7 +243,9 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                         firstName: washer.firstName,
                         lastName: washer.lastName,
                         initials: washer.initials,
-                        imageUrl: washer.profilePictureUrl,
+                        imageUrl: FormattingUtil.formatUrl(
+                          washer.profilePictureUrl,
+                        ),
                         fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
                       SelectableTextRowItem(
