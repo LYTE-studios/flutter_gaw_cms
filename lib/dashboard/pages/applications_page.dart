@@ -155,6 +155,11 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       ),
       rows: applicationsListResponse?.applications.map(
             (application) {
+              String? distance = GeoUtil.formatDistance(application.distance);
+              if (application.noTravelCosts) {
+                distance = '($distance)';
+              }
+
               return InkWell(
                 onTap: () {
                   onSelected(application);
@@ -178,7 +183,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                           application.address.postalCode,
                     ): ListUtil.lColumn,
                     TextRowItem(
-                      value: GeoUtil.formatDistance(application.distance),
+                      value: distance,
                     ): ListUtil.sColumn,
                     BaseRowItem(
                       child: Row(

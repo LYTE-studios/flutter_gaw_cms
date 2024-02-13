@@ -34,12 +34,20 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
     String statusString = "";
     Color statusColour = GawTheme.text;
 
+    bool isActive = false;
+
     if (widget.info.isDraft ?? true) {
       statusString = "Draft";
       statusColour = GawTheme.error;
     } else if (widget.info.state == JobState.pending) {
-      statusString = "Active";
-      statusColour = GawTheme.success;
+      if (GawDateUtil.fromApi(widget.info.startTime).isBefore(DateTime.now())) {
+        statusString = "Active";
+        statusColour = GawTheme.success;
+        isActive = true;
+      } else {
+        statusString = "Pending";
+        statusColour = GawTheme.secondaryTint;
+      }
     } else if (widget.info.state == JobState.done) {
       statusString = "Done";
       statusColour = GawTheme.text;
@@ -145,7 +153,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                   MainText(
                     GawDateUtil.formatTimeInterval(
                       GawDateUtil.fromApi(widget.info.startTime),
-                      GawDateUtil.fromApi(widget.info.startTime),
+                      GawDateUtil.fromApi(widget.info.endTime),
                     ),
                     color: GawTheme.secondaryTint,
                     fontWeight: FontWeight.w600,
@@ -171,7 +179,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
               ),
               Row(
                 children: [
-                  _SelectedWashersWidget(
+                  SelectedWashersWidget(
                     selectedWashers: widget.info.selectedWashers,
                     maxWashers: widget.info.maxWashers,
                   ),
@@ -255,7 +263,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                         ),
                       ),
                     )
-                  : widget.info.state == JobState.done
+                  : widget.info.state == JobState.done || isActive
                       ? EditButton(
                           onTap: () {
                             DialogUtil.show(
@@ -331,12 +339,13 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
   }
 }
 
-class _SelectedWashersWidget extends StatelessWidget {
+class SelectedWashersWidget extends StatelessWidget {
   final int selectedWashers;
 
   final int maxWashers;
 
-  const _SelectedWashersWidget({
+  const SelectedWashersWidget({
+    super.key,
     required this.selectedWashers,
     required this.maxWashers,
   });

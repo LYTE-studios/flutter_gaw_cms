@@ -295,10 +295,16 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                         fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
                       StatusRowItem(
-                        value: LocaleKeys.newCopy.tr(),
-                        color: GawTheme.success,
-                        visible:
-                            GawDateUtil.tryFromApi(customer.createdAt)?.isAfter(
+                        value: customer.hasActiveJob == true
+                            ? 'Active job'
+                            : LocaleKeys.newCopy.tr(),
+                        color: customer.hasActiveJob == true
+                            ? GawTheme.mainTint
+                            : GawTheme.success,
+                        visible: customer.hasActiveJob == true
+                            ? true
+                            : GawDateUtil.tryFromApi(customer.createdAt)
+                                    ?.isAfter(
                                   DateTime(
                                     DateTime.now().year,
                                     DateTime.now().month,
@@ -306,7 +312,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                                   ),
                                 ) ??
                                 false,
-                      ): ListUtil.xSColumn,
+                      ): ListUtil.sColumn,
                       const IconRowItem(
                         icon: PixelPerfectIcons.customEye,
                       ): ListUtil.miniColumn,

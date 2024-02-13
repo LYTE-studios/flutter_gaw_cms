@@ -115,7 +115,13 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
               formItems: [
                 SizedBox(
                   width: 520,
-                  child: InputMultiSelectionForm(),
+                  child: InputMultiSelectionForm(
+                    options: {
+                      'In-App notification': 0,
+                      'Push notification': 1,
+                      'Email': 2,
+                    },
+                  ),
                 ),
               ],
             ),
