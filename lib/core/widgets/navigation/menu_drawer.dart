@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -82,14 +83,15 @@ class MenuDrawer extends StatelessWidget {
             onTap: () {
               onChange?.call(WashersPage.route);
             },
-            active: [WashersPage.route, ApplicationsPage.route].contains(route),
+            active:
+                [WashersPage.route, RegistrationsPage.route].contains(route),
             subItems: [
               DrawerNavigationSubItem(
                 onTap: () {
-                  onChange?.call(ApplicationsPage.route);
+                  onChange?.call(RegistrationsPage.route);
                 },
-                label: 'Applications',
-                active: route == ApplicationsPage.route,
+                label: 'Registrations',
+                active: route == RegistrationsPage.route,
               ),
             ],
           ),
@@ -102,7 +104,16 @@ class MenuDrawer extends StatelessWidget {
               onChange?.call(JobsPage.route);
             },
             iconUrl: PixelPerfectIcons.workMedium,
-            active: JobsPage.route == route,
+            active: [JobsPage.route, ApplicationsPage.route].contains(route),
+            subItems: [
+              DrawerNavigationSubItem(
+                onTap: () {
+                  onChange?.call(ApplicationsPage.route);
+                },
+                label: 'Applications',
+                active: route == ApplicationsPage.route,
+              ),
+            ],
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,

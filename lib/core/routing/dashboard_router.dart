@@ -7,6 +7,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
@@ -19,6 +20,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
   DashboardPage.route: (context, state, data) => dashboardPageBeamPage,
   WashersPage.route: (context, state, data) => washersBeamPage,
   ApplicationsPage.route: (context, state, data) => applicationsBeamPage,
+  RegistrationsPage.route: (context, state, data) => registrationsBeamPage,
   ApplicationReviewScreen.route: (context, state, data) {
     final jobId = state.pathParameters[ApplicationReviewScreen.kJobId]
         ?.replaceFirst(':', '');

@@ -38,7 +38,7 @@ class _FileUploadFormState extends State<FileUploadForm> {
                   label: 'Upload profile picture',
                 ),
                 MainText(
-                  'Select image to complete customers profile',
+                  'Select image to complete users profile',
                 ),
               ],
             ),

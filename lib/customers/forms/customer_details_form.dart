@@ -146,7 +146,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
                   );
                 },
                 frozen: !widget.canEdit,
-                text: widget.customer?.address?.formattedAddres(),
+                text: widget.customer?.address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer address',
               ),
@@ -183,7 +183,7 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
                   );
                 },
                 frozen: !widget.canEdit,
-                text: widget.customer?.billingAddress?.formattedAddres(),
+                text: widget.customer?.billingAddress?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer billing address',
               ),

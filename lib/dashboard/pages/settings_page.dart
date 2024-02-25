@@ -26,6 +26,51 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class _SettingsPageState extends ConsumerState<SettingsPage>
     with ScreenStateMixin {
+  String oneHour = 'After one hour';
+  String oneDay = 'After one day';
+  String oneWeek = 'After one week';
+  String never = 'Never';
+
+  int toSeconds(String value) {
+    if (value == never) {
+      return 0;
+    }
+
+    if (value == oneHour) {
+      return const Duration(hours: 1).inSeconds;
+    }
+
+    if (value == oneDay) {
+      return const Duration(days: 1).inSeconds;
+    }
+
+    if (value == oneWeek) {
+      return const Duration(days: 7).inSeconds;
+    }
+
+    return 0;
+  }
+
+  String toSelectedValue(int? value) {
+    if (value == null || value == 0) {
+      return never;
+    }
+
+    if (value == const Duration(hours: 1).inSeconds) {
+      return oneHour;
+    }
+
+    if (value == const Duration(days: 1).inSeconds) {
+      return oneDay;
+    }
+
+    if (value == const Duration(days: 7).inSeconds) {
+      return oneWeek;
+    }
+
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(
@@ -49,42 +94,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                     FormRow(
                       formItems: [
                         Expanded(
-                          child: InputSelectionForm(
-                            hint: "Select",
+                          child: InputMultiSelectionForm(
                             label: 'Automatically log out after',
-                            enableText: false,
-                            value: Configuration.sessionDuration?.toString() ??
-                                '0',
-                            onSelected: (dynamic value) async {
-                              int? duration = int.tryParse(value);
-
-                              if (duration == null) {
-                                return;
-                              }
+                            isMulti: false,
+                            selectedOptions: [
+                              toSelectedValue(Configuration.sessionDuration)
+                            ],
+                            options: {
+                              oneHour: null,
+                              oneDay: null,
+                              oneWeek: null,
+                              never: null,
+                            },
+                            onUpdate: (String value) async {
+                              int seconds = toSeconds(value);
 
                               setLoading(true);
 
-                              if (duration == 0) {
-                                duration = null;
-                              }
-
                               await AuthenticationApi.updateExpirySession(
-                                duration: duration,
+                                duration: seconds == 0 ? null : seconds,
                               );
 
                               await AuthenticationApi.testConnection();
                               setData(() {
                                 loading = false;
                               });
-                            },
-                            options: {
-                              const Duration(hours: 1).inSeconds.toString():
-                                  "After one hour",
-                              const Duration(days: 1).inSeconds.toString():
-                                  "After one day",
-                              const Duration(days: 7).inSeconds.toString():
-                                  "After one week",
-                              '0': "Never",
                             },
                           ),
                         ),

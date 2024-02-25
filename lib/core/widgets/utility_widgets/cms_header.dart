@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
 import 'package:flutter_gaw_cms/secrets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart' as api;
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class CmsHeader extends ConsumerWidget {
@@ -103,7 +104,6 @@ class LanguageButton extends ConsumerStatefulWidget {
 }
 
 class _LanguageButtonState extends ConsumerState<LanguageButton> {
-  bool _english = true;
   bool _menuOpen = false;
   bool _hover = false;
 
@@ -112,16 +112,21 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
   }
 
   void _toggleLanguage() {
-    setState(() {
-      _english = !_english;
-    });
+    String? language = ref.read(userProvider).language;
+
+    if (language == 'en') {
+      language = 'nl';
+    } else {
+      language = 'en';
+    }
 
     EasyLocalization.of(context)?.setLocale(
-      Locale(_english ? 'en' : 'nl'),
+      Locale(language),
     );
 
-    //UsersApi.updateLanguage(UpdateLanguageRequest((b) => b..language = _english ? 'en' : 'nl'));
-    //loadData();
+    UsersApi.updateLanguage(
+        UpdateLanguageRequest((b) => b..language = language));
+    loadData();
   }
 
   void _toggleMenu(MenuController controller) {
@@ -141,7 +146,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
   @override
   Widget build(BuildContext context) {
-    //final userState = ref.watch(userProvider);
+    final userState = ref.watch(userProvider);
 
     return MenuAnchor(
       onClose: _toggleRotation,
@@ -188,9 +193,9 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
               width: 40,
               height: 32,
               child: SvgIcon(
-                _english
-                    ? PixelPerfectIcons.netherlands
-                    : PixelPerfectIcons.unitedKingdom,
+                userState.language == 'nl'
+                    ? PixelPerfectIcons.unitedKingdom
+                    : PixelPerfectIcons.netherlands,
                 color: Colors.transparent,
               ),
             ),
@@ -226,7 +231,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
                     width: 40,
                     height: 32,
                     child: SvgIcon(
-                      !_english
+                      userState.language == 'nl'
                           ? PixelPerfectIcons.netherlands
                           : PixelPerfectIcons.unitedKingdom,
                       color: Colors.transparent,

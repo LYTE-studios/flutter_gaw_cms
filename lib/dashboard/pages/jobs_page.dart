@@ -46,7 +46,7 @@ class _JobsPageState extends ConsumerState<JobsPage> {
         label: 'Create new job',
         onTap: () {
           DialogUtil.show(
-            dialog: JobCreatePopup(),
+            dialog: const JobCreatePopup(),
             context: context,
           );
         },

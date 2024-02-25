@@ -204,9 +204,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
               child: InputStaticTextForm(
                 label: 'Location',
                 frozen: true,
-                text: (address?.formattedAddres().isEmpty ?? true)
+                text: (address?.formattedAddress().isEmpty ?? true)
                     ? address?.formattedLatLong()
-                    : address?.formattedAddres(),
+                    : address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Location for the job',
               ),

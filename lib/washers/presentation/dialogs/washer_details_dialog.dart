@@ -230,6 +230,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                       FormItem(
                         child: InputTextForm(
                           label: 'IBAN',
+                          controller: tecIban,
                           frozen: !canEdit,
                         ),
                       ),
@@ -264,7 +265,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                             );
                           },
                           frozen: !canEdit,
-                          text: address?.formattedAddres(),
+                          text: address?.formattedAddress(),
                           icon: PixelPerfectIcons.placeIndicator,
                           hint: 'Washer address',
                         ),

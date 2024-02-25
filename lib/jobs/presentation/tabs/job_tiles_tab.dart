@@ -28,16 +28,21 @@ class _JobTilesTabState extends State<JobTilesTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LoadingSwitcher(
-            loading: widget.loading,
-            child: SizedBox(
-              width: double.infinity,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  children: buildItems(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 128,
+            ),
+            child: LoadingSwitcher(
+              loading: widget.loading,
+              child: SizedBox(
+                width: double.infinity,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    children: buildItems(),
+                  ),
                 ),
               ),
             ),

@@ -41,10 +41,6 @@ class WasherBasicDetailsForm extends StatelessWidget {
       }
     }
 
-    if (address == null) {
-      valid = false;
-    }
-
     onValidationChange?.call(valid);
   }
 
@@ -102,14 +98,12 @@ class WasherBasicDetailsForm extends StatelessWidget {
                   DialogUtil.show(
                     dialog: LocationPickerDialog(
                       address: address,
-                      onAddressSelected: (Address address) {
-                        onUpdateAddress?.call(address);
-                      },
+                      onAddressSelected: onUpdateAddress,
                     ),
                     context: context,
                   );
                 },
-                text: address?.formattedAddres(),
+                text: address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Washer address',
               ),

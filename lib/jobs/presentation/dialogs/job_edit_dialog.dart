@@ -355,9 +355,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                     context: context,
                   );
                 },
-                text: (address?.formattedAddres().isEmpty ?? true)
+                text: (address?.formattedAddress().isEmpty ?? true)
                     ? address?.formattedLatLong()
-                    : address?.formattedAddres(),
+                    : address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Location for the job',
               ),
