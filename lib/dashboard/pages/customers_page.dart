@@ -50,8 +50,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
     setLoading(true);
 
     setData(() {
-      page = page;
-      itemCount = itemCount;
+      this.page = page ?? this.page;
+      this.itemCount = itemCount ?? this.itemCount;
     });
 
     CustomerApi.getCustomers(

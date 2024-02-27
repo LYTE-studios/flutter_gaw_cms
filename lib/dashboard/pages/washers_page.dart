@@ -48,8 +48,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
     setLoading(true);
 
     setData(() {
-      page = page;
-      itemCount = itemCount;
+      this.page = page ?? this.page;
+      this.itemCount = itemCount ?? this.itemCount;
     });
 
     WashersApi.getWashers(

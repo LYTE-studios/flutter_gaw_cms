@@ -122,7 +122,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       loading: loading,
       title: 'Registrations',
       valueName: 'registrations',
-      totalItems: 0,
+      totalItems: washersListResponse?.total ?? 0,
       onSearch: (String? value) {
         loadData(page: 1, itemCount: itemCount, term: value);
       },
