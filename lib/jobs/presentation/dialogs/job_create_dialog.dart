@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -37,7 +38,9 @@ class JobCreatePopup extends ConsumerWidget {
               ],
             ),
           ),
-          const _JobCreateForm(),
+          const Expanded(
+            child: _JobCreateForm(),
+          ),
         ],
       ),
     );

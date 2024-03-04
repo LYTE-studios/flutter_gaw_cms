@@ -145,10 +145,12 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MainText(
-                    widget.info.title ?? "",
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+                  Expanded(
+                    child: MainText(
+                      widget.info.title ?? "",
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
                   MainText(
                     GawDateUtil.formatTimeInterval(

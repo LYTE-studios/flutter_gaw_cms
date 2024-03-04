@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for Get-a-Wash
 publish_to: none
-version: 1.0.0+5
+version: 1.0.3+14
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_maps_flutter: ^2.5.3
+  google_maps_flutter: ^2.6.0
   tuple: ^2.0.2
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.2.1
@@ -34,6 +34,10 @@ dependencies:
   geolocator: ^10.1.0
   widget_to_marker: ^1.0.4
   page_transition: ^2.1.0
+  flutter_dropzone: ^3.0.7
+  google_maps_flutter_web: ^0.5.6+1
+  collection: ^1.18.0
+  sentry_flutter: ^7.16.1
 
 
   # Get-a-Wash
@@ -46,10 +50,10 @@ dependencies:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
-  flutter_dropzone: ^3.0.7
 
 dependency_overrides:
   dio: ^5.3.3
+  google_maps_flutter: ^2.5.0
   gaw_ui:
     path: ../flutter_package_gaw_ui
   gaw_api:

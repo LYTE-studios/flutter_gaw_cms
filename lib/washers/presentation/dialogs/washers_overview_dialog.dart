@@ -92,7 +92,7 @@ class WashersOverviewDialog extends ConsumerWidget {
                   child: const Text("Client Signature"),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

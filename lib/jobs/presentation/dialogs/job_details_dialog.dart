@@ -1,5 +1,10 @@
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/widgets/time_registration_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -39,8 +44,10 @@ class JobDetailsPopup extends ConsumerWidget {
               ],
             ),
           ),
-          _JobCreateForm(
-            job: job,
+          Expanded(
+            child: _JobDetailsForm(
+              job: job,
+            ),
           ),
         ],
       ),
@@ -48,18 +55,18 @@ class JobDetailsPopup extends ConsumerWidget {
   }
 }
 
-class _JobCreateForm extends ConsumerStatefulWidget {
+class _JobDetailsForm extends ConsumerStatefulWidget {
   final Job job;
 
-  const _JobCreateForm({
+  const _JobDetailsForm({
     required this.job,
   });
 
   @override
-  ConsumerState<_JobCreateForm> createState() => _JobCreateFormState();
+  ConsumerState<_JobDetailsForm> createState() => _JobCreateFormState();
 }
 
-class _JobCreateFormState extends ConsumerState<_JobCreateForm>
+class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
     with ScreenStateMixin {
   String? customerQueryTerm;
 
@@ -132,8 +139,25 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
 
   bool validated = true;
 
+  WashersForJobResponse? washersForJob;
+
+  void loadData() {
+    setLoading(true);
+
+    JobsApi.getWashersForJob(jobId: widget.job.id!).then((response) {
+      setState(() {
+        washersForJob = response;
+      });
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(() => setLoading(false));
+  }
+
   @override
   void initState() {
+    Future(() {
+      loadData();
+    });
     super.initState();
   }
 
@@ -153,11 +177,8 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                 hint: 'Enter a job title',
               ),
             ),
-            Expanded(
+            const Spacer(
               flex: 2,
-              child: Row(
-                children: [],
-              ),
             ),
           ],
         ),
@@ -226,7 +247,75 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             ),
           ],
         ),
+        SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(
+              PaddingSizes.smallPadding,
+            ),
+            child: _WashersBlock(
+              loading: loading,
+              response: washersForJob,
+            ),
+          ),
+        ),
       ],
     );
+  }
+}
+
+class _WashersBlock extends StatelessWidget {
+  final bool loading;
+
+  final WashersForJobResponse? response;
+
+  const _WashersBlock({
+    this.loading = false,
+    this.response,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(
+        minHeight: 128,
+      ),
+      decoration: BoxDecoration(
+        border: const Border.fromBorderSide(Borders.mainSide),
+        borderRadius: BorderRadius.circular(12),
+        color: GawTheme.clearText,
+      ),
+      child: LoadingSwitcher(
+        loading: loading,
+        child: SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: getItems(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getItems() {
+    List<Widget> widgets = [];
+
+    for (Washer washer in response?.washers ?? []) {
+      TimeRegistration? registration =
+          response?.timeRegistrations.firstWhereOrNull(
+        (item) => item.washer?.id == washer.id,
+      );
+
+      widgets.add(
+        TimeRegistrationCard(
+          timeRegistration: registration,
+          washer: washer,
+        ),
+      );
+    }
+
+    return widgets;
   }
 }

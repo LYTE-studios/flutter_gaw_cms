@@ -157,7 +157,8 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                         child: CircularProgressOverviewBlock(
                           isLoading: loading,
                           color: GawTheme.secondaryTint,
-                          value: adminStatistics?.unservicedJobCount ?? 0,
+                          value:
+                              adminStatistics?.jobsWithoutCandidatesCount ?? 0,
                           maxValue: adminStatistics?.jobCount ?? 0,
                           title: 'Jobs without candidates',
                           description: 'Out of all planned jobs',
@@ -166,7 +167,8 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                       Expanded(
                         child: CircularProgressOverviewBlock(
                           color: GawTheme.mainTint,
-                          value: adminStatistics?.unservicedJobCount ?? 0,
+                          value: (adminStatistics?.jobCount ?? 0) -
+                              (adminStatistics?.plannedJobCount ?? 0),
                           maxValue: adminStatistics?.jobCount ?? 0,
                           title: 'Jobs with no approved candidates',
                           description: 'Out of all planned jobs',
@@ -176,7 +178,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                       Expanded(
                         flex: 2,
                         child: TargetStatisticsBlock(
-                          jobsCount: adminStatistics?.completedJobCount ?? 0,
+                          jobsCount: adminStatistics?.jobCount ?? 0,
                           increaseAmount:
                               adminStatistics?.getJobCountTrend() ?? 0,
                         ),

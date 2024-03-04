@@ -27,6 +27,18 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
     with ScreenStateMixin {
   bool validated = false;
 
+  String? getLanguageCode() {
+    if (language == all) {
+      return null;
+    }
+
+    if (language == english) {
+      return 'en';
+    } else {
+      return 'nl';
+    }
+  }
+
   void validate() {
     validated = true;
 
@@ -64,6 +76,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
           ..title = tecTitle.text
           ..description = tecDescription.text
           ..sendMail = selectedTypes.contains(email)
+          ..language = getLanguageCode()
           ..isGlobal = true,
       ),
     ).then((_) {

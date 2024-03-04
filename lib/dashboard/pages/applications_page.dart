@@ -81,11 +81,14 @@ class _ApplicationsPageState extends ConsumerState<ApplicationsPage>
 class ApplicationsListView extends StatefulWidget {
   final bool fullView;
 
+  final bool isJobSpecific;
+
   final String? jobId;
 
   const ApplicationsListView({
     super.key,
     this.fullView = true,
+    this.isJobSpecific = true,
     this.jobId,
   });
 
@@ -142,11 +145,11 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
           const BaseHeaderItem(
             label: 'Washer name',
           ): ListUtil.xLColumn,
-          const BaseHeaderItem(
-            label: 'Date',
+          BaseHeaderItem(
+            label: !widget.isJobSpecific ? 'Job Date' : 'Date',
           ): ListUtil.mColumn,
-          const BaseHeaderItem(
-            label: 'Region',
+          BaseHeaderItem(
+            label: !widget.isJobSpecific ? 'Job title' : 'Region',
           ): ListUtil.lColumn,
           const BaseHeaderItem(
             label: 'Distance',
@@ -175,54 +178,93 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                     ): ListUtil.xLColumn,
                     TextRowItem(
                       value: GawDateUtil.tryFormatReadableDate(
-                        GawDateUtil.tryFromApi(application.createdAt),
+                        GawDateUtil.tryFromApi(
+                          !widget.isJobSpecific
+                              ? application.job.startTime
+                              : application.createdAt,
+                        ),
                       ),
                     ): ListUtil.mColumn,
-                    SelectableTextRowItem(
-                      value: application.address.city ??
-                          application.address.postalCode,
-                    ): ListUtil.lColumn,
+                    !widget.isJobSpecific
+                        ? TextRowItem(
+                            value: application.job.title,
+                          )
+                        : SelectableTextRowItem(
+                            value: application.address.city ??
+                                application.address.postalCode,
+                          ): ListUtil.lColumn,
                     TextRowItem(
                       value: distance,
                     ): ListUtil.sColumn,
                     BaseRowItem(
                       child: Row(
                         children: [
-                          SizedBox(
-                            width: 128,
-                            child: _ApprovalButton(
-                              label: 'Approve',
-                              icon: PixelPerfectIcons.checkMedium,
-                              backgroundColor: GawTheme.mainTint,
-                              textColor: GawTheme.clearText,
-                              onTap: () {
-                                setLoading(true);
-
-                                JobsApi.approveApplication(id: application.id!)
-                                    .then((_) {
-                                  loadData();
-                                }).catchError((error) {
-                                  ExceptionHandler.show(error);
-                                }).whenComplete(() => setLoading(false));
-                              },
+                          const Spacer(),
+                          Visibility(
+                            visible: application.state ==
+                                JobApplicationState.approved,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: PaddingSizes.mainPadding,
+                              ),
+                              child: ApprovedStateBlock(),
                             ),
                           ),
-                          SizedBox(
-                            width: 105,
-                            child: _ApprovalButton(
-                              label: 'Deny',
-                              icon: PixelPerfectIcons.xMedium,
-                              backgroundColor: GawTheme.clearText,
-                              textColor: GawTheme.mainTint,
-                              onTap: () {
-                                setLoading(true);
-                                JobsApi.denyApplication(id: application.id!)
-                                    .then((_) {
-                                  loadData();
-                                }).catchError((error) {
-                                  ExceptionHandler.show(error);
-                                }).whenComplete(() => setLoading(false));
-                              },
+                          Visibility(
+                            visible: application.state ==
+                                JobApplicationState.rejected,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: PaddingSizes.mainPadding,
+                              ),
+                              child: RejectedStateBlock(),
+                            ),
+                          ),
+                          Visibility(
+                            visible: application.state ==
+                                JobApplicationState.pending,
+                            child: SizedBox(
+                              width: 128,
+                              child: _ApprovalButton(
+                                label: 'Approve',
+                                icon: PixelPerfectIcons.checkMedium,
+                                backgroundColor: GawTheme.mainTint,
+                                textColor: GawTheme.clearText,
+                                onTap: () {
+                                  setLoading(true);
+
+                                  JobsApi.approveApplication(
+                                          id: application.id!)
+                                      .then((_) {
+                                    loadData();
+                                  }).catchError((error) {
+                                    ExceptionHandler.show(error);
+                                  }).whenComplete(() => setLoading(false));
+                                },
+                              ),
+                            ),
+                          ),
+                          Visibility(
+                            visible: [
+                              JobApplicationState.pending,
+                            ].contains(application.state),
+                            child: SizedBox(
+                              width: 105,
+                              child: _ApprovalButton(
+                                label: 'Deny',
+                                icon: PixelPerfectIcons.xMedium,
+                                backgroundColor: GawTheme.clearText,
+                                textColor: GawTheme.mainTint,
+                                onTap: () {
+                                  setLoading(true);
+                                  JobsApi.denyApplication(id: application.id!)
+                                      .then((_) {
+                                    loadData();
+                                  }).catchError((error) {
+                                    ExceptionHandler.show(error);
+                                  }).whenComplete(() => setLoading(false));
+                                },
+                              ),
                             ),
                           ),
                           ColorlessInkWell(

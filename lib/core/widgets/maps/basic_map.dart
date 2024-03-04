@@ -225,29 +225,29 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
         ),
         child: Stack(
           children: [
-            FractionallySizedBox(
-              widthFactor: 1.02,
-              heightFactor: 1.02,
-              child: GoogleMap(
-                onCameraMove: widget.onMoveCamera,
-                myLocationEnabled: widget.showCurrentLocation,
-                myLocationButtonEnabled: widget.showCurrentLocation,
-                markers: markers,
-                polylines: lines,
-                onMapCreated: (controller) async {
-                  if (!_controller.isCompleted) {
-                    _controller.complete(controller);
-                  }
-                },
-                initialCameraPosition: CameraPosition(
-                  target: widget.startPosition,
-                  zoom: widget.initialZoom ?? 7,
-                ),
-                compassEnabled: false,
-                mapToolbarEnabled: false,
-                buildingsEnabled: false,
-              ),
-            ),
+            // FractionallySizedBox(
+            //   widthFactor: 1.02,
+            //   heightFactor: 1.02,
+            //   child: GoogleMap(
+            //     onCameraMove: widget.onMoveCamera,
+            //     myLocationEnabled: widget.showCurrentLocation,
+            //     myLocationButtonEnabled: widget.showCurrentLocation,
+            //     markers: markers,
+            //     polylines: lines,
+            //     onMapCreated: (controller) async {
+            //       if (!_controller.isCompleted) {
+            //         _controller.complete(controller);
+            //       }
+            //     },
+            //     initialCameraPosition: CameraPosition(
+            //       target: widget.startPosition,
+            //       zoom: widget.initialZoom ?? 7,
+            //     ),
+            //     compassEnabled: false,
+            //     mapToolbarEnabled: false,
+            //     buildingsEnabled: false,
+            //   ),
+            // ),
             LoadingSwitcher(
               loading: loading,
               backgroundColor: GawTheme.clearBackground,

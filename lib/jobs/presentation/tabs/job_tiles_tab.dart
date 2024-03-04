@@ -55,7 +55,9 @@ class _JobTilesTabState extends State<JobTilesTab> {
   List<Widget> buildItems() {
     List<Widget> items = [];
 
-    for (Job job in widget.jobs) {
+    List<Job> jobs = widget.jobs;
+
+    for (Job job in jobs) {
       items.add(
         JobInfoCard(
           info: job,
