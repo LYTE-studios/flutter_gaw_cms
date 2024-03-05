@@ -5,7 +5,7 @@ import 'package:gaw_ui/gaw_ui.dart';
 const BeamPage notFoundBeamPage = BeamPage(
   title: 'Not found',
   key: ValueKey('not-found'),
-  type: BeamPageType.noTransition,
+  type: BeamPageType.fadeTransition,
   child: NotFoundScreen(),
 );
 
@@ -22,8 +22,10 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: GawTheme.mainTint,
       body: Center(
-        child: MainText('Not found'),
+        child: SplashLogo(),
       ),
     );
   }

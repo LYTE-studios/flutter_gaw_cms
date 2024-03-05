@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for Get-a-Wash
 publish_to: none
-version: 1.0.3+14
+version: 1.0.4+15
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -38,7 +38,8 @@ dependencies:
   google_maps_flutter_web: ^0.5.6+1
   collection: ^1.18.0
   sentry_flutter: ^7.16.1
-
+  flutter_native_splash: ^2.3.2
+  flutterwebapp_reload_detector: 0.0.1
 
   # Get-a-Wash
 
@@ -70,3 +71,4 @@ flutter:
 
   assets:
     - lib/assets/styles/map_style.json
+    - lib/assets/images/
