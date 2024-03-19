@@ -1,192 +1,245 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class TimeRegistrationCard extends StatelessWidget {
+class TimeRegistrationCard extends ConsumerStatefulWidget {
+  final Job job;
+
   final TimeRegistration? timeRegistration;
 
   final Washer? washer;
 
+  final Function()? onEdit;
+
   const TimeRegistrationCard({
     super.key,
+    required this.job,
     this.timeRegistration,
     this.washer,
+    this.onEdit,
   });
 
+  @override
+  ConsumerState<TimeRegistrationCard> createState() =>
+      _TimeRegistrationCardState();
+}
+
+class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
+    with ScreenStateMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(
         PaddingSizes.mainPadding,
       ),
-      child: Container(
-        height: 221,
-        width: 256,
-        padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: GawTheme.clearText,
-          border: Border.all(color: GawTheme.background),
-          boxShadow: const [
-            Shadows.heavyShadow,
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 36,
-              child: ProfileRowItem(
-                fixedWidth: 156,
-                initials: washer?.initials,
-                imageUrl: washer?.profilePictureUrl,
-                firstName: washer?.firstName,
-                lastName: washer?.lastName,
-              ),
+      child: ColorlessInkWell(
+        onTap: () {
+          DialogUtil.show(
+            dialog: TimeRangePickerDialog(
+              title: widget.washer?.getFullName(),
+              initialStart:
+                  GawDateUtil.tryFromApi(widget.timeRegistration?.startTime),
+              initialEnd:
+                  GawDateUtil.tryFromApi(widget.timeRegistration?.endTime),
+              onSubmit: (DateTime startTime, DateTime endTime) {
+                setLoading(true);
+
+                JobsApi.createTimeRegistration(
+                  userId: widget.washer!.id,
+                  request: TimeRegistrationRequest(
+                    (b) => b
+                      ..jobId = widget.job.id
+                      ..startTime = GawDateUtil.toApi(startTime)
+                      ..endTime = GawDateUtil.toApi(endTime),
+                  ),
+                ).catchError((error) {
+                  ExceptionHandler.show(error);
+                }).whenComplete(() {
+                  widget.onEdit?.call();
+                  setLoading(false);
+                });
+              },
             ),
-            const GawDivider(),
-            Expanded(
-              child: timeRegistration == null
-                  ? Center(
-                      child: MainText(
-                        'Awaiting time registration',
-                        textStyleOverride: TextStyles.mainStyle.copyWith(
-                          color: GawTheme.unselectedText,
-                          fontSize: 12,
-                        ),
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const SizedBox(
-                          height: PaddingSizes.mainPadding,
-                        ),
-                        Row(
+            context: context,
+          );
+        },
+        child: LoadingSwitcher(
+          loading: loading,
+          child: Container(
+            height: 221,
+            width: 256,
+            clipBehavior: Clip.none,
+            padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: GawTheme.clearText,
+              border: Border.all(color: GawTheme.background),
+              boxShadow: const [
+                Shadows.heavyShadow,
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  height: 36,
+                  child: ProfileRowItem(
+                    fixedWidth: 156,
+                    initials: widget.washer?.initials,
+                    imageUrl: widget.washer?.profilePictureUrl,
+                    firstName: widget.washer?.firstName,
+                    lastName: widget.washer?.lastName,
+                  ),
+                ),
+                const GawDivider(),
+                Expanded(
+                  child: widget.timeRegistration == null
+                      ? Center(
+                          child: MainText(
+                            'Awaiting time registration',
+                            textStyleOverride: TextStyles.mainStyle.copyWith(
+                              color: GawTheme.unselectedText,
+                              fontSize: 12,
+                            ),
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const MainText(
-                              "From: ",
-                              color: GawTheme.text,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(
+                              height: PaddingSizes.mainPadding,
                             ),
-                            MainText(
-                              GawDateUtil.formatTimeString(
-                                GawDateUtil.fromApi(
-                                  timeRegistration!.startTime!,
+                            Row(
+                              children: [
+                                const MainText(
+                                  "From: ",
+                                  color: GawTheme.text,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ),
-                              color: GawTheme.mainTint,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            const SizedBox(width: 42),
-                            const MainText(
-                              "Until: ",
-                              color: GawTheme.text,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            MainText(
-                              GawDateUtil.formatTimeString(
-                                GawDateUtil.fromApi(
-                                  timeRegistration!.endTime!,
-                                ),
-                              ),
-                              color: GawTheme.mainTint,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: PaddingSizes.mainPadding,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 72,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: const Border.fromBorderSide(
-                                    Borders.lightSide,
+                                MainText(
+                                  GawDateUtil.formatTimeString(
+                                    GawDateUtil.fromApi(
+                                      widget.timeRegistration!.startTime!,
+                                    ),
                                   ),
+                                  color: GawTheme.mainTint,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    PaddingSizes.smallPadding,
-                                  ),
-                                  child: Image.network(
-                                    FormattingUtil.formatUrl(
-                                          timeRegistration?.washerSignatureUrl,
-                                        ) ??
-                                        '',
-                                    fit: BoxFit.fitHeight,
-                                    errorBuilder: (context, _, __) {
-                                      return Center(
-                                        child: MainText(
-                                          'Signature not found',
-                                          textStyleOverride:
-                                              TextStyles.mainStyle.copyWith(
-                                            color: GawTheme.error,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                const SizedBox(width: 42),
+                                const MainText(
+                                  "Until: ",
+                                  color: GawTheme.text,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ),
+                                MainText(
+                                  GawDateUtil.formatTimeString(
+                                    GawDateUtil.fromApi(
+                                      widget.timeRegistration!.endTime!,
+                                    ),
+                                  ),
+                                  color: GawTheme.mainTint,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ],
                             ),
                             const SizedBox(
-                              width: PaddingSizes.smallPadding,
+                              height: PaddingSizes.mainPadding,
                             ),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: const Border.fromBorderSide(
-                                    Borders.lightSide,
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    height: 72,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: const Border.fromBorderSide(
+                                        Borders.lightSide,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(
+                                        PaddingSizes.smallPadding,
+                                      ),
+                                      child: Image.network(
+                                        FormattingUtil.formatUrl(
+                                              widget.timeRegistration
+                                                  ?.washerSignatureUrl,
+                                            ) ??
+                                            '',
+                                        fit: BoxFit.contain,
+                                        errorBuilder: (context, _, __) {
+                                          return Center(
+                                            child: MainText(
+                                              'Edited by admin',
+                                              textStyleOverride:
+                                                  TextStyles.mainStyle.copyWith(
+                                                color: GawTheme.secondaryTint,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(
-                                    PaddingSizes.smallPadding,
-                                  ),
-                                  child: Image.network(
-                                    FormattingUtil.formatUrl(
-                                          timeRegistration
-                                              ?.customerSignatureUrl,
-                                        ) ??
-                                        '',
-                                    fit: BoxFit.fitHeight,
-                                    errorBuilder: (context, _, __) {
-                                      return Center(
-                                        child: MainText(
-                                          'Signature not found',
-                                          textStyleOverride:
-                                              TextStyles.mainStyle.copyWith(
-                                            color: GawTheme.error,
-                                            fontSize: 8,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                const SizedBox(
+                                  width: PaddingSizes.smallPadding,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    height: 72,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: const Border.fromBorderSide(
+                                        Borders.lightSide,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(
+                                        PaddingSizes.smallPadding,
+                                      ),
+                                      child: Image.network(
+                                        FormattingUtil.formatUrl(
+                                              widget.timeRegistration
+                                                  ?.customerSignatureUrl,
+                                            ) ??
+                                            '',
+                                        fit: BoxFit.contain,
+                                        errorBuilder: (context, _, __) {
+                                          return Center(
+                                            child: MainText(
+                                              'Edited by admin',
+                                              textStyleOverride:
+                                                  TextStyles.mainStyle.copyWith(
+                                                color: GawTheme.secondaryTint,
+                                                fontSize: 8,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

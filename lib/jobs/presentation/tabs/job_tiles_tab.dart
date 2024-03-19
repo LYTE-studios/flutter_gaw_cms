@@ -30,7 +30,7 @@ class _JobTilesTabState extends State<JobTilesTab> {
         children: [
           ConstrainedBox(
             constraints: const BoxConstraints(
-              minHeight: 128,
+              minHeight: 56,
             ),
             child: LoadingSwitcher(
               loading: widget.loading,

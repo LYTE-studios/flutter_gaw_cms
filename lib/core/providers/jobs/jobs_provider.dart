@@ -33,11 +33,11 @@ class JobsProvider extends StateNotifier<JobsProviderState> {
   void loadData() {
     setLoading(true);
 
-    Future(() {
-      loadDraftJobs().catchError(_handleError);
-      loadDoneJobs().catchError(_handleError);
-      loadUpcomingJobs().catchError(_handleError);
-      loadActiveJobs().catchError(_handleError);
+    Future(() async {
+      await loadDraftJobs().catchError(_handleError);
+      await loadDoneJobs().catchError(_handleError);
+      await loadUpcomingJobs().catchError(_handleError);
+      await loadActiveJobs().catchError(_handleError);
     }).then((_) {
       setLoading(false);
     });

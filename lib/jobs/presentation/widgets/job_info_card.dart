@@ -278,13 +278,15 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                                 job: widget.info,
                               ),
                               context: context,
-                            );
+                            ).then((_) {
+                              ref.read(jobsProvider.notifier).loadData();
+                            });
                           },
                           icon: PixelPerfectIcons.info,
                           label: "Info",
                           fontSize: 12,
                           minHeight: 35,
-                          color: Colors.transparent,
+                          color: GawTheme.clearText,
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -317,7 +319,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                               label: "Edit",
                               fontSize: 12,
                               minHeight: 35,
-                              color: Colors.transparent,
+                              color: GawTheme.clearText,
                             ),
                           ],
                         ),

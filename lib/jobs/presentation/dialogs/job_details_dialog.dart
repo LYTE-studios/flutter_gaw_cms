@@ -245,6 +245,10 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
             child: _WashersBlock(
               loading: loading,
               response: washersForJob,
+              job: widget.job,
+              onEditTimeRegistration: () {
+                loadData();
+              },
             ),
           ),
         ),
@@ -258,9 +262,15 @@ class _WashersBlock extends StatelessWidget {
 
   final WashersForJobResponse? response;
 
+  final Job? job;
+
+  final Function()? onEditTimeRegistration;
+
   const _WashersBlock({
     this.loading = false,
     this.response,
+    this.job,
+    this.onEditTimeRegistration,
   });
 
   @override
@@ -297,10 +307,16 @@ class _WashersBlock extends StatelessWidget {
         (item) => item.washer?.id == washer.id,
       );
 
+      if (job == null) {
+        return [];
+      }
+
       widgets.add(
         TimeRegistrationCard(
           timeRegistration: registration,
           washer: washer,
+          job: job!,
+          onEdit: onEditTimeRegistration,
         ),
       );
     }
