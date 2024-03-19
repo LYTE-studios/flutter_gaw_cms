@@ -51,6 +51,9 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
     } else if (widget.info.state == JobState.done) {
       statusString = "Done";
       statusColour = GawTheme.text;
+    } else {
+      statusString = "Unserviced";
+      statusColour = GawTheme.error;
     }
 
     return Padding(
@@ -265,7 +268,9 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                         ),
                       ),
                     )
-                  : widget.info.state == JobState.done || isActive
+                  : [JobState.done, JobState.cancelled]
+                              .contains(widget.info.state) ||
+                          isActive
                       ? EditButton(
                           onTap: () {
                             DialogUtil.show(

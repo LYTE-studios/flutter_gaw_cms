@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/routing/router.dart';
 import 'package:flutter_gaw_cms/core/routing/sign_in_router.dart';
@@ -47,6 +48,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> with ScreenStateMixin {
       ),
     ).then((response) {
       setLoading(false);
+      UsersApi.helloThere().then((HelloThereResponse? response) {
+        if (EasyLocalization.of(context)?.locale.languageCode !=
+            (response?.language ?? 'en')) {
+          EasyLocalization.of(context)?.setLocale(
+            Locale(response?.language ?? 'en'),
+          );
+        }
+
+        mainRouter.beamToNamed(DashboardScreen.route);
+      });
       mainRouter.beamToNamed(DashboardScreen.route);
     }).catchError((error, stackTrace) {
       setLoading(false);

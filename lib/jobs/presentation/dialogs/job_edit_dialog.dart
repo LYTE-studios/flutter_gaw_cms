@@ -28,19 +28,8 @@ class JobEditPopup extends ConsumerWidget {
               vertical: PaddingSizes.bigPadding,
               horizontal: PaddingSizes.smallPadding,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                FormTitle(
-                  label: job.state == JobState.done ? 'Job info' : 'Edit job',
-                ),
-                const Spacer(),
-                GawCloseButton(
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            child: FormTitle(
+              label: job.state == JobState.done ? 'Job info' : 'Edit job',
             ),
           ),
           Expanded(

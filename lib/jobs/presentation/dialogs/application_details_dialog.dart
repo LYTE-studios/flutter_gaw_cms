@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
@@ -54,26 +56,30 @@ class _ApplicationDetailsDialogState
                     ),
                     child: Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: PaddingSizes.mainPadding,
-                          ),
-                          child: GenericButton(
-                            onTap: () {
-                              setLoading(true);
-                              JobsApi.approveApplication(
-                                      id: widget.application.id!)
-                                  .then((_) {
-                                Navigator.pop(context);
-                                ref.invalidate(jobsProvider);
-                              }).catchError((error) {
-                                ExceptionHandler.show(error);
-                              }).whenComplete(() => setLoading(false));
-                            },
-                            label: 'Approve',
-                            textStyleOverride: TextStyles.mainStyle.copyWith(
-                              color: GawTheme.clearText,
-                              fontSize: 12,
+                        Visibility(
+                          visible: widget.application.job.selectedWashers <
+                              widget.application.job.maxWashers,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              right: PaddingSizes.mainPadding,
+                            ),
+                            child: GenericButton(
+                              onTap: () {
+                                setLoading(true);
+                                JobsApi.approveApplication(
+                                        id: widget.application.id!)
+                                    .then((_) {
+                                  Navigator.pop(context);
+                                  ref.invalidate(jobsProvider);
+                                }).catchError((error) {
+                                  ExceptionHandler.show(error);
+                                }).whenComplete(() => setLoading(false));
+                              },
+                              label: 'Approve',
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                color: GawTheme.clearText,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
@@ -94,7 +100,7 @@ class _ApplicationDetailsDialogState
                           color: GawTheme.clearText,
                           textStyleOverride: TextStyles.mainStyle.copyWith(
                             color: GawTheme.text,
-                            fontSize: 12,
+                            fontSize: 15,
                           ),
                         ),
                       ],

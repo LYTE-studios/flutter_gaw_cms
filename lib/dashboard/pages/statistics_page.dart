@@ -243,7 +243,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                           weeklyStatistics:
                               adminStatistics?.hoursWorkedStats.toSpots() ?? [],
                           averageHours: adminStatistics
-                                  ?.hoursWorkedStats.averageHours
+                                  ?.hoursWorkedStats.totalWorkedHours
                                   .round() ??
                               0,
                           isTrend: false,

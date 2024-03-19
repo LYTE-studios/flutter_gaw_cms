@@ -222,7 +222,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                           ),
                           Visibility(
                             visible: application.state ==
-                                JobApplicationState.pending,
+                                    JobApplicationState.pending &&
+                                application.job.selectedWashers <
+                                    application.job.maxWashers,
                             child: SizedBox(
                               width: 128,
                               child: _ApprovalButton(
@@ -245,9 +247,10 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                             ),
                           ),
                           Visibility(
-                            visible: [
-                              JobApplicationState.pending,
-                            ].contains(application.state),
+                            visible: application.state ==
+                                    JobApplicationState.pending &&
+                                application.job.selectedWashers <
+                                    application.job.maxWashers,
                             child: SizedBox(
                               width: 105,
                               child: _ApprovalButton(

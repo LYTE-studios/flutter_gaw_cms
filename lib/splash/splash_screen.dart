@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/routing/router.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -33,7 +34,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void _goToDashboard() {
     AuthenticationApi.testConnection().then((success) {
       if (success) {
-        mainRouter.beamToNamed(DashboardScreen.route);
+        UsersApi.helloThere().then((HelloThereResponse? response) {
+          if (EasyLocalization.of(context)?.locale.languageCode !=
+              (response?.language ?? 'en')) {
+            EasyLocalization.of(context)?.setLocale(
+              Locale(response?.language ?? 'en'),
+            );
+          }
+
+          mainRouter.beamToNamed(DashboardScreen.route);
+        });
       }
     }).catchError((error) {
       ExceptionHandler.show(Exception('Auth failed'));
@@ -82,7 +92,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         _goToDashboard();
         return;
       }
-      
+
       getTokens();
     });
     super.initState();

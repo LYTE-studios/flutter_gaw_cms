@@ -409,7 +409,7 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
       ..addListener((state) {
         loadArrays();
       })
-      ..loadData().then((_) => setLoading(false));
+      ..loadData().whenComplete(() => setLoading(false));
   }
 
   void loadArrays() {

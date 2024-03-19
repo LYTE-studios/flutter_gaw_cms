@@ -24,24 +24,13 @@ class JobDetailsPopup extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
+          const Padding(
+            padding: EdgeInsets.symmetric(
               vertical: PaddingSizes.bigPadding,
               horizontal: PaddingSizes.smallPadding,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const FormTitle(
-                  label: 'Job info',
-                ),
-                const Spacer(),
-                GawCloseButton(
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            child: FormTitle(
+              label: 'Job info',
             ),
           ),
           Expanded(

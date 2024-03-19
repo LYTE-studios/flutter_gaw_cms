@@ -45,7 +45,9 @@ class _JobDeletePopupState extends ConsumerState<WasherDeleteDialog>
               vertical: PaddingSizes.mainPadding,
             ),
             child: MainText(
-              "Are you sure you want to delete these washers?",
+              widget.ids.length == 1
+                  ? "Are you sure you want to delete this washer?"
+                  : "Are you sure you want to delete these washers?",
               textStyleOverride: TextStyles.titleStyle.copyWith(
                 fontSize: 18,
               ),

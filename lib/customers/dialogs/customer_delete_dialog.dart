@@ -44,7 +44,9 @@ class _JobDeletePopupState extends ConsumerState<CustomerDeleteDialog>
               vertical: PaddingSizes.mainPadding,
             ),
             child: MainText(
-              "Are you sure you want to delete these customers?",
+              widget.ids.length == 1
+                  ? "Are you sure you want to delete this customer?"
+                  : "Are you sure you want to delete these customers?",
               textStyleOverride: TextStyles.titleStyle.copyWith(
                 fontSize: 18,
               ),

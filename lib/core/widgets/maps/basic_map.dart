@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -129,11 +128,17 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
   }
 
   void setLines() {
+    if (widget.selectedAddressPosition == null) {
+      setLoading(false);
+      return;
+    }
+
     GoogleApi.getDirections(
       from: widget.selectedAddressPosition!,
       to: widget.startPosition,
     ).then((coordinates) {
       setState(() {
+        loading = false;
         lines.add(
           Polyline(
             polylineId: const PolylineId('_'),
@@ -172,9 +177,27 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     );
   }
 
+  String? style;
+
+  Future<void> setStyle() async {
+    setLoading(true);
+
+    style = await DefaultAssetBundle.of(context).loadString(
+      'lib/assets/styles/map_style.json',
+      cache: true,
+    );
+
+    setState(() {
+      style = style;
+    });
+  }
+
   @override
   void initState() {
-    setLoading(true);
+    Future(() async {
+      await setStyle();
+      setLines();
+    });
     super.initState();
   }
 
@@ -186,35 +209,8 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
     super.dispose();
   }
 
-  void setStyle(BuildContext context) {
-    DefaultAssetBundle.of(context)
-        .loadString(
-      'lib/assets/styles/map_style.json',
-      cache: true,
-    )
-        .then(
-      (asset) {
-        _controller.future.then((controller) {
-          controller.setMapStyle(asset).then((_) {
-            Future.delayed(
-              const Duration(
-                milliseconds: 500,
-              ),
-            ).then((_) {
-              setLoading(false);
-            });
-          }).catchError((error) {
-            ExceptionHandler.show(error);
-          });
-        });
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    setStyle(context);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -223,37 +219,33 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
             Shadows.mainShadow,
           ],
         ),
-        child: Stack(
-          children: [
-            // FractionallySizedBox(
-            //   widthFactor: 1.02,
-            //   heightFactor: 1.02,
-            //   child: GoogleMap(
-            //     onCameraMove: widget.onMoveCamera,
-            //     myLocationEnabled: widget.showCurrentLocation,
-            //     myLocationButtonEnabled: widget.showCurrentLocation,
-            //     markers: markers,
-            //     polylines: lines,
-            //     onMapCreated: (controller) async {
-            //       if (!_controller.isCompleted) {
-            //         _controller.complete(controller);
-            //       }
-            //     },
-            //     initialCameraPosition: CameraPosition(
-            //       target: widget.startPosition,
-            //       zoom: widget.initialZoom ?? 7,
-            //     ),
-            //     compassEnabled: false,
-            //     mapToolbarEnabled: false,
-            //     buildingsEnabled: false,
-            //   ),
-            // ),
-            LoadingSwitcher(
-              loading: loading,
-              backgroundColor: GawTheme.clearBackground,
-              child: const SizedBox(),
+        child: FractionallySizedBox(
+          widthFactor: 1.02,
+          heightFactor: 1.02,
+          child: LoadingSwitcher(
+            loading: loading,
+            child: GoogleMap(
+              onCameraMove: widget.onMoveCamera,
+              myLocationEnabled: widget.showCurrentLocation,
+              myLocationButtonEnabled: widget.showCurrentLocation,
+              markers: markers,
+              polylines: lines,
+              style: style,
+              onMapCreated: (controller) {
+                if (_controller.isCompleted) {
+                  return;
+                }
+                _controller.complete(controller);
+              },
+              initialCameraPosition: CameraPosition(
+                target: widget.startPosition,
+                zoom: widget.initialZoom ?? 7,
+              ),
+              compassEnabled: false,
+              mapToolbarEnabled: false,
+              buildingsEnabled: false,
             ),
-          ],
+          ),
         ),
       ),
     );

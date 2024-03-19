@@ -126,7 +126,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
             }
             DialogUtil.show(
               dialog: CustomerDeleteDialog(
-                  ids: selection.map((e) => e.id ?? '').toList()),
+                ids: selection.map((e) => e.id ?? '').toList(),
+              ),
               context: context,
             ).then((_) {
               selection = [];
