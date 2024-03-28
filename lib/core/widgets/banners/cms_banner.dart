@@ -54,7 +54,7 @@ class CmsBanner extends StatelessWidget {
               height: 56,
               child: Center(
                 child: MainText(
-                  '© 2023 GET-A-WASH',
+                  '© ${DateTime.now().year} GET-A-WASH',
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     fontSize: 12,
                     color: GawTheme.clearText,

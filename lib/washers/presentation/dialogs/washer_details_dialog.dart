@@ -36,7 +36,9 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
           ..email = tecEmail.text
           ..phoneNumber = tecPhoneNumber.text
           ..address = address?.toBuilder()
-          ..taxNumber = tecIban.text,
+          ..taxNumber = tecIban.text
+          ..company = tecSsn.text
+          ..dateOfBirth = GawDateUtil.tryToApi(dateOfBirth),
       ),
     ).then((_) {
       loadData();
@@ -61,7 +63,9 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
         tecEmail.text = washer?.email ?? '';
         tecPhoneNumber.text = washer?.phoneNumber ?? '';
         tecIban.text = washer?.taxNumber ?? '';
+        tecSsn.text = washer?.company ?? '';
         address = washer?.address;
+        dateOfBirth = GawDateUtil.tryFromApi(washer?.dateOfBirth);
       });
     }).catchError(
       (error) {
@@ -90,7 +94,13 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     text: washer?.phoneNumber,
   );
 
+  late TextEditingController tecSsn = TextEditingController(
+    text: washer?.company,
+  );
+
   Address? address;
+
+  DateTime? dateOfBirth;
 
   @override
   void initState() {
@@ -103,225 +113,253 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   @override
   Widget build(BuildContext context) {
     return BaseDialog(
-      height: 680,
+      height: 760,
       child: Padding(
         padding: const EdgeInsets.all(
           PaddingSizes.bigPadding,
         ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(
-                PaddingSizes.mainPadding,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  MainText(
-                    'Washer profile',
-                    textStyleOverride: TextStyles.mainStyleTitle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: PaddingSizes.mainPadding,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(
+                  PaddingSizes.mainPadding,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    MainText(
+                      'Washer profile',
+                      textStyleOverride: TextStyles.mainStyleTitle,
                     ),
-                    child: ColorlessInkWell(
-                      onTap: () {
-                        setState(() {
-                          canEdit = !canEdit;
-                        });
-                      },
-                      child: const SizedBox(
-                        width: 21,
-                        height: 21,
-                        child: SvgIcon(
-                          PixelPerfectIcons.editNormal,
-                          color: GawTheme.text,
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: PaddingSizes.mainPadding,
+                      ),
+                      child: ColorlessInkWell(
+                        onTap: () {
+                          setState(() {
+                            canEdit = !canEdit;
+                          });
+                        },
+                        child: const SizedBox(
+                          width: 21,
+                          height: 21,
+                          child: SvgIcon(
+                            PixelPerfectIcons.editNormal,
+                            color: GawTheme.text,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: PaddingSizes.bigPadding,
-              ),
-              child: Container(
-                height: 180,
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: Borders.mainSide,
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 120,
-                    width: 120,
-                    child: ProfilePictureAvatar(
-                      canEdit: true,
-                      showCircle: true,
-                      imageUrl: FormattingUtil.formatUrl(
-                        washer?.profilePictureUrl,
-                      ),
-                      onEditPressed: () {
-                        setLoading(true);
-
-                        FilePicker.platform
-                            .pickFiles(
-                          type: FileType.image,
-                        )
-                            .then((FilePickerResult? result) {
-                          if (result?.files.isEmpty ?? true) {
-                            setLoading(false);
-
-                            return;
-                          }
-
-                          UsersApi.uploadProfilePicture(
-                            result!.files[0].bytes!,
-                            userId: washer!.id,
-                          ).then((_) {
-                            loadData();
-                          }).catchError((error) {
-                            ExceptionHandler.show(error);
-                          }).whenComplete(() => setLoading(false));
-                        });
-                      },
-                    ),
-                  ),
+                  ],
                 ),
               ),
-            ),
-            LoadingSwitcher(
-              loading: loading,
-              child: GawForm(
-                rows: [
-                  FormRow(
-                    formItems: [
-                      FormItem(
-                        child: InputTextForm(
-                          label: 'First name',
-                          controller: tecFirstname,
-                          frozen: !canEdit,
-                        ),
-                      ),
-                      FormItem(
-                        child: InputTextForm(
-                          label: 'Last name',
-                          controller: tecLastName,
-                          frozen: !canEdit,
-                        ),
-                      ),
-                      FormItem(
-                        flex: 2,
-                        child: InputTextForm(
-                          label: 'Email',
-                          controller: tecEmail,
-                          frozen: !canEdit,
-                        ),
-                      ),
-                    ],
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: PaddingSizes.bigPadding,
+                ),
+                child: Container(
+                  height: 180,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: Borders.mainSide,
+                    ),
                   ),
-                  FormRow(
-                    formItems: [
-                      FormItem(
-                        child: InputTextForm(
-                          label: 'IBAN',
-                          controller: tecIban,
-                          frozen: !canEdit,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      height: 120,
+                      width: 120,
+                      child: ProfilePictureAvatar(
+                        canEdit: true,
+                        showCircle: true,
+                        imageUrl: FormattingUtil.formatUrl(
+                          washer?.profilePictureUrl,
                         ),
-                      ),
-                      FormItem(
-                        child: InputTextForm(
-                          label: 'Phone number',
-                          controller: tecPhoneNumber,
-                          frozen: !canEdit,
-                        ),
-                      ),
-                    ],
-                  ),
-                  FormRow(
-                    formItems: [
-                      FormItem(
-                        flex: 2,
-                        child: InputStaticTextForm(
-                          label: 'Address',
-                          onTap: () {
-                            if (!canEdit) {
+                        onEditPressed: () {
+                          setLoading(true);
+
+                          FilePicker.platform
+                              .pickFiles(
+                            type: FileType.image,
+                          )
+                              .then((FilePickerResult? result) {
+                            if (result?.files.isEmpty ?? true) {
+                              setLoading(false);
+
                               return;
                             }
-                            DialogUtil.show(
-                              dialog: LocationPickerDialog(
-                                onAddressSelected: (Address address) {
-                                  setState(() {
-                                    this.address = address;
-                                  });
-                                },
-                              ),
-                              context: context,
-                            );
-                          },
-                          frozen: !canEdit,
-                          text: address?.formattedAddress(),
-                          icon: PixelPerfectIcons.placeIndicator,
-                          hint: 'Washer address',
-                        ),
-                      ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: canEdit,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: PaddingSizes.bigPadding,
-                        left: PaddingSizes.mainPadding,
-                        right: PaddingSizes.mainPadding,
-                        bottom: PaddingSizes.mainPadding,
-                      ),
-                      child: FormRow(
-                        formItems: [
-                          GenericButton(
-                            label: 'Save changes',
-                            onTap: () {
-                              if (loading) {
-                                return;
-                              }
-                              _update();
-                            },
-                            loading: loading,
-                            textStyleOverride: TextStyles.mainStyle.copyWith(
-                              color: GawTheme.clearText,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: PaddingSizes.mainPadding,
-                          ),
-                          GenericButton(
-                            outline: true,
-                            label: 'Cancel',
-                            color: GawTheme.clearText,
-                            textColor: GawTheme.text,
-                            textStyleOverride: TextStyles.mainStyle.copyWith(
-                              fontSize: 12,
-                            ),
-                            onTap: () {
-                              setState(() {
-                                canEdit = false;
-                              });
+
+                            UsersApi.uploadProfilePicture(
+                              result!.files[0].bytes!,
+                              userId: washer!.id,
+                            ).then((_) {
                               loadData();
-                            },
-                          ),
-                        ],
+                            }).catchError((error) {
+                              ExceptionHandler.show(error);
+                            }).whenComplete(() => setLoading(false));
+                          });
+                        },
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              LoadingSwitcher(
+                loading: loading,
+                child: GawForm(
+                  rows: [
+                    FormRow(
+                      formItems: [
+                        FormItem(
+                          child: InputTextForm(
+                            label: 'First name',
+                            controller: tecFirstname,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                        FormItem(
+                          child: InputTextForm(
+                            label: 'Last name',
+                            controller: tecLastName,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                        FormItem(
+                          flex: 2,
+                          child: InputTextForm(
+                            label: 'Email',
+                            controller: tecEmail,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                      ],
+                    ),
+                    FormRow(
+                      formItems: [
+                        FormItem(
+                          child: InputTextForm(
+                            label: 'IBAN',
+                            controller: tecIban,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                        FormItem(
+                          child: InputTextForm(
+                            label: 'Phone number',
+                            controller: tecPhoneNumber,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                      ],
+                    ),
+                    FormRow(
+                      formItems: [
+                        FormItem(
+                          child: InputForm(
+                            label: 'Date of Birth',
+                            child: GawStandaloneDatePicker(
+                              date: dateOfBirth,
+                              label: 'Date',
+                              enabled: canEdit,
+                              onUpdateDate: (DateTime? date) {
+                                setState(() {
+                                  dateOfBirth = date;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        FormItem(
+                          child: InputTextForm(
+                            label: 'SSN',
+                            controller: tecSsn,
+                            frozen: !canEdit,
+                          ),
+                        ),
+                      ],
+                    ),
+                    FormRow(
+                      formItems: [
+                        FormItem(
+                          flex: 2,
+                          child: InputStaticTextForm(
+                            label: 'Address',
+                            onTap: () {
+                              if (!canEdit) {
+                                return;
+                              }
+                              DialogUtil.show(
+                                dialog: LocationPickerDialog(
+                                  onAddressSelected: (Address address) {
+                                    setState(() {
+                                      this.address = address;
+                                    });
+                                  },
+                                ),
+                                context: context,
+                              );
+                            },
+                            frozen: !canEdit,
+                            text: address?.formattedAddress(),
+                            icon: PixelPerfectIcons.placeIndicator,
+                            hint: 'Washer address',
+                          ),
+                        ),
+                      ],
+                    ),
+                    Visibility(
+                      visible: canEdit,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: PaddingSizes.bigPadding,
+                          left: PaddingSizes.mainPadding,
+                          right: PaddingSizes.mainPadding,
+                          bottom: PaddingSizes.mainPadding,
+                        ),
+                        child: FormRow(
+                          formItems: [
+                            GenericButton(
+                              label: 'Save changes',
+                              onTap: () {
+                                if (loading) {
+                                  return;
+                                }
+                                _update();
+                              },
+                              loading: loading,
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                color: GawTheme.clearText,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: PaddingSizes.mainPadding,
+                            ),
+                            GenericButton(
+                              outline: true,
+                              label: 'Cancel',
+                              color: GawTheme.clearText,
+                              textColor: GawTheme.text,
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                fontSize: 12,
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  canEdit = false;
+                                });
+                                loadData();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

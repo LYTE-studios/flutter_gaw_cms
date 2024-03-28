@@ -65,6 +65,12 @@ class _JobsPageState extends ConsumerState<JobsPage> {
             child: SizedBox(
               height: MediaQuery.of(context).size.height - 180,
               child: TabbedView(
+                onReloadTimes: (DateTime? start, DateTime? end) {
+                  ref.read(jobsProvider.notifier).loadData(
+                        startTime: start,
+                        endTime: end,
+                      );
+                },
                 isScreenSheet: true,
                 tabs: const [
                   'Upcoming jobs',

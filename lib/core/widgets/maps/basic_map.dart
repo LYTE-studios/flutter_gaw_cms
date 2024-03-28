@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:widget_to_marker/widget_to_marker.dart';
+import 'package:http/http.dart';
 
 import '../../utils/location_utils.dart';
 
@@ -61,58 +62,68 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
 
   Set<Polyline> lines = {};
 
-  late Set<Marker> markers = widget.markers ?? getInitialMarkers();
+  late Set<Marker> markers = widget.markers ?? {};
 
   bool isCompleted = false;
 
   String? mapTheme;
 
-  Set<Marker> getInitialMarkers() {
-    Set<Marker> markers = {};
-
-    if (widget.setInitialMarker) {
-      setMarker(widget.startPosition);
-    }
+  Future<void> setInitialMarkers() async {
     if (widget.selectedAddressPosition != null) {
-      SizedBox(
-        height: 16,
-        width: 16,
-        child: ProfilePictureAvatar(
-          imageUrl: widget.profileImageUrl,
+      BitmapDescriptor descriptor = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(
+          size: const Size(21, 21),
+          devicePixelRatio: MediaQuery.of(context).devicePixelRatio,
         ),
-      ).toBitmapDescriptor().then(
-        (value) {
-          LatLng position = LatLng(
-              widget.selectedAddressPosition?.latitude ?? 0,
-              //?? defaultAddress.latitude ?? 0,
-              widget.selectedAddressPosition?.longitude ??
-                  0 //?? defaultAddress.longitude ?? 0,
-              );
-          markers.add(
-            Marker(
-              markerId: const MarkerId(
-                'user-location',
-              ),
-              position: position,
-              icon: value,
-            ),
-          );
-          setLines();
-        },
+        PixelPerfectIcons.profilePicture,
+        package: PixelPerfectIcons.packageName,
       );
-    }
 
-    return markers;
+      if (widget.profileImageUrl != null) {
+        final Response response = await get(
+          Uri.parse(
+            FormattingUtil.formatUrl(
+              widget.profileImageUrl!,
+            )!,
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          Uint8List bytes = response.bodyBytes;
+
+          descriptor = BitmapDescriptor.fromBytes(
+            bytes,
+            size: const Size(24, 24),
+          );
+        }
+      }
+      markers.add(
+        Marker(
+          markerId: const MarkerId(
+            'user-location',
+          ),
+          position: LatLng(
+            widget.selectedAddressPosition?.latitude ?? 0,
+            widget.selectedAddressPosition?.longitude ?? 0,
+          ),
+          icon: descriptor,
+        ),
+      );
+
+      if (widget.setInitialMarker) {
+        setMarker(widget.startPosition);
+      }
+    }
   }
 
   void setMarker(LatLng position) {
-    const SizedBox(
-      height: 16,
-      width: 16,
-      child: SvgIcon(
-        PixelPerfectIcons.placeIndicator,
+    BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(
+        devicePixelRatio: MediaQuery.of(context).devicePixelRatio,
       ),
-    ).toBitmapDescriptor().then((value) {
+      PixelPerfectIcons.placeIndicator,
+      package: PixelPerfectIcons.packageName,
+    ).then((BitmapDescriptor descriptor) {
       setState(() {
         markers.add(
           Marker(
@@ -120,7 +131,7 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
               'job-location',
             ),
             position: position,
-            icon: value,
+            icon: descriptor,
           ),
         );
       });
@@ -196,6 +207,7 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
   void initState() {
     Future(() async {
       await setStyle();
+      setInitialMarkers();
       setLines();
     });
     super.initState();

@@ -247,7 +247,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                                   .round() ??
                               0,
                           isTrend: false,
-                          trend: adminStatistics?.getHoursWorkedTrend() ?? 0,
+                          trend: adminStatistics?.getHoursWorkedTrend(),
                           showWeekly: false,
                           overriddenPadding: const EdgeInsets.all(
                             PaddingSizes.smallPadding,
