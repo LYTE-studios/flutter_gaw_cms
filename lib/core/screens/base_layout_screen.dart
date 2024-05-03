@@ -63,17 +63,23 @@ class BaseLayoutScreen extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: (bannerHeightOverride ?? CmsHeader.headerHeight) -
-                  56 -
-                  extraActionButtonPadding,
+              top: 0,
+              bottom: 0,
               right: 0,
               child: actionWidget == null
                   ? const SizedBox()
-                  : SizedBox(
-                      height: constraints.maxHeight -
-                          (bannerHeightOverride ?? CmsHeader.headerHeight) +
-                          56,
-                      child: actionWidget!,
+                  : Column(
+                      children: [
+                        SizedBox(
+                          height:
+                              (bannerHeightOverride ?? CmsHeader.headerHeight) -
+                                  56 -
+                                  extraActionButtonPadding,
+                        ),
+                        Expanded(
+                          child: actionWidget!,
+                        ),
+                      ],
                     ),
             ),
           ],

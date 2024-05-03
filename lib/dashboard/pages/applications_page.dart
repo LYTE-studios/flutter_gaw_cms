@@ -81,11 +81,14 @@ class _ApplicationsPageState extends ConsumerState<ApplicationsPage>
 class ApplicationsListView extends StatefulWidget {
   final bool fullView;
 
+  final bool isJobSpecific;
+
   final String? jobId;
 
   const ApplicationsListView({
     super.key,
     this.fullView = true,
+    this.isJobSpecific = true,
     this.jobId,
   });
 
@@ -137,17 +140,29 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       totalItems: 0,
       showFooter: widget.fullView,
       showHeader: widget.fullView || widget.jobId != null,
-      header: const BaseListHeader(
+      header: BaseListHeader(
         items: {
-          'Washer name': ListUtil.xLColumn,
-          'Date': ListUtil.mColumn,
-          'Region': ListUtil.lColumn,
-          'Distance': ListUtil.sColumn,
-          '': ListUtil.sColumn,
+          const BaseHeaderItem(
+            label: 'Washer name',
+          ): ListUtil.xLColumn,
+          BaseHeaderItem(
+            label: !widget.isJobSpecific ? 'Job Date' : 'Date',
+          ): ListUtil.mColumn,
+          BaseHeaderItem(
+            label: !widget.isJobSpecific ? 'Job title' : 'Region',
+          ): ListUtil.lColumn,
+          const BaseHeaderItem(
+            label: 'Distance',
+          ): ListUtil.sColumn,
         },
       ),
       rows: applicationsListResponse?.applications.map(
             (application) {
+              String? distance = GeoUtil.formatDistance(application.distance);
+              if (application.noTravelCosts) {
+                distance = '($distance)';
+              }
+
               return InkWell(
                 onTap: () {
                   onSelected(application);
@@ -157,91 +172,225 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                     ProfileRowItem(
                       firstName: application.washer.firstName,
                       lastName: application.washer.lastName,
-                      imageUrl: application.washer.profilePictureUrl,
+                      imageUrl: FormattingUtil.formatUrl(
+                        application.washer.profilePictureUrl,
+                      ),
                     ): ListUtil.xLColumn,
                     TextRowItem(
                       value: GawDateUtil.tryFormatReadableDate(
-                        GawDateUtil.tryFromApi(application.createdAt),
+                        GawDateUtil.tryFromApi(
+                          !widget.isJobSpecific
+                              ? application.job.startTime
+                              : application.createdAt,
+                        ),
                       ),
                     ): ListUtil.mColumn,
-                    SelectableTextRowItem(
-                      value: application.address.city ??
-                          application.address.postalCode,
-                    ): ListUtil.lColumn,
+                    !widget.isJobSpecific
+                        ? TextRowItem(
+                            value: application.job.title,
+                          )
+                        : SelectableTextRowItem(
+                            value: application.address.city ??
+                                application.address.postalCode,
+                          ): ListUtil.lColumn,
                     TextRowItem(
-                      value: GeoUtil.formatDistance(application.distance),
+                      value: distance,
                     ): ListUtil.sColumn,
                     BaseRowItem(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingSizes.mainPadding,
-                          vertical: PaddingSizes.mainPadding,
-                        ),
-                        child: GenericButton(
-                          radius: 16,
-                          onTap: () {
-                            setLoading(true);
+                      child: Row(
+                        children: [
+                          const Spacer(),
+                          Visibility(
+                            visible: application.state ==
+                                JobApplicationState.approved,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: PaddingSizes.mainPadding,
+                              ),
+                              child: ApprovedStateBlock(),
+                            ),
+                          ),
+                          Visibility(
+                            visible: application.state ==
+                                JobApplicationState.rejected,
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: PaddingSizes.mainPadding,
+                              ),
+                              child: RejectedStateBlock(),
+                            ),
+                          ),
+                          Visibility(
+                            visible: application.state ==
+                                    JobApplicationState.pending &&
+                                application.job.selectedWashers <
+                                    application.job.maxWashers,
+                            child: SizedBox(
+                              width: 128,
+                              child: _ApprovalButton(
+                                label: 'Approve',
+                                icon: PixelPerfectIcons.checkMedium,
+                                backgroundColor: GawTheme.mainTint,
+                                textColor: GawTheme.clearText,
+                                onTap: () {
+                                  setLoading(true);
 
-                            JobsApi.approveApplication(id: application.id!)
-                                .then((_) {
-                              loadData();
-                            }).catchError((error) {
-                              ExceptionHandler.show(error);
-                            }).whenComplete(() => setLoading(false));
-                          },
-                          label: 'Approve',
-                          icon: PixelPerfectIcons.checkMedium,
-                          textColor: GawTheme.clearText,
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.clearText,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                                  JobsApi.approveApplication(
+                                          id: application.id!)
+                                      .then((_) {
+                                    loadData();
+                                  }).catchError((error) {
+                                    ExceptionHandler.show(error);
+                                  }).whenComplete(() => setLoading(false));
+                                },
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ): ListUtil.mColumn,
-                    BaseRowItem(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: PaddingSizes.mainPadding,
-                          vertical: PaddingSizes.mainPadding,
-                        ),
-                        child: GenericButton(
-                          label: 'Deny',
-                          outline: true,
-                          radius: 16,
-                          icon: PixelPerfectIcons.xNormal,
-                          onTap: () {
-                            setLoading(true);
-                            JobsApi.denyApplication(id: application.id!)
-                                .then((_) {
-                              loadData();
-                            }).catchError((error) {
-                              ExceptionHandler.show(error);
-                            }).whenComplete(() => setLoading(false));
-                          },
-                          textColor: GawTheme.mainTint,
-                          color: GawTheme.clearText,
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.mainTint,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                          Visibility(
+                            visible: application.state ==
+                                    JobApplicationState.pending &&
+                                application.job.selectedWashers <
+                                    application.job.maxWashers,
+                            child: SizedBox(
+                              width: 105,
+                              child: _ApprovalButton(
+                                label: 'Deny',
+                                icon: PixelPerfectIcons.xMedium,
+                                backgroundColor: GawTheme.clearText,
+                                textColor: GawTheme.mainTint,
+                                onTap: () {
+                                  setLoading(true);
+                                  JobsApi.denyApplication(id: application.id!)
+                                      .then((_) {
+                                    loadData();
+                                  }).catchError((error) {
+                                    ExceptionHandler.show(error);
+                                  }).whenComplete(() => setLoading(false));
+                                },
+                              ),
+                            ),
                           ),
-                        ),
+                          ColorlessInkWell(
+                            onTap: () {
+                              onSelected(application);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(
+                                  PaddingSizes.mainPadding),
+                              child: Container(
+                                height: 32,
+                                width: 128,
+                                decoration: BoxDecoration(
+                                  color: GawTheme.clearText,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: const Border.fromBorderSide(
+                                    Borders.lightSide,
+                                  ),
+                                ),
+                                child: const IntrinsicWidth(
+                                  child: IntrinsicWidth(
+                                    child: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: PaddingSizes.smallPadding,
+                                        ),
+                                        child: MainText(
+                                          'View application',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ): ListUtil.mColumn,
-                    ActionButtonRowItem(
-                      label: 'View application',
-                      onTap: () {
-                        onSelected(application);
-                      },
-                    ): ListUtil.mColumn,
+                    ): 390,
                   },
                 ),
               );
             },
           ).toList() ??
           [],
+    );
+  }
+}
+
+class _ApprovalButton extends StatelessWidget {
+  final String label;
+
+  final String icon;
+
+  final bool outline;
+
+  final Color backgroundColor;
+
+  final Color textColor;
+
+  final Function()? onTap;
+
+  const _ApprovalButton({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.backgroundColor,
+    required this.textColor,
+    this.outline = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: PaddingSizes.mainPadding,
+      ),
+      child: ColorlessInkWell(
+        onTap: onTap,
+        child: Container(
+          height: 32,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(16),
+            border: outline
+                ? null
+                : const Border.fromBorderSide(
+                    Borders.thickMainTintSide,
+                  ),
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: PaddingSizes.mainPadding,
+                ),
+                child: MainText(
+                  label,
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: textColor,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: PaddingSizes.smallPadding,
+                ),
+                child: SizedBox(
+                  height: 21,
+                  width: 21,
+                  child: SvgIcon(
+                    icon,
+                    color: textColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

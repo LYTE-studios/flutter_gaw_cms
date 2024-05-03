@@ -12,11 +12,12 @@ part of 'notifications_provider_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$NotificationsProviderState {
   List<Notification>? get notifications => throw _privateConstructorUsedError;
+  bool get tickerIsRunning => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $NotificationsProviderStateCopyWith<NotificationsProviderState>
@@ -30,7 +31,7 @@ abstract class $NotificationsProviderStateCopyWith<$Res> {
       _$NotificationsProviderStateCopyWithImpl<$Res,
           NotificationsProviderState>;
   @useResult
-  $Res call({List<Notification>? notifications});
+  $Res call({List<Notification>? notifications, bool tickerIsRunning});
 }
 
 /// @nodoc
@@ -48,12 +49,17 @@ class _$NotificationsProviderStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? notifications = freezed,
+    Object? tickerIsRunning = null,
   }) {
     return _then(_value.copyWith(
       notifications: freezed == notifications
           ? _value.notifications
           : notifications // ignore: cast_nullable_to_non_nullable
               as List<Notification>?,
+      tickerIsRunning: null == tickerIsRunning
+          ? _value.tickerIsRunning
+          : tickerIsRunning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -67,7 +73,7 @@ abstract class _$$notificationsProviderStateImplCopyWith<$Res>
       __$$notificationsProviderStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({List<Notification>? notifications});
+  $Res call({List<Notification>? notifications, bool tickerIsRunning});
 }
 
 /// @nodoc
@@ -84,12 +90,17 @@ class __$$notificationsProviderStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? notifications = freezed,
+    Object? tickerIsRunning = null,
   }) {
     return _then(_$notificationsProviderStateImpl(
       notifications: freezed == notifications
           ? _value._notifications
           : notifications // ignore: cast_nullable_to_non_nullable
               as List<Notification>?,
+      tickerIsRunning: null == tickerIsRunning
+          ? _value.tickerIsRunning
+          : tickerIsRunning // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -97,7 +108,8 @@ class __$$notificationsProviderStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$notificationsProviderStateImpl implements notificationsProviderState {
-  _$notificationsProviderStateImpl({final List<Notification>? notifications})
+  _$notificationsProviderStateImpl(
+      {final List<Notification>? notifications, this.tickerIsRunning = false})
       : _notifications = notifications;
 
   final List<Notification>? _notifications;
@@ -111,8 +123,12 @@ class _$notificationsProviderStateImpl implements notificationsProviderState {
   }
 
   @override
+  @JsonKey()
+  final bool tickerIsRunning;
+
+  @override
   String toString() {
-    return 'NotificationsProviderState(notifications: $notifications)';
+    return 'NotificationsProviderState(notifications: $notifications, tickerIsRunning: $tickerIsRunning)';
   }
 
   @override
@@ -121,12 +137,14 @@ class _$notificationsProviderStateImpl implements notificationsProviderState {
         (other.runtimeType == runtimeType &&
             other is _$notificationsProviderStateImpl &&
             const DeepCollectionEquality()
-                .equals(other._notifications, _notifications));
+                .equals(other._notifications, _notifications) &&
+            (identical(other.tickerIsRunning, tickerIsRunning) ||
+                other.tickerIsRunning == tickerIsRunning));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_notifications));
+  int get hashCode => Object.hash(runtimeType,
+      const DeepCollectionEquality().hash(_notifications), tickerIsRunning);
 
   @JsonKey(ignore: true)
   @override
@@ -139,11 +157,13 @@ class _$notificationsProviderStateImpl implements notificationsProviderState {
 abstract class notificationsProviderState
     implements NotificationsProviderState {
   factory notificationsProviderState(
-          {final List<Notification>? notifications}) =
-      _$notificationsProviderStateImpl;
+      {final List<Notification>? notifications,
+      final bool tickerIsRunning}) = _$notificationsProviderStateImpl;
 
   @override
   List<Notification>? get notifications;
+  @override
+  bool get tickerIsRunning;
   @override
   @JsonKey(ignore: true)
   _$$notificationsProviderStateImplCopyWith<_$notificationsProviderStateImpl>

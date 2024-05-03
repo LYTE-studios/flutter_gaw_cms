@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -12,32 +13,23 @@ class JobCreatePopup extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return BaseDialog(
+    return const BaseDialog(
       height: 640,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               vertical: PaddingSizes.bigPadding,
               horizontal: PaddingSizes.smallPadding,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const FormTitle(
-                  label: 'Create new job',
-                ),
-                const Spacer(),
-                GawCloseButton(
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            child: FormTitle(
+              label: 'Create new job',
             ),
           ),
-          const _JobCreateForm(),
+          Expanded(
+            child: _JobCreateForm(),
+          ),
         ],
       ),
     );
@@ -326,9 +318,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                     context: context,
                   );
                 },
-                text: (address?.formattedAddres().isEmpty ?? true)
+                text: (address?.formattedAddress().isEmpty ?? true)
                     ? address?.formattedLatLong()
-                    : address?.formattedAddres(),
+                    : address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Location for the job',
               ),

@@ -69,62 +69,76 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: GawTheme.clearBackground,
+      backgroundColor: GawTheme.clearText,
       body: Center(
-        child: SizedBox(
-          height: 480,
-          width: 320,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HeaderBackButton(
-                color: GawTheme.text,
-                goBack: () => signInRouter.beamBack(),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              MainText(
-                'Reset your password',
-                alignment: TextAlign.start,
-                textStyleOverride: TextStyles.mainStyleTitle.copyWith(
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
-                ),
-              ),
-              const SizedBox(
-                height: PaddingSizes.bigPadding,
-              ),
-              MainText(
-                'Enter the email associated with your account. We will send you an email with the instructions to reset your password.',
-                alignment: TextAlign.start,
-                textStyleOverride: TextStyles.mainStyleTitle.copyWith(
-                  color: Colors.black87.withOpacity(0.6),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding + 8,
-              ),
-              CmsInputField(
-                hint: 'you@getawash.be',
-                label: 'Email',
-                controller: tecEmail,
-                onSubmitted: () => onSendEmail(context),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              GenericButton(
-                label: 'Send reset code',
-                onTap: !valid ? null : () => onSendEmail(context),
-                loading: loading,
-                color: valid ? GawTheme.mainTint : GawTheme.unselectedMainTint,
-              ),
+        child: Container(
+          height: 360,
+          width: 420,
+          decoration: BoxDecoration(
+            color: GawTheme.clearText,
+            boxShadow: const [
+              Shadows.topSheetShadow,
             ],
+            borderRadius: BorderRadius.circular(
+              12,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HeaderBackButton(
+                  color: GawTheme.text,
+                  goBack: () => signInRouter.beamBack(),
+                  heightOverride: 42,
+                  size: 15,
+                ),
+                const SizedBox(
+                  height: PaddingSizes.mainPadding,
+                ),
+                MainText(
+                  'Reset your password',
+                  alignment: TextAlign.start,
+                  textStyleOverride: TextStyles.mainStyleTitle.copyWith(
+                    fontFamily: 'General Sans',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.bigPadding,
+                ),
+                MainText(
+                  'Enter the email associated with your account. We will send you an email with the instructions to reset your password.',
+                  alignment: TextAlign.start,
+                  textStyleOverride: TextStyles.mainStyleTitle.copyWith(
+                    color: Colors.black87.withOpacity(0.6),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.extraBigPadding + 8,
+                ),
+                CmsInputField(
+                  label: 'Email',
+                  controller: tecEmail,
+                  onSubmitted: () => onSendEmail(context),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.extraBigPadding,
+                ),
+                GenericButton(
+                  label: 'Send reset code',
+                  onTap: !valid ? null : () => onSendEmail(context),
+                  loading: loading,
+                  color:
+                      valid ? GawTheme.mainTint : GawTheme.unselectedMainTint,
+                ),
+              ],
+            ),
           ),
         ),
       ),

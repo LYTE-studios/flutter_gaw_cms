@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/notifications/notifications_provider.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
@@ -5,9 +6,10 @@ import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
 import 'package:flutter_gaw_cms/secrets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart' as api;
+import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class CmsHeader extends StatelessWidget {
+class CmsHeader extends ConsumerWidget {
   final String mainRoute;
 
   final String subRoute;
@@ -26,7 +28,9 @@ class CmsHeader extends StatelessWidget {
   static const double headerHeight = 280;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+
     return Container(
       height: heightOverride ?? CmsHeader.headerHeight,
       decoration: const BoxDecoration(color: GawTheme.secondaryTint),
@@ -63,10 +67,15 @@ class CmsHeader extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  MainText(
-                    'Welcome back, Stieg',
-                    textStyleOverride: TextStyles.titleStyle.copyWith(
-                      color: GawTheme.clearText,
+                  AnimatedSwitcher(
+                    duration: const Duration(
+                      milliseconds: 300,
+                    ),
+                    child: MainText(
+                      'Welcome back, ${user.firstName ?? ''}',
+                      textStyleOverride: TextStyles.titleStyle.copyWith(
+                        color: GawTheme.clearText,
+                      ),
                     ),
                   ),
                   MainText(
@@ -95,19 +104,45 @@ class LanguageButton extends ConsumerStatefulWidget {
 }
 
 class _LanguageButtonState extends ConsumerState<LanguageButton> {
-  bool _english = true;
   bool _menuOpen = false;
+  bool _hover = false;
+
+  Map<String, String> languages = {
+    'en': PixelPerfectIcons.unitedKingdom,
+    'nl': PixelPerfectIcons.netherlands,
+    'fr': PixelPerfectIcons.france,
+  };
 
   void loadData() {
     ref.invalidate(userProvider);
   }
 
-  void _toggleLanguage() {
-    setState(() {
-      _english = !_english;
-    });
-    //UsersApi.updateLanguage(UpdateLanguageRequest((b) => b..language = _english ? 'en' : 'nl'));
-    //loadData();
+  String? getIcon() {
+    String? language = ref.read(userProvider).language;
+
+    String? icon = languages[language];
+
+    return icon;
+  }
+
+  List<String> getOtherIcons() {
+    String? language = ref.read(userProvider).language;
+
+    Map<String, String> tempLanguages = {...languages};
+
+    tempLanguages.removeWhere((key, value) => key == language);
+
+    return tempLanguages.values.toList();
+  }
+
+  void _toggleLanguage(String language) {
+    EasyLocalization.of(context)?.setLocale(
+      Locale(language),
+    );
+
+    UsersApi.updateLanguage(
+        UpdateLanguageRequest((b) => b..language = language));
+    loadData();
   }
 
   void _toggleMenu(MenuController controller) {
@@ -127,8 +162,6 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
   @override
   Widget build(BuildContext context) {
-    //final userState = ref.watch(userProvider);
-
     return MenuAnchor(
       onClose: _toggleRotation,
       alignmentOffset: const Offset(0, 4),
@@ -141,10 +174,71 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
           ),
         ),
       ),
-      menuChildren: [
+      menuChildren: buildMenuItems(),
+      builder: (context, controller, child) {
+        String? icon = getIcon();
+
+        return ColorlessInkWell(
+          onTap: () => _toggleMenu(controller),
+          onHover: () {
+            setState(() {
+              _hover = true;
+            });
+          },
+          onExitHover: () {
+            setState(() {
+              _hover = false;
+            });
+          },
+          child: Container(
+            width: 80.0,
+            height: 44.0,
+            decoration: BoxDecoration(
+              color: GawTheme.clearText,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: SizedBox(
+                    width: 40,
+                    height: 32,
+                    child: icon == null
+                        ? const SizedBox()
+                        : SvgIcon(
+                            icon,
+                            color: Colors.transparent,
+                          ),
+                  ),
+                ),
+                RotatingIcon(
+                  iconUrl: PixelPerfectIcons.arrowRightMedium,
+                  rotate: _menuOpen || _hover,
+                  turns: 0.5,
+                  rotation: 1,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> buildMenuItems() {
+    List<String> icons = getOtherIcons();
+
+    List<Widget> widgets = [];
+
+    for (String icon in icons) {
+      widgets.add(
         MenuItemButton(
           onPressed: () {
-            _toggleLanguage();
+            _toggleLanguage(
+              languages.keys.toList()[languages.values.toList().indexOf(icon)],
+            );
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(GawTheme.clearText),
@@ -164,59 +258,26 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
             ),
           ),
           child: Padding(
-            padding:
-                const EdgeInsets.only(left: 0, right: 24, top: 6, bottom: 6),
+            padding: const EdgeInsets.only(
+              left: 0,
+              right: 24,
+              top: 6,
+              bottom: 6,
+            ),
             child: SizedBox(
               width: 40,
               height: 32,
               child: SvgIcon(
-                _english
-                    ? PixelPerfectIcons.netherlands
-                    : PixelPerfectIcons.unitedKingdom,
+                icon,
                 color: Colors.transparent,
               ),
             ),
           ),
-        )
-      ],
-      builder: (context, controller, child) {
-        return ColorlessInkWell(
-          onTap: () => _toggleMenu(controller),
-          child: Container(
-            width: 80.0,
-            height: 44.0,
-            decoration: BoxDecoration(
-              color: GawTheme.clearText,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: SizedBox(
-                    width: 40,
-                    height: 32,
-                    child: SvgIcon(
-                      !_english
-                          ? PixelPerfectIcons.netherlands
-                          : PixelPerfectIcons.unitedKingdom,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-                RotatingIcon(
-                  iconUrl: PixelPerfectIcons.arrowRightMedium,
-                  rotate: _menuOpen,
-                  turns: 0.5,
-                  rotation: 1,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+        ),
+      );
+    }
+
+    return widgets;
   }
 }
 
@@ -299,7 +360,7 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
               height: 36,
               width: 36,
               child: ProfilePictureAvatar(
-                imageUrl: imageUrl,
+                imageUrl: api.FormattingUtil.formatUrl(imageUrl),
               ),
             ),
           ),
@@ -376,7 +437,7 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
       ..addListener((state) {
         loadArrays();
       })
-      ..loadData().then((_) => setLoading(false));
+      ..loadData().whenComplete(() => setLoading(false));
   }
 
   void loadArrays() {

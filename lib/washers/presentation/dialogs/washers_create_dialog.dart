@@ -1,8 +1,13 @@
+import 'dart:html';
+import 'dart:typed_data';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
-import 'package:flutter_gaw_cms/customers/forms/customer_basic_details_form.dart';
-import 'package:flutter_gaw_cms/customers/forms/customer_billing_form.dart';
+import 'package:flutter_gaw_cms/core/widgets/forms/file_upload_form.dart';
+import 'package:flutter_gaw_cms/washers/presentation/forms/washer_basic_details_form.dart';
+import 'package:flutter_gaw_cms/washers/presentation/forms/washer_billing_form.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -19,31 +24,13 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
   final TextEditingController tecLastName = TextEditingController();
   final TextEditingController tecEmail = TextEditingController();
   final TextEditingController tecPhoneNumber = TextEditingController();
-  final TextEditingController tecCompany = TextEditingController();
   final TextEditingController tecVat = TextEditingController();
+
+  Address? address;
 
   int index = 0;
 
   bool valid = false;
-
-  late List<Widget> pages = [
-    CustomerBasicDetailsForm(
-      onValidationChange: (bool value) {
-        setState(() {
-          valid = value;
-        });
-      },
-      tecFirstName: tecFirstName,
-      tecLastName: tecLastName,
-      tecEmail: tecEmail,
-      tecPhoneNumber: tecPhoneNumber,
-    ),
-    CustomerBillingForm(
-      tecCompany: tecCompany,
-      tecVat: tecVat,
-    ),
-    SizedBox(),
-  ];
 
   void _next() {
     if (index == 2) {
@@ -69,10 +56,13 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
     });
   }
 
+  File? profilePicture;
+  Uint8List? rawImage;
+
   @override
   Widget build(BuildContext context) {
     return BaseDialog(
-      height: 480,
+      height: 520,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,7 +86,44 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
               padding: const EdgeInsets.symmetric(
                 horizontal: PaddingSizes.bigPadding,
               ),
-              child: pages[index],
+              child: [
+                WasherBasicDetailsForm(
+                  onValidationChange: (bool value) {
+                    setState(() {
+                      valid = value;
+                    });
+                  },
+                  onUpdateAddress: (Address address) {
+                    setState(() {
+                      this.address = address;
+                    });
+                  },
+                  address: address,
+                  tecFirstName: tecFirstName,
+                  tecLastName: tecLastName,
+                  tecEmail: tecEmail,
+                  tecPhoneNumber: tecPhoneNumber,
+                ),
+                WasherBillingForm(
+                  tecVat: tecVat,
+                ),
+                FileUploadForm(
+                  onUpdateFile: (File? file, Uint8List data) {
+                    setState(() {
+                      profilePicture = file;
+                      rawImage = data;
+                    });
+                  },
+                  onRemoveFile: () {
+                    setState(() {
+                      profilePicture = null;
+                      rawImage = null;
+                    });
+                  },
+                  file: profilePicture,
+                  rawData: rawImage,
+                ),
+              ][index],
             ),
           ),
           Padding(
@@ -126,6 +153,7 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
                       child: Center(
                         child: LoadingSwitcher(
                           loading: loading,
+                          color: GawTheme.clearText,
                           child: MainText(
                             index == 2 ? 'Create' : 'Next',
                             textStyleOverride: TextStyles.titleStyle.copyWith(
@@ -146,11 +174,11 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
                         });
                         return;
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 72,
                         child: Center(
                           child: MainText(
-                            'Back',
+                            LocaleKeys.back.tr(),
                           ),
                         ),
                       ),

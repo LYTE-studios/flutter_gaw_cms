@@ -21,6 +21,14 @@ class NotificationsProvider extends StateNotifier<NotificationsProviderState> {
   final Ref ref;
 
   Future<void> startTicker() async {
+    if (state.tickerIsRunning) {
+      return;
+    }
+
+    state = state.copyWith(
+      tickerIsRunning: true,
+    );
+
     while (true) {
       await loadData();
 

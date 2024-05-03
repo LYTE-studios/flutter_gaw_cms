@@ -109,7 +109,7 @@ class CustomerBasicDetailsForm extends StatelessWidget {
                     context: context,
                   );
                 },
-                text: address?.formattedAddres(),
+                text: address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer address',
               ),

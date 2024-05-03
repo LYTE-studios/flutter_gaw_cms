@@ -28,15 +28,21 @@ class _JobTilesTabState extends State<JobTilesTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LoadingSwitcher(
-            loading: widget.loading,
-            child: SizedBox(
-              width: double.infinity,
-              child: Center(
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  children: buildItems(),
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: 56,
+            ),
+            child: LoadingSwitcher(
+              loading: widget.loading,
+              child: SizedBox(
+                width: double.infinity,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    children: buildItems(),
+                  ),
                 ),
               ),
             ),
@@ -49,7 +55,9 @@ class _JobTilesTabState extends State<JobTilesTab> {
   List<Widget> buildItems() {
     List<Widget> items = [];
 
-    for (Job job in widget.jobs) {
+    List<Job> jobs = widget.jobs;
+
+    for (Job job in jobs) {
       items.add(
         JobInfoCard(
           info: job,

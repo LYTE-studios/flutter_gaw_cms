@@ -85,20 +85,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     child: CircularProgressOverviewBlock(
                       isLoading: loading,
                       color: GawTheme.secondaryTint,
-                      value: adminStatistics?.unservicedJobCount ?? 0,
+                      value: adminStatistics?.comingJobCount ?? 0,
                       maxValue: adminStatistics?.jobCount ?? 0,
-                      title: 'Jobs without candidates',
-                      description: 'Out of all planned jobs this week',
+                      title: 'Jobs that haven\'t started yet',
+                      description: 'Out of all jobs',
                     ),
                   ),
                   Expanded(
                     child: CircularProgressOverviewBlock(
-                      color: GawTheme.mainTint,
-                      value: adminStatistics?.unservicedJobCount ?? 0,
-                      maxValue: adminStatistics?.jobCount ?? 0,
-                      title: 'Jobs with no approved candidates',
-                      description: 'Out of all planned jobs this week',
                       isLoading: loading,
+                      color: GawTheme.mainTint,
+                      value: adminStatistics?.ongoingJobCount ?? 0,
+                      maxValue: adminStatistics?.jobCount ?? 0,
+                      title: 'Ongoing jobs',
+                      description: 'Out of all jobs',
                     ),
                   ),
                   Expanded(
@@ -106,7 +106,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     child: TargetStatisticsBlock(
                       loading: loading,
                       jobsCount: adminStatistics?.jobCount ?? 0,
-                      increaseAmount: 12.5,
+                      increaseAmount: adminStatistics?.getJobCountTrend() ?? 0,
                     ),
                   )
                 ],
@@ -187,6 +187,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               fullScreen: false,
               child: ApplicationsListView(
                 fullView: false,
+                isJobSpecific: false,
               ),
             ),
           ),

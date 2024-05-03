@@ -56,7 +56,7 @@ class CustomerBillingForm extends StatelessWidget {
                     context: context,
                   );
                 },
-                text: billingAddress?.formattedAddres(),
+                text: billingAddress?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer billing address',
               ),

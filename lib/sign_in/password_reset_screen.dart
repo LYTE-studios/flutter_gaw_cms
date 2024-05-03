@@ -8,9 +8,9 @@ import 'package:gaw_ui/gaw_ui.dart';
 
 BeamPage resetPasswordBeamPage(String code, String token) {
   return BeamPage(
-    title: 'Reset Passord',
+    title: 'Reset Password',
     key: const ValueKey('reset-password'),
-    type: BeamPageType.slideLeftTransition,
+    type: BeamPageType.slideRightTransition,
     child: PasswordResetScreen(code: code, token: token),
   );
 }
@@ -84,76 +84,90 @@ class _PasswordResetScreenState extends State<PasswordResetScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('yes');
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: GawTheme.clearBackground,
+      backgroundColor: GawTheme.clearText,
       body: Center(
-        child: SizedBox(
-          height: 480,
-          width: 320,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HeaderBackButton(
-                color: GawTheme.text,
-                goBack: () => signInRouter.beamBack(),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              MainText(
-                'Reset your password',
-                alignment: TextAlign.start,
-                textStyleOverride: TextStyles.mainStyleTitle.copyWith(
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
-                ),
-              ),
-              const SizedBox(
-                height: PaddingSizes.bigPadding,
-              ),
-              MainText(
-                'Choose your new password.',
-                alignment: TextAlign.start,
-                textStyleOverride: TextStyles.mainStyleTitle.copyWith(
-                  color: Colors.black87.withOpacity(0.6),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding + 8,
-              ),
-              CmsInputField(
-                hint: 'Choose Password',
-                label: 'Password',
-                controller: tecPassword,
-                isPasswordField: true,
-                onSubmitted: () => onResetPassword(context),
-              ),
-              const SizedBox(
-                height: PaddingSizes.bigPadding,
-              ),
-              CmsInputField(
-                hint: 'Choose Password',
-                label: 'Password',
-                controller: tecPasswordCheck,
-                isPasswordField: true,
-                onSubmitted: () => onResetPassword(context),
-              ),
-              const SizedBox(
-                height: PaddingSizes.extraBigPadding,
-              ),
-              GenericButton(
-                label: 'Reset Password',
-                onTap: !valid ? null : () => onResetPassword(context),
-                loading: loading,
-                color: valid ? GawTheme.mainTint : GawTheme.unselectedMainTint,
-              ),
+        child: Container(
+          height: 420,
+          width: 420,
+          decoration: BoxDecoration(
+            color: GawTheme.clearText,
+            boxShadow: const [
+              Shadows.topSheetShadow,
             ],
+            borderRadius: BorderRadius.circular(
+              12,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(
+              PaddingSizes.extraBigPadding,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HeaderBackButton(
+                  color: GawTheme.text,
+                  goBack: () => signInRouter.beamBack(),
+                  heightOverride: 42,
+                  size: 15,
+                ),
+                const SizedBox(
+                  height: PaddingSizes.mainPadding,
+                ),
+                MainText(
+                  'Reset your password',
+                  alignment: TextAlign.start,
+                  textStyleOverride: TextStyles.mainStyleTitle.copyWith(
+                    fontFamily: 'General Sans',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.bigPadding,
+                ),
+                MainText(
+                  'Choose your new password.',
+                  alignment: TextAlign.start,
+                  textStyleOverride: TextStyles.mainStyleTitle.copyWith(
+                    color: Colors.black87.withOpacity(0.6),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.extraBigPadding + 8,
+                ),
+                CmsInputField(
+                  label: 'Password',
+                  controller: tecPassword,
+                  isPasswordField: true,
+                  onSubmitted: () => onResetPassword(context),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.bigPadding,
+                ),
+                CmsInputField(
+                  label: 'Verify password',
+                  controller: tecPasswordCheck,
+                  isPasswordField: true,
+                  onSubmitted: () => onResetPassword(context),
+                ),
+                const SizedBox(
+                  height: PaddingSizes.extraBigPadding,
+                ),
+                GenericButton(
+                  label: 'Reset Password',
+                  onTap: !valid ? null : () => onResetPassword(context),
+                  loading: loading,
+                  color:
+                      valid ? GawTheme.mainTint : GawTheme.unselectedMainTint,
+                ),
+              ],
+            ),
           ),
         ),
       ),

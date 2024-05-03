@@ -1,7 +1,10 @@
+import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/widgets/time_registration_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -21,28 +24,19 @@ class JobDetailsPopup extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
+          const Padding(
+            padding: EdgeInsets.symmetric(
               vertical: PaddingSizes.bigPadding,
               horizontal: PaddingSizes.smallPadding,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const FormTitle(
-                  label: 'Edit job',
-                ),
-                const Spacer(),
-                GawCloseButton(
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            child: FormTitle(
+              label: 'Job info',
             ),
           ),
-          _JobCreateForm(
-            job: job,
+          Expanded(
+            child: _JobDetailsForm(
+              job: job,
+            ),
           ),
         ],
       ),
@@ -50,80 +44,20 @@ class JobDetailsPopup extends ConsumerWidget {
   }
 }
 
-class _JobCreateForm extends ConsumerStatefulWidget {
+class _JobDetailsForm extends ConsumerStatefulWidget {
   final Job job;
 
-  const _JobCreateForm({
+  const _JobDetailsForm({
     required this.job,
   });
 
   @override
-  ConsumerState<_JobCreateForm> createState() => _JobCreateFormState();
+  ConsumerState<_JobDetailsForm> createState() => _JobCreateFormState();
 }
 
-class _JobCreateFormState extends ConsumerState<_JobCreateForm>
+class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
     with ScreenStateMixin {
   String? customerQueryTerm;
-
-  late Map<String, String> options = widget.job.customer.id == null
-      ? {}
-      : {
-          widget.job.customer.id!:
-              '${widget.job.customer.firstName ?? ''} ${widget.job.customer.lastName ?? ''}'
-        };
-
-  void createJob({required bool isDraft}) {
-    if (!validated) {
-      return;
-    }
-
-    setLoading(true);
-
-    JobsApi.updateJob(
-      id: widget.job.id!,
-      request: UpdateJobRequest(
-        (b) => b
-          ..title = tecTitle.text
-          ..startTime = GawDateUtil.toApi(startTime!)
-          ..endTime = GawDateUtil.toApi(endTime!)
-          ..applicationStartTime =
-              GawDateUtil.toApi(applicationRecruitmentPeriodStart!)
-          ..applicationEndTime =
-              GawDateUtil.toApi(applicationRecruitmentPeriodEnd!)
-          ..customerId = customerId
-          ..maxWashers = int.parse(tecNeededWashers.text)
-          ..isDraft = isDraft
-          ..address = address!.toBuilder()
-          ..description = tecDescription.text,
-      ),
-    ).then((_) {
-      Navigator.pop(context);
-      ref.read(jobsProvider.notifier).loadData();
-    }).catchError((error) {
-      ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
-    );
-  }
-
-  Map<String, String> loadOptionsByResponse(CustomerListResponse? response) {
-    if (response == null) {
-      return {};
-    }
-
-    Map<String, String> customerOptions = {};
-
-    for (Customer customer in response.customers.toList()) {
-      if (customer.firstName == null || customer.lastName == null) {
-        customerOptions[customer.id!] = customer.email ?? '';
-      } else {
-        customerOptions[customer.id!] =
-            '${customer.firstName ?? ''} ${customer.lastName ?? ''}';
-      }
-    }
-
-    return customerOptions;
-  }
 
   List<Customer> knownCustomers = [];
 
@@ -135,29 +69,6 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
     }
 
     return knownCustomers;
-  }
-
-  void getCustomerOptions() {
-    if (customerQueryTerm?.isEmpty ?? true) {
-      CustomerApi.getCustomers().then((CustomerListResponse? response) {
-        setState(() {
-          knownCustomers = setCustomerList(response?.customers.toList() ?? []);
-          options = loadOptionsByResponse(response);
-        });
-      }).catchError((error) {
-        ExceptionHandler.show(error);
-      });
-    } else {
-      CustomerApi.getCustomersQuery(query: customerQueryTerm ?? '')
-          .then((CustomerListResponse? response) {
-        setState(() {
-          knownCustomers = setCustomerList(response?.customers.toList() ?? []);
-          options = loadOptionsByResponse(response);
-        });
-      }).catchError((error) {
-        ExceptionHandler.show(error);
-      });
-    }
   }
 
   void validate() {
@@ -217,8 +128,25 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
 
   bool validated = true;
 
+  WashersForJobResponse? washersForJob;
+
+  void loadData() {
+    setLoading(true);
+
+    JobsApi.getWashersForJob(jobId: widget.job.id!).then((response) {
+      setState(() {
+        washersForJob = response;
+      });
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(() => setLoading(false));
+  }
+
   @override
   void initState() {
+    Future(() {
+      loadData();
+    });
     super.initState();
   }
 
@@ -238,16 +166,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                 hint: 'Enter a job title',
               ),
             ),
-            FormItem(
-              child: InputTextForm(
-                label: 'Needed washers for the job',
-                frozen: true,
-                controller: tecNeededWashers,
-                hint: 'Enter needed washers',
-                number: true,
-              ),
+            const Spacer(
+              flex: 2,
             ),
-            const Spacer(),
           ],
         ),
         FormRow(
@@ -276,7 +197,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           formItems: [
             FormItem(
               child: InputSelectionForm(
-                options: options,
+                options: {
+                  widget.job.customer.id: widget.job.customer.getFullName(),
+                },
                 enabled: false,
                 value: widget.job.customer.id,
                 label: 'Customer',
@@ -291,9 +214,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
               child: InputStaticTextForm(
                 label: 'Location',
                 frozen: true,
-                text: (address?.formattedAddres().isEmpty ?? true)
+                text: (address?.formattedAddress().isEmpty ?? true)
                     ? address?.formattedLatLong()
-                    : address?.formattedAddres(),
+                    : address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Location for the job',
               ),
@@ -313,7 +236,91 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             ),
           ],
         ),
+        SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(
+              PaddingSizes.smallPadding,
+            ),
+            child: _WashersBlock(
+              loading: loading,
+              response: washersForJob,
+              job: widget.job,
+              onEditTimeRegistration: () {
+                loadData();
+              },
+            ),
+          ),
+        ),
       ],
     );
+  }
+}
+
+class _WashersBlock extends StatelessWidget {
+  final bool loading;
+
+  final WashersForJobResponse? response;
+
+  final Job? job;
+
+  final Function()? onEditTimeRegistration;
+
+  const _WashersBlock({
+    this.loading = false,
+    this.response,
+    this.job,
+    this.onEditTimeRegistration,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(
+        minHeight: 128,
+      ),
+      decoration: BoxDecoration(
+        border: const Border.fromBorderSide(Borders.mainSide),
+        borderRadius: BorderRadius.circular(12),
+        color: GawTheme.clearText,
+      ),
+      child: LoadingSwitcher(
+        loading: loading,
+        child: SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: getItems(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getItems() {
+    List<Widget> widgets = [];
+
+    for (Washer washer in response?.washers ?? []) {
+      TimeRegistration? registration =
+          response?.timeRegistrations.firstWhereOrNull(
+        (item) => item.washer?.id == washer.id,
+      );
+
+      if (job == null) {
+        return [];
+      }
+
+      widgets.add(
+        TimeRegistrationCard(
+          timeRegistration: registration,
+          washer: washer,
+          job: job!,
+          onEdit: onEditTimeRegistration,
+        ),
+      );
+    }
+
+    return widgets;
   }
 }

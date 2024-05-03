@@ -17,20 +17,33 @@ class BaseDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: GawTheme.clearBackground,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: PaddingSizes.bigPadding,
-            horizontal: PaddingSizes.extraBigPadding,
+      child: Stack(
+        children: [
+          Container(
+            height: height,
+            width: width,
+            decoration: BoxDecoration(
+              color: GawTheme.clearText,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: PaddingSizes.bigPadding,
+                horizontal: PaddingSizes.extraBigPadding,
+              ),
+              child: child,
+            ),
           ),
-          child: child,
-        ),
+          Positioned(
+            right: PaddingSizes.mainPadding,
+            top: PaddingSizes.mainPadding,
+            child: CloseButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

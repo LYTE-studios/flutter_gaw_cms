@@ -7,5 +7,6 @@ part 'notifications_provider_state.freezed.dart';
 class NotificationsProviderState with _$NotificationsProviderState {
   factory NotificationsProviderState({
     List<Notification>? notifications,
+    @Default(false) bool tickerIsRunning,
   }) = notificationsProviderState;
 }

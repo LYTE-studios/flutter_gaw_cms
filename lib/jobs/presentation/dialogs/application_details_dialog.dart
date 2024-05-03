@@ -1,8 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
 import 'package:flutter_gaw_cms/core/widgets/maps/basic_map.dart';
+import 'package:flutter_gaw_cms/jobs/presentation/widgets/job_info_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -53,32 +56,37 @@ class _ApplicationDetailsDialogState
                     ),
                     child: Row(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: PaddingSizes.mainPadding,
-                          ),
-                          child: GenericButton(
-                            onTap: () {
-                              setLoading(true);
-                              JobsApi.approveApplication(
-                                      id: widget.application.id!)
-                                  .then((_) {
-                                Navigator.pop(context);
-                                ref.invalidate(jobsProvider);
-                              }).catchError((error) {
-                                ExceptionHandler.show(error);
-                              }).whenComplete(() => setLoading(false));
-                            },
-                            label: 'Approve',
-                            textStyleOverride: TextStyles.mainStyle.copyWith(
-                              color: GawTheme.clearText,
-                              fontSize: 12,
+                        Visibility(
+                          visible: widget.application.job.selectedWashers <
+                              widget.application.job.maxWashers,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              right: PaddingSizes.mainPadding,
+                            ),
+                            child: GenericButton(
+                              onTap: () {
+                                setLoading(true);
+                                JobsApi.approveApplication(
+                                        id: widget.application.id!)
+                                    .then((_) {
+                                  Navigator.pop(context);
+                                  ref.invalidate(jobsProvider);
+                                }).catchError((error) {
+                                  ExceptionHandler.show(error);
+                                }).whenComplete(() => setLoading(false));
+                              },
+                              label: 'Approve',
+                              textStyleOverride: TextStyles.mainStyle.copyWith(
+                                color: GawTheme.clearText,
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
                         GenericButton(
                           label: 'Deny',
                           outline: true,
+                          textColor: GawTheme.unselectedText,
                           onTap: () {
                             setLoading(true);
                             JobsApi.denyApplication(id: widget.application.id!)
@@ -92,7 +100,7 @@ class _ApplicationDetailsDialogState
                           color: GawTheme.clearText,
                           textStyleOverride: TextStyles.mainStyle.copyWith(
                             color: GawTheme.text,
-                            fontSize: 12,
+                            fontSize: 15,
                           ),
                         ),
                       ],
@@ -111,26 +119,43 @@ class _ApplicationDetailsDialogState
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 children: [
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: PaddingSizes.mainPadding,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: PaddingSizes.bigPadding,
-                          left: PaddingSizes.extraBigPadding,
-                        ),
-                        child: MainText(
-                          'DATE & TIME',
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.unselectedText,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w300,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: PaddingSizes.smallPadding,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: MainText(
+                            widget.application.job.title ?? '',
+                            textStyleOverride: TextStyles.titleStyle.copyWith(
+                              fontSize: 18,
+                            ),
                           ),
                         ),
+                        SelectedWashersWidget(
+                          selectedWashers:
+                              widget.application.job.selectedWashers,
+                          maxWashers: widget.application.job.maxWashers,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const GawDivider(),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: PaddingSizes.bigPadding,
+                      left: PaddingSizes.mainPadding +
+                          PaddingSizes.extraBigPadding,
+                    ),
+                    child: MainText(
+                      'DATE & TIME',
+                      textStyleOverride: TextStyles.mainStyle.copyWith(
+                        color: GawTheme.unselectedText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
                       ),
-                    ],
+                    ),
                   ),
                   _InfoRow(
                     leading: const SvgIcon(
@@ -149,7 +174,8 @@ class _ApplicationDetailsDialogState
                   Padding(
                     padding: const EdgeInsets.only(
                       top: PaddingSizes.bigPadding,
-                      left: PaddingSizes.extraBigPadding,
+                      left: PaddingSizes.mainPadding +
+                          PaddingSizes.extraBigPadding,
                     ),
                     child: MainText(
                       'LOCATION',

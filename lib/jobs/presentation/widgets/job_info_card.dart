@@ -34,19 +34,27 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
     String statusString = "";
     Color statusColour = GawTheme.text;
 
+    bool isActive = false;
+
     if (widget.info.isDraft ?? true) {
       statusString = "Draft";
       statusColour = GawTheme.error;
     } else if (widget.info.state == JobState.pending) {
-      statusString = "Active";
-      statusColour = GawTheme.success;
+      if (GawDateUtil.fromApi(widget.info.startTime).isBefore(DateTime.now())) {
+        statusString = "Active";
+        statusColour = GawTheme.success;
+        isActive = true;
+      } else {
+        statusString = "Pending";
+        statusColour = GawTheme.secondaryTint;
+      }
     } else if (widget.info.state == JobState.done) {
       statusString = "Done";
       statusColour = GawTheme.text;
+    } else {
+      statusString = "Unserviced";
+      statusColour = GawTheme.error;
     }
-
-    String abbreviation =
-        (widget.info.title ?? " ").split(" ").map((e) => e[0]).join();
 
     return Padding(
       padding: const EdgeInsets.all(PaddingSizes.mainPadding),
@@ -71,23 +79,19 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
+                  SizedBox(
                     height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: GawTheme.darkBackground,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: MainText(
-                      abbreviation,
-                      color: GawTheme.clearText,
-                      fontWeight: FontWeight.w600,
+                    width: 40,
+                    child: InitialsAvatar(
+                      isBlock: true,
+                      initials: widget.info.customer.initials ?? '',
+                      imageUrl: FormattingUtil.formatUrl(
+                        widget.info.customer.profilePictureUrl,
+                      ),
                     ),
                   ),
                   Visibility(
-                    visible: !widget.basic,
+                    visible: !widget.basic && (widget.info.isDraft ?? false),
                     child: ColorlessInkWell(
                       onTap: () {
                         setLoading(true);
@@ -144,15 +148,17 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MainText(
-                    widget.info.title ?? "",
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+                  Expanded(
+                    child: MainText(
+                      widget.info.title ?? "",
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
                   MainText(
                     GawDateUtil.formatTimeInterval(
                       GawDateUtil.fromApi(widget.info.startTime),
-                      GawDateUtil.fromApi(widget.info.startTime),
+                      GawDateUtil.fromApi(widget.info.endTime),
                     ),
                     color: GawTheme.secondaryTint,
                     fontWeight: FontWeight.w600,
@@ -178,7 +184,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
               ),
               Row(
                 children: [
-                  _SelectedWashersWidget(
+                  SelectedWashersWidget(
                     selectedWashers: widget.info.selectedWashers,
                     maxWashers: widget.info.maxWashers,
                   ),
@@ -262,7 +268,9 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                         ),
                       ),
                     )
-                  : widget.info.state == JobState.done
+                  : [JobState.done, JobState.cancelled]
+                              .contains(widget.info.state) ||
+                          isActive
                       ? EditButton(
                           onTap: () {
                             DialogUtil.show(
@@ -270,13 +278,15 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                                 job: widget.info,
                               ),
                               context: context,
-                            );
+                            ).then((_) {
+                              ref.read(jobsProvider.notifier).loadData();
+                            });
                           },
                           icon: PixelPerfectIcons.info,
                           label: "Info",
                           fontSize: 12,
                           minHeight: 35,
-                          color: Colors.transparent,
+                          color: GawTheme.clearText,
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -309,7 +319,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                               label: "Edit",
                               fontSize: 12,
                               minHeight: 35,
-                              color: Colors.transparent,
+                              color: GawTheme.clearText,
                             ),
                           ],
                         ),
@@ -338,12 +348,13 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
   }
 }
 
-class _SelectedWashersWidget extends StatelessWidget {
+class SelectedWashersWidget extends StatelessWidget {
   final int selectedWashers;
 
   final int maxWashers;
 
-  const _SelectedWashersWidget({
+  const SelectedWashersWidget({
+    super.key,
     required this.selectedWashers,
     required this.maxWashers,
   });

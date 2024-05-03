@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -27,23 +28,14 @@ class JobEditPopup extends ConsumerWidget {
               vertical: PaddingSizes.bigPadding,
               horizontal: PaddingSizes.smallPadding,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const FormTitle(
-                  label: 'Edit job',
-                ),
-                const Spacer(),
-                GawCloseButton(
-                  onClose: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+            child: FormTitle(
+              label: job.state == JobState.done ? 'Job info' : 'Edit job',
             ),
           ),
-          _JobCreateForm(
-            job: job,
+          Expanded(
+            child: _JobCreateForm(
+              job: job,
+            ),
           ),
         ],
       ),
@@ -355,9 +347,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
                     context: context,
                   );
                 },
-                text: (address?.formattedAddres().isEmpty ?? true)
+                text: (address?.formattedAddress().isEmpty ?? true)
                     ? address?.formattedLatLong()
-                    : address?.formattedAddres(),
+                    : address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Location for the job',
               ),

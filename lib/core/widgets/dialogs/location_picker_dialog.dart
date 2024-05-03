@@ -91,7 +91,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
 
     GoogleApi.fetchUrl(
       {
-        "query": query!,
+        "query": query!.trim(),
         "key": Configuration.googleApiKey,
         "region": "be",
       },
@@ -99,7 +99,6 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
       (value) {
         setTicker();
         if (value != null) {
-          // print(value);
           PlaceAutocompleteResponse response =
               PlaceAutocompleteResponse.fromJson(value);
           if (response.predictions != null) {

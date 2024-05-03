@@ -3,7 +3,7 @@ import 'package:flutter_gaw_cms/core/widgets/dialogs/location_picker_dialog.dart
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
-class CustomerBasicDetailsForm extends StatelessWidget {
+class WasherBasicDetailsForm extends StatelessWidget {
   final TextEditingController tecFirstName;
 
   final TextEditingController tecLastName;
@@ -17,7 +17,7 @@ class CustomerBasicDetailsForm extends StatelessWidget {
 
   final Function(bool)? onValidationChange;
 
-  const CustomerBasicDetailsForm({
+  const WasherBasicDetailsForm({
     super.key,
     required this.tecFirstName,
     required this.tecLastName,
@@ -41,10 +41,6 @@ class CustomerBasicDetailsForm extends StatelessWidget {
       }
     }
 
-    if (address == null) {
-      valid = false;
-    }
-
     onValidationChange?.call(valid);
   }
 
@@ -61,14 +57,14 @@ class CustomerBasicDetailsForm extends StatelessWidget {
             FormItem(
               child: InputTextForm(
                 label: 'First name',
-                hint: 'Customer first name',
+                hint: 'Washer first name',
                 controller: tecFirstName..addListener(validate),
               ),
             ),
             FormItem(
               child: InputTextForm(
                 label: 'Last name',
-                hint: 'Customer last name',
+                hint: 'Washer last name',
                 controller: tecLastName..addListener(validate),
               ),
             ),
@@ -76,7 +72,7 @@ class CustomerBasicDetailsForm extends StatelessWidget {
               flex: 2,
               child: InputTextForm(
                 label: 'Email',
-                hint: 'Customer email',
+                hint: 'Washer email',
                 controller: tecEmail..addListener(validate),
               ),
             )
@@ -87,7 +83,7 @@ class CustomerBasicDetailsForm extends StatelessWidget {
             FormItem(
               child: InputTextForm(
                 label: 'Phone number',
-                hint: 'Customer phone number',
+                hint: 'Washer phone number',
                 controller: tecPhoneNumber..addListener(validate),
               ),
             ),
@@ -102,16 +98,14 @@ class CustomerBasicDetailsForm extends StatelessWidget {
                   DialogUtil.show(
                     dialog: LocationPickerDialog(
                       address: address,
-                      onAddressSelected: (Address address) {
-                        onUpdateAddress?.call(address);
-                      },
+                      onAddressSelected: onUpdateAddress,
                     ),
                     context: context,
                   );
                 },
-                text: address?.formattedAddres(),
+                text: address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
-                hint: 'Customer address',
+                hint: 'Washer address',
               ),
             ),
           ],

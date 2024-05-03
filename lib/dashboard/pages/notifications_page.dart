@@ -1,7 +1,8 @@
 import 'package:beamer/beamer.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
-import 'package:flutter_gaw_cms/core/widgets/utility_widgets/cms_header.dart';
+import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -22,44 +23,94 @@ class NotificationsPage extends ConsumerStatefulWidget {
   ConsumerState<NotificationsPage> createState() => _NotificationsPageState();
 }
 
-class NotificationInfo {
-  NotificationInfo();
-
-  String text = "";
-
-  @override
-  String toString() {
-    return text;
-  }
-}
-
-/// This is a map of <LanguageCode, Info>
-final notificationsProvider =
-    StateProvider<Map<String, NotificationInfo>>((ref) => {});
-
-final inAppNotificationProvider = StateProvider<bool>((ref) => false);
-final pushAppNotificationProvider = StateProvider<bool>((ref) => false);
-
 class _NotificationsPageState extends ConsumerState<NotificationsPage>
     with ScreenStateMixin {
-  int selectedLanguageIndex = 0;
+  bool validated = false;
 
-  final Map<String, Widget> notifications = {
-    "ALL": const LanguageNotification(language: "ALL", text: "Any language"),
-    "NL": const LanguageNotification(language: "NL", text: "Dutch"),
-    "FR": const LanguageNotification(language: "FR", text: "French"),
-    "EN": const LanguageNotification(language: "EN", text: "English"),
-  };
+  String? getLanguageCode() {
+    if (language == all) {
+      return null;
+    }
 
-  void pageIndexChange(int index) {
-    if (index == selectedLanguageIndex) {
+    if (language == english) {
+      return 'en';
+    } else {
+      return 'nl';
+    }
+  }
+
+  void validate() {
+    validated = true;
+
+    if (tecTitle.text.isEmpty) {
+      validated = false;
+    }
+
+    if (tecDescription.text.isEmpty) {
+      validated = false;
+    }
+
+    if (selectedTypes.isEmpty) {
+      validated = false;
+    }
+    if (language?.isEmpty ?? true) {
+      validated = false;
+    }
+    setState(() {
+      validated = validated;
+    });
+  }
+
+  void send() {
+    validate();
+
+    if (!validated) {
       return;
     }
 
-    setState(() {
-      selectedLanguageIndex = index;
-    });
+    setLoading(true);
+
+    NotificationsApi.postNotification(
+      request: NotificationsRequest(
+        (b) => b
+          ..title = tecTitle.text
+          ..description = tecDescription.text
+          ..sendMail = selectedTypes.contains(email)
+          ..language = getLanguageCode()
+          ..isGlobal = true,
+      ),
+    ).then((_) {
+      setState(() {
+        tecTitle.text = '';
+        tecDescription.text = '';
+        selectedTypes = [];
+        language = null;
+      });
+      validate();
+    }).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(() => setLoading(false));
   }
+
+  String english = 'English';
+  String dutch = 'Dutch';
+  String all = 'All';
+  String inApp = 'In-App notification';
+  String push = 'Push notification';
+  String email = 'Email';
+
+  late final TextEditingController tecTitle = TextEditingController()
+    ..addListener(() {
+      setState(() {});
+    });
+  late final TextEditingController tecDescription = TextEditingController()
+    ..addListener(() {
+      setState(() {});
+    });
+
+  List<String> selectedTypes = [];
+
+  String? language;
 
   @override
   Widget build(BuildContext context) {
@@ -67,214 +118,173 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
       mainRoute: 'Notifications',
       subRoute: 'Notifications',
       child: ScreenSheet(
-        topPadding: CmsHeader.headerHeight + PaddingSizes.smallPadding,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        topPadding: 136,
+        child: ListView(
+          shrinkWrap: false,
+          dragStartBehavior: DragStartBehavior.down,
+          padding: const EdgeInsets.only(
+            left: PaddingSizes.bigPadding * 2,
+            right: PaddingSizes.bigPadding * 2,
+            top: PaddingSizes.extraBigPadding * 2,
+            bottom: 256,
+          ),
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(PaddingSizes.bigPadding),
-                    child: SizedBox(
-                      height: 390,
-                      child: TabbedView(
-                        tabs: notifications.keys.toList(),
-                        pages: notifications.values.toList(),
-                        selectedIndex: selectedLanguageIndex,
-                        onPageIndexChange: pageIndexChange,
-                      ),
-                    ),
+            const FormTitle(
+              label: 'Send notification',
+            ),
+            const FormSubTitle(
+              label: 'Notification will be sent out instantly',
+            ),
+            const SizedBox(
+              height: PaddingSizes.bigPadding,
+            ),
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputTextForm(
+                    label: 'Title',
+                    controller: tecTitle,
+                    hint: 'Notification title...',
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Tab
-class LanguageNotification extends ConsumerStatefulWidget {
-  const LanguageNotification({
-    super.key,
-    required this.language,
-    required this.text,
-  });
-
-  final String language;
-  final String text;
-
-  @override
-  LanguageNotificationState createState() => LanguageNotificationState();
-}
-
-/// A tabbed menu
-// class _LanguageNotification extends State<LanguageNotification> {
-class LanguageNotificationState extends ConsumerState<LanguageNotification>
-    with ScreenStateMixin {
-  bool sendAsEmail = false;
-  bool inAppNotification = true;
-  bool pushNotification = false;
-
-  /// Callback when user presses the 'send' button
-  void onSubmit() {
-    print("SENDING");
-
-    setLoading(true);
-
-    NotificationsApi.postNotification(
-        request: NotificationsRequest(
-      (b) => b
-        ..title = tecTitle.text
-        ..description = tecDescription.text
-        ..isGlobal = true
-        ..sendMail = sendAsEmail,
-    )).catchError((error) {
-      setLoading(false);
-    });
-  }
-
-  final TextEditingController tecTitle = TextEditingController();
-  final TextEditingController tecDescription = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  PaddingSizes.mainPadding,
-                ),
-                child: Column(
-                  children: [
-                    InputTextForm(
-                      label: 'Title',
-                      controller: tecTitle,
-                    ),
-                    const SizedBox(
-                      height: PaddingSizes.smallPadding,
-                    ),
-                    InputTextForm(
-                      lines: 4,
-                      label: 'Description',
-                      controller: tecDescription,
-                    )
-                  ],
-                ),
-              ),
+            const SizedBox(
+              height: PaddingSizes.mainPadding,
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  PaddingSizes.bigPadding,
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputTextForm(
+                    label: 'Description',
+                    controller: tecDescription,
+                    hint: 'Write a description',
+                    lines: 3,
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _CupertinoSwitch(
-                      label: 'Send as email',
-                      value: sendAsEmail,
-                      onUpdate: (bool value) {
+              ],
+            ),
+            const SizedBox(
+              height: PaddingSizes.mainPadding,
+            ),
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputMultiSelectionForm(
+                    label: 'Notification type',
+                    onUpdate: (String value) {
+                      if (selectedTypes.contains(value)) {
                         setState(() {
-                          sendAsEmail = value;
+                          selectedTypes.remove(value);
                         });
-                      },
-                    ),
-                    _CupertinoSwitch(
-                      label: 'In app notification',
-                      value: inAppNotification,
-                      onUpdate: (bool value) {
-                        setState(() {
-                          inAppNotification = value;
-                        });
-                      },
-                    ),
-                  ],
+                        validate();
+
+                        return;
+                      }
+                      setState(() {
+                        selectedTypes.add(value);
+                      });
+                      validate();
+                    },
+                    selectedOptions: selectedTypes,
+                    options: {
+                      inApp: const SvgImage(
+                        PixelPerfectIcons.customInApp,
+                        fit: BoxFit.fitHeight,
+                      ),
+                      push: const SvgImage(
+                        PixelPerfectIcons.customPush,
+                        fit: BoxFit.fitHeight,
+                      ),
+                      email: const SvgImage(
+                        PixelPerfectIcons.customMail,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    },
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-        const Spacer(),
-        Padding(
-          padding: const EdgeInsets.all(
-            PaddingSizes.bigPadding,
-          ),
-          child: SizedBox(
-            width: 161,
-            child: GenericButton(
-              label: "Send",
-              loading: loading,
-              onTap: onSubmit,
+            const SizedBox(
+              height: PaddingSizes.mainPadding,
             ),
-          ),
-        )
-      ],
-    );
-  }
-}
-
-class _CupertinoSwitch extends StatelessWidget {
-  final String label;
-
-  final bool value;
-
-  final Function(bool)? onUpdate;
-
-  const _CupertinoSwitch({
-    required this.label,
-    this.value = false,
-    this.onUpdate,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(
-        PaddingSizes.smallPadding,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: const Border.fromBorderSide(
-            Borders.mainSide,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(
-            PaddingSizes.smallPadding,
-          ),
-          child: SizedBox(
-            width: 270,
-            child: Row(
-              children: [
-                Switch(
-                  hoverColor: Colors.transparent,
-                  value: value,
-                  onChanged: onUpdate,
+            FormRow(
+              formItems: [
+                SizedBox(
+                  width: 520,
+                  child: InputMultiSelectionForm(
+                    label: 'Language',
+                    isMulti: false,
+                    onUpdate: (String value) {
+                      setState(() {
+                        language = value;
+                      });
+                      validate();
+                    },
+                    selectedOptions: language == null ? [] : [language!],
+                    options: {
+                      all: null,
+                      english: const SvgImage(
+                        PixelPerfectIcons.unitedKingdom,
+                        fit: BoxFit.fitHeight,
+                      ),
+                      dutch: const SvgImage(
+                        PixelPerfectIcons.netherlands,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: PaddingSizes.extraBigPadding,
+            ),
+            FormRow(
+              formItems: [
+                GenericButton(
+                  loading: loading,
+                  minWidth: 108,
+                  label: 'Send',
+                  onTap: send,
+                  icon: PixelPerfectIcons.customSend,
+                  textColor: GawTheme.clearText,
+                  color: !validated
+                      ? GawTheme.unselectedMainTint
+                      : GawTheme.mainTint,
+                  textStyleOverride: TextStyles.mainStyle.copyWith(
+                    color: GawTheme.mainTintText,
+                  ),
                 ),
                 const SizedBox(
-                  width: PaddingSizes.smallPadding,
+                  width: PaddingSizes.mainPadding,
                 ),
-                MainText(
-                  label,
+                GenericButton(
+                  loading: loading,
+                  outline: true,
+                  minWidth: 96,
+                  onTap: () {
+                    setState(() {
+                      tecTitle.text = '';
+                      tecDescription.text = '';
+                      selectedTypes = [];
+                      language = null;
+                    });
+                    validate();
+                  },
+                  textColor: GawTheme.unselectedText,
+                  color: GawTheme.clearBackground,
                   textStyleOverride: TextStyles.mainStyle.copyWith(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                    color: GawTheme.text,
                   ),
+                  label: 'Clear all',
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

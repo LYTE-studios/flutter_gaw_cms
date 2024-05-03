@@ -1,6 +1,11 @@
+import 'dart:html';
+import 'dart:typed_data';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
+import 'package:flutter_gaw_cms/core/widgets/forms/file_upload_form.dart';
 import 'package:flutter_gaw_cms/customers/forms/customer_basic_details_form.dart';
 import 'package:flutter_gaw_cms/customers/forms/customer_billing_form.dart';
 import 'package:gaw_api/gaw_api.dart';
@@ -29,6 +34,9 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
 
   bool valid = false;
 
+  File? profilePicture;
+  Uint8List? rawImage;
+
   void _next() {
     if (index == 2) {
       setLoading(true);
@@ -38,11 +46,25 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
           ..firstName = tecFirstName.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
+          ..phoneNumber = tecPhoneNumber.text
+          ..company = tecCompany.text
           ..address = address?.toBuilder()
           ..billingAddress = billingAddress?.toBuilder()
           ..taxNumber = tecVat.text,
-      )).then((_) {
-        Navigator.of(context).pop();
+      )).then((CreateCustomerResponse? response) {
+        if (response == null || rawImage == null) {
+          Navigator.of(context).pop();
+          return;
+        }
+        setLoading(true);
+        UsersApi.uploadProfilePicture(
+          rawImage!,
+          userId: response.customerId,
+        ).then((_) {
+          Navigator.of(context).pop();
+        }).catchError((error) {
+          ExceptionHandler.show(error);
+        }).whenComplete(() => setLoading(false));
       }).catchError((error) {
         ExceptionHandler.show(error);
         Navigator.of(context).pop();
@@ -89,11 +111,26 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
         tecCompany: tecCompany,
         tecVat: tecVat,
       ),
-      SizedBox(),
+      FileUploadForm(
+        onUpdateFile: (File? file, Uint8List data) {
+          setState(() {
+            profilePicture = file;
+            rawImage = data;
+          });
+        },
+        onRemoveFile: () {
+          setState(() {
+            profilePicture = null;
+            rawImage = null;
+          });
+        },
+        file: profilePicture,
+        rawData: rawImage,
+      ),
     ];
 
     return BaseDialog(
-      height: 480,
+      height: 520,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -147,6 +184,7 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                       child: Center(
                         child: LoadingSwitcher(
                           loading: loading,
+                          color: GawTheme.clearText,
                           child: MainText(
                             index == 2 ? 'Create' : 'Next',
                             textStyleOverride: TextStyles.titleStyle.copyWith(
@@ -167,11 +205,11 @@ class _CustomerCreateDialogState extends State<CustomerCreateDialog>
                         });
                         return;
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: 72,
                         child: Center(
                           child: MainText(
-                            'Back',
+                            LocaleKeys.back.tr(),
                           ),
                         ),
                       ),

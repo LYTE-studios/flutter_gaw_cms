@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/routing/router.dart';
+import 'package:flutter_gaw_cms/core/widgets/dialogs/confirm_logout_dialog.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_item.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_sub_item.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
-import 'package:flutter_gaw_cms/sign_in/sign_in_screen.dart';
-import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 import '../../../dashboard/pages/customers_page.dart';
@@ -84,14 +83,15 @@ class MenuDrawer extends StatelessWidget {
             onTap: () {
               onChange?.call(WashersPage.route);
             },
-            active: [WashersPage.route, ApplicationsPage.route].contains(route),
+            active:
+                [WashersPage.route, RegistrationsPage.route].contains(route),
             subItems: [
               DrawerNavigationSubItem(
                 onTap: () {
-                  onChange?.call(ApplicationsPage.route);
+                  onChange?.call(RegistrationsPage.route);
                 },
-                label: 'Applications',
-                active: route == ApplicationsPage.route,
+                label: 'Registrations',
+                active: route == RegistrationsPage.route,
               ),
             ],
           ),
@@ -104,7 +104,16 @@ class MenuDrawer extends StatelessWidget {
               onChange?.call(JobsPage.route);
             },
             iconUrl: PixelPerfectIcons.workMedium,
-            active: JobsPage.route == route,
+            active: [JobsPage.route, ApplicationsPage.route].contains(route),
+            subItems: [
+              DrawerNavigationSubItem(
+                onTap: () {
+                  onChange?.call(ApplicationsPage.route);
+                },
+                label: 'Applications',
+                active: route == ApplicationsPage.route,
+              ),
+            ],
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,
@@ -167,9 +176,10 @@ class MenuDrawer extends StatelessWidget {
             hoverColor: GawTheme.error,
             iconUrl: PixelPerfectIcons.logoutMedium,
             onTap: () {
-              LocalStorageUtil.setTokens(null, null);
-
-              mainRouter.beamToNamed(SignInScreen.route);
+              DialogUtil.show(
+                dialog: const ConfirmLogoutDialog(),
+                context: context,
+              );
             },
             active: false,
           ),

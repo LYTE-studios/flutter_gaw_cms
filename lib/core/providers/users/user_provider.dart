@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter_gaw_cms/core/providers/users/user_provider_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
@@ -20,19 +18,6 @@ class UserProvider extends StateNotifier<UserProviderState> {
 
   final Ref ref;
 
-  void loadProfilePicture() {
-    if (state.profilePictureUrl == null) {
-      return;
-    }
-    UsersApi.fetchProfilePicture(
-      state.profilePictureUrl!,
-    ).then((Uint8List? bytes) {
-      state = state.copyWith(
-        profilePicture: bytes,
-      );
-    });
-  }
-
   void loadData() {
     state = state.copyWith(
       loading: true,
@@ -46,7 +31,6 @@ class UserProvider extends StateNotifier<UserProviderState> {
         lastName: response.lastName,
         profilePictureUrl: response.profilePictureUrl,
       );
-      loadProfilePicture();
     });
   }
 
