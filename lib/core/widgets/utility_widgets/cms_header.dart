@@ -107,19 +107,35 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
   bool _menuOpen = false;
   bool _hover = false;
 
+  Map<String, String> languages = {
+    'en': PixelPerfectIcons.unitedKingdom,
+    'nl': PixelPerfectIcons.netherlands,
+    'fr': PixelPerfectIcons.france,
+  };
+
   void loadData() {
     ref.invalidate(userProvider);
   }
 
-  void _toggleLanguage() {
+  String? getIcon() {
     String? language = ref.read(userProvider).language;
 
-    if (language == 'en') {
-      language = 'nl';
-    } else {
-      language = 'en';
-    }
+    String? icon = languages[language];
 
+    return icon;
+  }
+
+  List<String> getOtherIcons() {
+    String? language = ref.read(userProvider).language;
+
+    Map<String, String> tempLanguages = {...languages};
+
+    tempLanguages.removeWhere((key, value) => key == language);
+
+    return tempLanguages.values.toList();
+  }
+
+  void _toggleLanguage(String language) {
     EasyLocalization.of(context)?.setLocale(
       Locale(language),
     );
@@ -146,8 +162,6 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userProvider);
-
     return MenuAnchor(
       onClose: _toggleRotation,
       alignmentOffset: const Offset(0, 4),
@@ -160,10 +174,71 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
           ),
         ),
       ),
-      menuChildren: [
+      menuChildren: buildMenuItems(),
+      builder: (context, controller, child) {
+        String? icon = getIcon();
+
+        return ColorlessInkWell(
+          onTap: () => _toggleMenu(controller),
+          onHover: () {
+            setState(() {
+              _hover = true;
+            });
+          },
+          onExitHover: () {
+            setState(() {
+              _hover = false;
+            });
+          },
+          child: Container(
+            width: 80.0,
+            height: 44.0,
+            decoration: BoxDecoration(
+              color: GawTheme.clearText,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: SizedBox(
+                    width: 40,
+                    height: 32,
+                    child: icon == null
+                        ? const SizedBox()
+                        : SvgIcon(
+                            icon,
+                            color: Colors.transparent,
+                          ),
+                  ),
+                ),
+                RotatingIcon(
+                  iconUrl: PixelPerfectIcons.arrowRightMedium,
+                  rotate: _menuOpen || _hover,
+                  turns: 0.5,
+                  rotation: 1,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> buildMenuItems() {
+    List<String> icons = getOtherIcons();
+
+    List<Widget> widgets = [];
+
+    for (String icon in icons) {
+      widgets.add(
         MenuItemButton(
           onPressed: () {
-            _toggleLanguage();
+            _toggleLanguage(
+              languages.keys.toList()[languages.values.toList().indexOf(icon)],
+            );
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(GawTheme.clearText),
@@ -193,63 +268,16 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
               width: 40,
               height: 32,
               child: SvgIcon(
-                userState.language == 'nl'
-                    ? PixelPerfectIcons.unitedKingdom
-                    : PixelPerfectIcons.netherlands,
+                icon,
                 color: Colors.transparent,
               ),
             ),
           ),
-        )
-      ],
-      builder: (context, controller, child) {
-        return ColorlessInkWell(
-          onTap: () => _toggleMenu(controller),
-          onHover: () {
-            setState(() {
-              _hover = true;
-            });
-          },
-          onExitHover: () {
-            setState(() {
-              _hover = false;
-            });
-          },
-          child: Container(
-            width: 80.0,
-            height: 44.0,
-            decoration: BoxDecoration(
-              color: GawTheme.clearText,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: SizedBox(
-                    width: 40,
-                    height: 32,
-                    child: SvgIcon(
-                      userState.language == 'nl'
-                          ? PixelPerfectIcons.netherlands
-                          : PixelPerfectIcons.unitedKingdom,
-                      color: Colors.transparent,
-                    ),
-                  ),
-                ),
-                RotatingIcon(
-                  iconUrl: PixelPerfectIcons.arrowRightMedium,
-                  rotate: _menuOpen || _hover,
-                  turns: 0.5,
-                  rotation: 1,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+        ),
+      );
+    }
+
+    return widgets;
   }
 }
 

@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
@@ -85,14 +84,41 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: 36,
-                  child: ProfileRowItem(
-                    fixedWidth: 156,
-                    initials: widget.washer?.initials,
-                    imageUrl: widget.washer?.profilePictureUrl,
-                    firstName: widget.washer?.firstName,
-                    lastName: widget.washer?.lastName,
+                ColorlessInkWell(
+                  onTap: () {
+                    String value = widget.washer?.company ??
+                        widget.timeRegistration?.washer?.company ??
+                        '';
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        elevation: 0,
+                        duration: const Duration(
+                          seconds: 1,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        content: BasicSnackBar(
+                          title: 'Copied!',
+                          description: '$value got copied to your clipboard',
+                        ),
+                      ),
+                    );
+
+                    Clipboard.setData(
+                      ClipboardData(
+                        text: value,
+                      ),
+                    );
+                  },
+                  child: SizedBox(
+                    height: 36,
+                    child: ProfileRowItem(
+                      fixedWidth: 156,
+                      initials: widget.washer?.initials,
+                      imageUrl: widget.washer?.profilePictureUrl,
+                      firstName: widget.washer?.firstName,
+                      lastName: widget.washer?.lastName,
+                    ),
                   ),
                 ),
                 const GawDivider(),

@@ -70,9 +70,12 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
   }) {
     setLoading(true);
 
+    page ??= this.page;
+    itemCount ??= this.itemCount;
+
     setData(() {
-      page = page;
-      itemCount = itemCount;
+      this.page = page ?? this.page;
+      this.itemCount = itemCount ?? this.itemCount;
     });
 
     WashersApi.getWashers(
@@ -122,6 +125,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       loading: loading,
       title: 'Registrations',
       valueName: 'registrations',
+      itemsPerPage: washersListResponse?.itemsPerPage,
       totalItems: washersListResponse?.total ?? 0,
       onSearch: (String? value) {
         loadData(page: 1, itemCount: itemCount, term: value);
