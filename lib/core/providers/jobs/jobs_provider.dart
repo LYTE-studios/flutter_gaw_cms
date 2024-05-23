@@ -50,8 +50,20 @@ class JobsProvider extends StateNotifier<JobsProviderState> {
     });
   }
 
-  Future<void> loadUpcomingJobs(
-      {DateTime? startTime, DateTime? endTime}) async {
+  void reloadUpcomingJobs({
+    DateTime? startTime,
+    DateTime? endTime,
+  }) {
+    state = state.copyWith(loading: true);
+    loadUpcomingJobs(startTime: startTime, endTime: endTime).whenComplete(() {
+      state = state.copyWith(loading: false);
+    });
+  }
+
+  Future<void> loadUpcomingJobs({
+    DateTime? startTime,
+    DateTime? endTime,
+  }) async {
     JobListResponse? response = await JobsApi.getUpcomingJobs(
       isAdmin: true,
       startTime: GawDateUtil.tryToApi(startTime),

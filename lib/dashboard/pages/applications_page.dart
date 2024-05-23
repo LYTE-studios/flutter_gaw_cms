@@ -9,6 +9,7 @@ import 'package:flutter_gaw_cms/jobs/presentation/tabs/job_tiles_tab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 const BeamPage applicationsBeamPage = BeamPage(
   title: 'Applications',
@@ -28,6 +29,16 @@ class ApplicationsPage extends ConsumerStatefulWidget {
 
 class _ApplicationsPageState extends ConsumerState<ApplicationsPage>
     with ScreenStateMixin {
+  final OverlayPortalController controller = OverlayPortalController();
+
+  DateIntervalSelectable? selectable = DateIntervalSelectable.thisYear;
+
+  late PickerDateRange? range = selectable?.getDateRange();
+
+  late DateTime? startTime = range?.startDate;
+
+  late DateTime? endTime = range?.endDate;
+
   @override
   Widget build(BuildContext context) {
     final jobsProviderState = ref.watch(jobsProvider);
@@ -37,43 +48,139 @@ class _ApplicationsPageState extends ConsumerState<ApplicationsPage>
     return BaseLayoutScreen(
       mainRoute: 'Jobs',
       subRoute: 'Applications',
-      child: ScreenSheet(
-        topPadding: 120,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: Borders.lightSide,
-                ),
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: PaddingSizes.mainPadding,
-                    horizontal: PaddingSizes.bigPadding,
+      child: LayoutBuilder(builder: (context, constraints) {
+        return OverlayPortal(
+          controller: controller,
+          overlayChildBuilder: (context) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: PaddingSizes.mainPadding,
                   ),
-                  child: MainText(
-                    'All jobs up for application',
-                    textStyleOverride: TextStyles.titleStyle.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                  child: SizedBox(
+                    height: constraints.maxHeight - 128,
+                    width: 400,
+                    child: CmsDateRangePicker(
+                      selectable: selectable,
+                      initialStart: startTime,
+                      initialEnd: endTime,
+                      onUpdateSelectable: (DateIntervalSelectable? selectable) {
+                        if (selectable == null) {
+                          setState(() {
+                            this.selectable = null;
+                          });
+                          return;
+                        }
+                        if (selectable == this.selectable) {
+                          setState(() {
+                            this.selectable = null;
+                            startTime = null;
+                            endTime = null;
+                          });
+                          return;
+                        }
+
+                        PickerDateRange range = selectable.getDateRange();
+
+                        setState(() {
+                          this.selectable = selectable;
+                          startTime = range.startDate!;
+                          endTime = range.endDate!;
+                        });
+                      },
+                      onUpdateDates: (startTime, endTime) {
+                        controller.toggle();
+
+                        ref.read(jobsProvider.notifier).reloadUpcomingJobs(
+                              startTime: startTime,
+                              endTime: endTime,
+                            );
+                      },
                     ),
                   ),
                 ),
-              ),
+              ],
+            );
+          },
+          child: GestureDetector(
+            onTap: () {
+              if (!controller.isShowing) {
+                return;
+              }
+              controller.toggle();
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(
+                  height: 64,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: PaddingSizes.smallPadding,
+                  ),
+                  child: SizedBox(
+                    height: 56,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Spacer(),
+                        CmsExpandableDateRangePicker(
+                          toggleExpand: controller.toggle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ScreenSheet(
+                    topPadding: 0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              bottom: Borders.lightSide,
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: PaddingSizes.mainPadding,
+                                horizontal: PaddingSizes.bigPadding,
+                              ),
+                              child: MainText(
+                                'All jobs up for application',
+                                textStyleOverride:
+                                    TextStyles.titleStyle.copyWith(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: JobTilesTab(
+                            loading: ref.watch(jobsProvider).loading,
+                            jobs: jobs,
+                            basicView: true,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Expanded(
-              child: JobTilesTab(
-                jobs: jobs,
-                basicView: true,
-              ),
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      }),
     );
   }
 }
