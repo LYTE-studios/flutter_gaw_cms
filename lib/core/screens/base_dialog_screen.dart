@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
@@ -74,7 +75,7 @@ class BaseDialogScreen extends StatelessWidget {
                     height: 48,
                     width: 180,
                     child: GenericButton(
-                      label: 'Go back',
+                      label: LocaleKeys.goBack.tr(),
                       color: GawTheme.clearBackground,
                       textStyleOverride: TextStyles.titleStyle.copyWith(
                         color: GawTheme.text,

@@ -14,7 +14,6 @@ import 'package:flutterwebapp_reload_detector/flutterwebapp_reload_detector.dart
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:themed/themed.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey();
 
@@ -92,16 +91,14 @@ class GawApp extends StatelessWidget {
     };
 
     return ProviderScope(
-      child: Themed(
-        child: MaterialApp.router(
-          scaffoldMessengerKey: scaffoldKey,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          theme: fallbackTheme,
-          routeInformationParser: BeamerParser(),
-          routerDelegate: mainRouter,
-        ),
+      child: MaterialApp.router(
+        scaffoldMessengerKey: scaffoldKey,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        theme: fallbackTheme,
+        routeInformationParser: BeamerParser(),
+        routerDelegate: mainRouter,
       ),
     );
   }
