@@ -166,12 +166,13 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
                       );
                     },
                     items: {
+                      const SizedBox(): 6,
                       TextRowItem(
                         value: export.name,
                         fixedWidth: ListUtil.hugeColumn,
                       ): ListUtil.hugeColumn,
                       SelectableTextRowItem(
-                        value: GawDateUtil.formatDate(
+                        value: GawDateUtil.formatFullDate(
                           GawDateUtil.fromApi(export.createdAt),
                         ),
                         fixedWidth: ListUtil.lColumn,
