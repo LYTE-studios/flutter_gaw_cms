@@ -4,6 +4,7 @@ import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_item.d
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_sub_item.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/exports_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
@@ -142,6 +143,17 @@ class MenuDrawer extends StatelessWidget {
             },
             iconUrl: PixelPerfectIcons.bellMedium,
             active: NotificationsPage.route == route,
+          ),
+          const SizedBox(
+            height: PaddingSizes.smallPadding,
+          ),
+          DrawerNavigationItem(
+            label: 'Exports',
+            onTap: () {
+              onChange?.call(ExportsPage.route);
+            },
+            iconUrl: PixelPerfectIcons.download,
+            active: ExportsPage.route == route,
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,

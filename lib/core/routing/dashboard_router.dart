@@ -5,6 +5,7 @@ import 'package:flutter_gaw_cms/core/screens/not_found_screen.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/exports_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
@@ -21,6 +22,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
   WashersPage.route: (context, state, data) => washersBeamPage,
   ApplicationsPage.route: (context, state, data) => applicationsBeamPage,
   RegistrationsPage.route: (context, state, data) => registrationsBeamPage,
+  ExportsPage.route: (context, state, data) => exportsBeamPage,
   ApplicationReviewScreen.route: (context, state, data) {
     final jobId = state.pathParameters[ApplicationReviewScreen.kJobId]
         ?.replaceFirst(':', '');
@@ -33,7 +35,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
       key: const ValueKey('applications-review'),
       type: BeamPageType.noTransition,
       child: ApplicationReviewScreen(
-        jobId: jobId ?? '',
+        jobId: jobId,
       ),
     );
   },

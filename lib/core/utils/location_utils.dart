@@ -31,10 +31,11 @@ class LocationUtils {
       if (i < polyline.length - 1) {
         // skip the last index
         totalDistance += getStraightLineDistance(
-            polyline[i + 1].latitude,
-            polyline[i + 1].longitude,
-            polyline[i].latitude,
-            polyline[i].longitude);
+          polyline[i + 1].latitude,
+          polyline[i + 1].longitude,
+          polyline[i].latitude,
+          polyline[i].longitude,
+        );
       }
     }
     return totalDistance;
