@@ -50,6 +50,7 @@ dependencies:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
+  readmore: ^3.0.0
 
 dependency_overrides:
   dio: ^5.3.3

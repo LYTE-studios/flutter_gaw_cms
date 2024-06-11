@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:readmore/readmore.dart';
 
 class ApplicationDetailsDialog extends ConsumerStatefulWidget {
   final JobApplication application;
@@ -203,6 +204,55 @@ class _ApplicationDetailsDialogState
                   const SizedBox(
                     height: PaddingSizes.extraBigPadding,
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: PaddingSizes.smallPadding,
+                      left: PaddingSizes.extraBigPadding * 1.5,
+                    ),
+                    child: MainText(
+                      'NOTE', //LocaleKeys.location.tr().toUpperCase(),
+                      textStyleOverride: TextStyles.mainStyle.copyWith(
+                        color: GawTheme.unselectedText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: PaddingSizes.extraMiniPadding,
+                        ),
+                        child: SizedBox(
+                          width: 21,
+                          height: 21,
+                          child: SvgIcon(PixelPerfectIcons.chat),
+                        ),
+                      ),
+                      SizedBox(
+                        width: PaddingSizes.smallPadding,
+                      ),
+                      Expanded(
+                        child: ReadMoreText(
+                          widget.application.note == null
+                              ? ''
+                              : widget.application.note!,
+                          trimLines: 1,
+                          trimMode: TrimMode.Line,
+                          trimCollapsedText: 'See More',
+                          trimExpandedText: ' See Less',
+                          colorClickableText: GawTheme.unselectedText,
+                          style: TextStyles.mainStyle.copyWith(
+                            color: GawTheme.text,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
