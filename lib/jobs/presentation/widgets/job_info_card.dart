@@ -84,7 +84,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                     width: 40,
                     child: InitialsAvatar(
                       isBlock: true,
-                      initials: widget.info.customer.initials ?? '',
+                      initials: '',
                       imageUrl: FormattingUtil.formatUrl(
                         widget.info.customer.profilePictureUrl,
                       ),

@@ -87,6 +87,11 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
           canDelete: false,
           title: 'Exports',
           valueName: 'exports',
+          onSearch: (String value) {
+            if (value == 'Admin') {
+              ExportsApi.refreshExports().whenComplete(() => loadData());
+            }
+          },
           onEditItemCount: (int index) {
             loadData(itemCount: index, page: page);
           },

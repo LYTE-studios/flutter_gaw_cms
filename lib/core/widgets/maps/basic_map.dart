@@ -174,12 +174,19 @@ class BasicMapState extends State<BasicMap> with ScreenStateMixin {
   }
 
   void updateMap(Address address) {
-    mapController?.animateCamera(
-      CameraUpdate.newLatLngZoom(
-        LatLng(address.latitude!, address.longitude!),
-        15,
-      ),
-    );
+    if (_controller.isCompleted) {
+      setState(() {
+        _controller.future.then(
+          (c) => c.animateCamera(
+            CameraUpdate.newLatLngZoom(
+              LatLng(address.latitude!, address.longitude!),
+              15,
+            ),
+          ),
+        );
+      });
+    }
+
     setMarker(
       LatLng(
         address.latitude!,

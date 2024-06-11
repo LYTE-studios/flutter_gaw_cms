@@ -141,12 +141,19 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
                     return;
                   }
                   DialogUtil.show(
-                    dialog: const LocationPickerDialog(),
+                    dialog: LocationPickerDialog(
+                      address: address,
+                      onAddressSelected: (Address address) {
+                        setState(() {
+                          this.address = address;
+                        });
+                      },
+                    ),
                     context: context,
                   );
                 },
                 frozen: !widget.canEdit,
-                text: widget.customer?.address?.formattedAddress(),
+                text: address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer address',
               ),
@@ -178,12 +185,19 @@ class _CustomerDetailsFormState extends State<CustomerDetailsForm>
                     return;
                   }
                   DialogUtil.show(
-                    dialog: const LocationPickerDialog(),
+                    dialog: LocationPickerDialog(
+                      address: billingAddress,
+                      onAddressSelected: (Address address) {
+                        setState(() {
+                          billingAddress = address;
+                        });
+                      },
+                    ),
                     context: context,
                   );
                 },
                 frozen: !widget.canEdit,
-                text: widget.customer?.billingAddress?.formattedAddress(),
+                text: billingAddress?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
                 hint: 'Customer billing address',
               ),
