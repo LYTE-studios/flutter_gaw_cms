@@ -75,9 +75,10 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage>
         (b) => b
           ..title = tecTitle.text
           ..description = tecDescription.text
+          ..sendNotification = selectedTypes.contains(inApp)
+          ..sendPush = selectedTypes.contains(push)
           ..sendMail = selectedTypes.contains(email)
-          ..language = getLanguageCode()
-          ..isGlobal = true,
+          ..language = getLanguageCode(),
       ),
     ).then((_) {
       setState(() {

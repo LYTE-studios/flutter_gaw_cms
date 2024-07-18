@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_create_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_delete_dialog.dart';
 import 'package:flutter_gaw_cms/customers/dialogs/customer_detail_dialog.dart';
+import 'package:flutter_gaw_cms/customers/dialogs/customer_history_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -40,6 +41,8 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
 
   String? sortingValue;
 
+  String? term;
+
   void loadData({
     int? page,
     int? itemCount,
@@ -50,6 +53,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
     setLoading(true);
 
     setData(() {
+      this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -111,6 +115,9 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
           title: LocaleKeys.customers.tr(),
           valueName: LocaleKeys.customers.tr().toLowerCase(),
           onSearch: (String? value) {
+            if (value == term) {
+              return;
+            }
             loadData(page: 1, itemCount: itemCount, term: value);
           },
           onEditItemCount: (int index) {
@@ -232,13 +239,10 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                     ascending: !ascending,
                   );
                 },
-              ): ListUtil.lColumn,
-              const BaseHeaderItem(
-                label: '',
               ): ListUtil.sColumn,
               const BaseHeaderItem(
-                label: '  ',
-              ): ListUtil.miniColumn,
+                label: '',
+              ): ListUtil.mColumn,
             },
           ),
           rows: customerListResponse?.customers.map(
@@ -294,7 +298,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                       TextRowItem(
                         value: customer.company,
                         fixedWidth: ListUtil.mColumn,
-                      ): ListUtil.lColumn,
+                      ): ListUtil.sColumn,
                       StatusRowItem(
                         value: customer.hasActiveJob == true
                             ? 'Active job'
@@ -314,9 +318,18 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                                 ) ??
                                 false,
                       ): ListUtil.sColumn,
-                      const IconRowItem(
-                        icon: PixelPerfectIcons.customEye,
-                      ): ListUtil.miniColumn,
+                      IconRowItem(
+                        icon: PixelPerfectIcons.timeDiamondpNormal,
+                        secondIcon: PixelPerfectIcons.customEye,
+                        onTap: () {
+                          DialogUtil.show(
+                            dialog: CustomerHistoryDialog(
+                              customerId: customer.id!,
+                            ),
+                            context: context,
+                          );
+                        },
+                      ): ListUtil.sColumn,
                     },
                   );
                 },

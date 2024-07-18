@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/dialogs/application_details_dialog.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/tabs/job_tiles_tab.dart';
+import 'package:flutter_gaw_cms/washers/presentation/dialogs/washer_history_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -277,6 +278,14 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                 child: BaseListItem(
                   items: {
                     ProfileRowItem(
+                      onTap: () {
+                        DialogUtil.show(
+                          dialog: WasherHistoryDialog(
+                            washerId: application.washer.id!,
+                          ),
+                          context: context,
+                        );
+                      },
                       firstName: application.washer.firstName,
                       lastName: application.washer.lastName,
                       imageUrl: FormattingUtil.formatUrl(
@@ -413,7 +422,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                           ),
                         ],
                       ),
-                    ): 390,
+                    ): 420,
                   },
                 ),
               );

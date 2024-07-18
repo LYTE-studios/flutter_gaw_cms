@@ -6,6 +6,7 @@ import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
 import 'package:flutter_gaw_cms/core/widgets/maps/basic_map.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/widgets/job_info_card.dart';
+import 'package:flutter_gaw_cms/washers/presentation/dialogs/washer_history_dialog.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
@@ -29,7 +30,31 @@ class _ApplicationDetailsDialogState
     extends ConsumerState<ApplicationDetailsDialog> with ScreenStateMixin {
   @override
   Widget build(BuildContext context) {
+    bool canEdit = GawDateUtil.fromApi(widget.application.job.startTime)
+        .isAfter(DateTime.now());
+
     return BaseDialog(
+      topChild: canEdit
+          ? Padding(
+              padding: const EdgeInsets.all(
+                PaddingSizes.smallPadding,
+              ),
+              child: ColorlessInkWell(
+                onTap: () {
+                  DialogUtil.show(
+                    dialog: WasherHistoryDialog(
+                      washerId: widget.application.washer.id!,
+                    ),
+                    context: context,
+                  );
+                },
+                child: const SvgIcon(
+                  PixelPerfectIcons.timeDiamondpNormal,
+                  color: GawTheme.unselectedText,
+                ),
+              ),
+            )
+          : const SizedBox(),
       child: Row(
         children: [
           Expanded(
@@ -51,60 +76,65 @@ class _ApplicationDetailsDialogState
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: PaddingSizes.bigPadding,
-                    ),
-                    child: Row(
-                      children: [
-                        Visibility(
-                          visible: widget.application.job.selectedWashers <
-                              widget.application.job.maxWashers,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              right: PaddingSizes.mainPadding,
-                            ),
-                            child: GenericButton(
-                              onTap: () {
-                                setLoading(true);
-                                JobsApi.approveApplication(
-                                        id: widget.application.id!)
-                                    .then((_) {
-                                  Navigator.pop(context);
-                                  ref.invalidate(jobsProvider);
-                                }).catchError((error) {
-                                  ExceptionHandler.show(error);
-                                }).whenComplete(() => setLoading(false));
-                              },
-                              label: 'Approve',
-                              textStyleOverride: TextStyles.mainStyle.copyWith(
-                                color: GawTheme.clearText,
-                                fontSize: 15,
+                  Visibility(
+                    visible: canEdit,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: PaddingSizes.bigPadding,
+                      ),
+                      child: Row(
+                        children: [
+                          Visibility(
+                            visible: widget.application.job.selectedWashers <
+                                widget.application.job.maxWashers,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: PaddingSizes.mainPadding,
+                              ),
+                              child: GenericButton(
+                                onTap: () {
+                                  setLoading(true);
+                                  JobsApi.approveApplication(
+                                          id: widget.application.id!)
+                                      .then((_) {
+                                    Navigator.pop(context);
+                                    ref.invalidate(jobsProvider);
+                                  }).catchError((error) {
+                                    ExceptionHandler.show(error);
+                                  }).whenComplete(() => setLoading(false));
+                                },
+                                label: 'Approve',
+                                textStyleOverride:
+                                    TextStyles.mainStyle.copyWith(
+                                  color: GawTheme.clearText,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        GenericButton(
-                          label: 'Deny',
-                          outline: true,
-                          textColor: GawTheme.unselectedText,
-                          onTap: () {
-                            setLoading(true);
-                            JobsApi.denyApplication(id: widget.application.id!)
-                                .then((_) {
-                              Navigator.pop(context);
-                              ref.invalidate(jobsProvider);
-                            }).catchError((error) {
-                              ExceptionHandler.show(error);
-                            }).whenComplete(() => setLoading(false));
-                          },
-                          color: GawTheme.clearText,
-                          textStyleOverride: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.text,
-                            fontSize: 15,
+                          GenericButton(
+                            label: 'Deny',
+                            outline: true,
+                            textColor: GawTheme.unselectedText,
+                            onTap: () {
+                              setLoading(true);
+                              JobsApi.denyApplication(
+                                      id: widget.application.id!)
+                                  .then((_) {
+                                Navigator.pop(context);
+                                ref.invalidate(jobsProvider);
+                              }).catchError((error) {
+                                ExceptionHandler.show(error);
+                              }).whenComplete(() => setLoading(false));
+                            },
+                            color: GawTheme.clearText,
+                            textStyleOverride: TextStyles.mainStyle.copyWith(
+                              color: GawTheme.text,
+                              fontSize: 15,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -198,61 +228,70 @@ class _ApplicationDetailsDialogState
                   const SizedBox(
                     height: PaddingSizes.bigPadding,
                   ),
+                  Visibility(
+                    visible: widget.application.note?.isNotEmpty ?? false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: PaddingSizes.smallPadding,
+                            left: PaddingSizes.extraBigPadding * 1.5,
+                          ),
+                          child: MainText(
+                            'NOTE', //LocaleKeys.location.tr().toUpperCase(),
+                            textStyleOverride: TextStyles.mainStyle.copyWith(
+                              color: GawTheme.unselectedText,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                top: PaddingSizes.extraMiniPadding,
+                              ),
+                              child: SizedBox(
+                                width: 21,
+                                height: 21,
+                                child: SvgIcon(PixelPerfectIcons.chat),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: PaddingSizes.smallPadding,
+                            ),
+                            Expanded(
+                              child: ReadMoreText(
+                                widget.application.note == null
+                                    ? ''
+                                    : widget.application.note!,
+                                trimLines: 1,
+                                trimMode: TrimMode.Line,
+                                trimCollapsedText: 'See More',
+                                trimExpandedText: 'See Less',
+                                colorClickableText: GawTheme.unselectedText,
+                                style: TextStyles.mainStyle.copyWith(
+                                  color: GawTheme.text,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: PaddingSizes.extraBigPadding,
+                        ),
+                      ],
+                    ),
+                  ),
                   _NoTransportCosts(
                     noTravelCosts: widget.application.noTravelCosts,
                   ),
-                  const SizedBox(
-                    height: PaddingSizes.extraBigPadding,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: PaddingSizes.smallPadding,
-                      left: PaddingSizes.extraBigPadding * 1.5,
-                    ),
-                    child: MainText(
-                      'NOTE', //LocaleKeys.location.tr().toUpperCase(),
-                      textStyleOverride: TextStyles.mainStyle.copyWith(
-                        color: GawTheme.unselectedText,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: PaddingSizes.extraMiniPadding,
-                        ),
-                        child: SizedBox(
-                          width: 21,
-                          height: 21,
-                          child: SvgIcon(PixelPerfectIcons.chat),
-                        ),
-                      ),
-                      SizedBox(
-                        width: PaddingSizes.smallPadding,
-                      ),
-                      Expanded(
-                        child: ReadMoreText(
-                          widget.application.note == null
-                              ? ''
-                              : widget.application.note!,
-                          trimLines: 1,
-                          trimMode: TrimMode.Line,
-                          trimCollapsedText: 'See More',
-                          trimExpandedText: ' See Less',
-                          colorClickableText: GawTheme.unselectedText,
-                          style: TextStyles.mainStyle.copyWith(
-                            color: GawTheme.text,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
@@ -273,9 +312,7 @@ class _NoTransportCosts extends StatelessWidget {
     return SizedBox(
       height: 56,
       child: BigCheckBox(
-        label: noTravelCosts
-            ? 'Is paying for transport'
-            : 'Is not paying for transport',
+        label: 'Is paying for transport',
         value: noTravelCosts,
       ),
     );
@@ -350,6 +387,7 @@ class _InfoRow extends StatelessWidget {
         left: PaddingSizes.extraSmallPadding,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           leading,
           Expanded(
@@ -365,28 +403,36 @@ class _InfoRow extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: PaddingSizes.smallPadding,
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: 320,
                       ),
-                      child: MainText(
-                        first,
-                        textStyleOverride: TextStyles.mainStyle.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: PaddingSizes.smallPadding,
+                        ),
+                        child: MainText(
+                          first,
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
                     isTime
                         ? const SizedBox(width: PaddingSizes.mainPadding)
                         : const SizedBox.shrink(),
-                    MainText(
-                      last,
-                      textStyleOverride: TextStyles.mainStyle.copyWith(
-                        color:
-                            !isTime ? GawTheme.unselectedText : GawTheme.text,
-                        fontWeight: !isTime ? FontWeight.w500 : FontWeight.w400,
-                        fontSize: !isTime ? 13 : 16,
+                    Expanded(
+                      child: MainText(
+                        last,
+                        textStyleOverride: TextStyles.mainStyle.copyWith(
+                          color:
+                              !isTime ? GawTheme.unselectedText : GawTheme.text,
+                          fontWeight:
+                              !isTime ? FontWeight.w500 : FontWeight.w400,
+                          fontSize: !isTime ? 13 : 16,
+                        ),
                       ),
                     ),
                   ],

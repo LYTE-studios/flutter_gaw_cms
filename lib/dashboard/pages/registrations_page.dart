@@ -61,6 +61,8 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
 
   String? sortingValue;
 
+  String? term;
+
   void loadData({
     int? page,
     int? itemCount,
@@ -74,6 +76,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
     itemCount ??= this.itemCount;
 
     setData(() {
+      this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -113,10 +116,12 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
         washerId: washer.id,
       ),
       context: context,
-    ).then((_) => loadData(
-          itemCount: itemCount,
-          page: page,
-        ));
+    ).then(
+      (_) => loadData(
+        itemCount: itemCount,
+        page: page,
+      ),
+    );
   }
 
   @override
@@ -128,6 +133,9 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       itemsPerPage: washersListResponse?.itemsPerPage,
       totalItems: washersListResponse?.total ?? 0,
       onSearch: (String? value) {
+        if (value == term) {
+          return;
+        }
         loadData(page: 1, itemCount: itemCount, term: value);
       },
       onEditItemCount: (int index) {

@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for Get-a-Wash
 publish_to: none
-version: 1.1.0+29
+version: 1.2.0+1
 
 environment:
   sdk: '>=3.1.0 <4.0.0'

@@ -7,11 +7,17 @@ class BaseDialog extends StatelessWidget {
   final double height;
   final double width;
 
+  final bool dismissable;
+
+  final Widget? topChild;
+
   const BaseDialog({
     super.key,
     required this.child,
     this.height = 520,
     this.width = 860,
+    this.dismissable = true,
+    this.topChild,
   });
 
   @override
@@ -19,19 +25,23 @@ class BaseDialog extends StatelessWidget {
     return Dialog(
       child: Stack(
         children: [
-          Container(
-            height: height,
-            width: width,
-            decoration: BoxDecoration(
-              color: GawTheme.clearText,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: PaddingSizes.bigPadding,
-                horizontal: PaddingSizes.extraBigPadding,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              height: height,
+              width: width,
+              decoration: const BoxDecoration(
+                color: GawTheme.clearText,
               ),
-              child: child,
+              child: Padding(
+                padding: !dismissable
+                    ? EdgeInsets.zero
+                    : const EdgeInsets.symmetric(
+                        vertical: PaddingSizes.bigPadding,
+                        horizontal: PaddingSizes.extraBigPadding,
+                      ),
+                child: child,
+              ),
             ),
           ),
           Positioned(
@@ -43,6 +53,12 @@ class BaseDialog extends StatelessWidget {
               },
             ),
           ),
+          if (topChild != null)
+            Positioned(
+              right: PaddingSizes.mainPadding + 42,
+              top: PaddingSizes.mainPadding,
+              child: topChild!,
+            ),
         ],
       ),
     );
