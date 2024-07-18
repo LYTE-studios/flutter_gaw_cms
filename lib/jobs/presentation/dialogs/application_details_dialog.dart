@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_gaw_cms/core/providers/jobs/jobs_provider.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/base_dialog.dart';
@@ -28,11 +26,41 @@ class ApplicationDetailsDialog extends ConsumerStatefulWidget {
 
 class _ApplicationDetailsDialogState
     extends ConsumerState<ApplicationDetailsDialog> with ScreenStateMixin {
+  TimeRegistration? timeRegistration;
+
+  late bool canEdit = GawDateUtil.fromApi(widget.application.job.startTime)
+      .isAfter(DateTime.now());
+
+  void loadData() {
+    JobsApi.getRegistrationForJob(
+      washerId: widget.application.washer.id!,
+      jobId: widget.application.job.id!,
+    ).then(
+      (TimeRegistrationResponse? response) {
+        setState(() {
+          timeRegistration = response?.timeRegistration;
+          loading = false;
+        });
+      },
+    ).catchError((error) {
+      ExceptionHandler.show(error);
+    }).whenComplete(
+      () => setLoading(false),
+    );
+  }
+
+  @override
+  void initState() {
+    Future(() {
+      if (!canEdit) {
+        loadData();
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool canEdit = GawDateUtil.fromApi(widget.application.job.startTime)
-        .isAfter(DateTime.now());
-
     return BaseDialog(
       topChild: canEdit
           ? Padding(
@@ -201,6 +229,27 @@ class _ApplicationDetailsDialogState
                       GawDateUtil.fromApi(widget.application.job.endTime),
                     ),
                     isTime: true,
+                  ),
+                  AnimatedSize(
+                    duration: kThemeAnimationDuration,
+                    child: timeRegistration == null
+                        ? const SizedBox()
+                        : _InfoRow(
+                            leading: const SvgIcon(
+                              PixelPerfectIcons.timeDiamondpNormal,
+                              color: GawTheme.secondaryTint,
+                            ),
+                            first: GawDateUtil.tryFormatTimeInterval(
+                                  GawDateUtil.tryFromApi(
+                                      timeRegistration?.startTime),
+                                  GawDateUtil.tryFromApi(
+                                      timeRegistration?.endTime),
+                                ) ??
+                                '',
+                            last:
+                                'Break time: ${timeRegistration?.breakTime ?? '0'} mins',
+                            isTime: true,
+                          ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(

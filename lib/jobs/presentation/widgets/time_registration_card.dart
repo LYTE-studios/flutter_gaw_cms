@@ -69,7 +69,7 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
         child: LoadingSwitcher(
           loading: loading,
           child: Container(
-            height: 221,
+            height: 256,
             width: 256,
             clipBehavior: Clip.none,
             padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
@@ -140,6 +140,7 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
                               height: PaddingSizes.mainPadding,
                             ),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const MainText(
                                   "From: ",
@@ -168,6 +169,34 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
                                   GawDateUtil.formatTimeString(
                                     GawDateUtil.fromApi(
                                       widget.timeRegistration!.endTime!,
+                                    ),
+                                  ),
+                                  color: GawTheme.mainTint,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: PaddingSizes.smallPadding,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const MainText(
+                                  "Break time: ",
+                                  color: GawTheme.text,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                MainText(
+                                  GawDateUtil.formatTimeString(
+                                    DateTime(
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      widget.timeRegistration?.breakTime ?? 0,
                                     ),
                                   ),
                                   color: GawTheme.mainTint,
