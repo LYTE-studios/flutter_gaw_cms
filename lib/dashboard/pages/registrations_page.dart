@@ -160,79 +160,82 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       ),
       rows: washersListResponse?.washers.map(
             (washer) {
-              return BaseListItem(
-                items: {
-                  ProfileRowItem(
-                    firstName: washer.firstName,
-                    lastName: washer.lastName,
-                    imageUrl: FormattingUtil.formatUrl(
-                      washer.profilePictureUrl,
-                    ),
-                  ): ListUtil.xLColumn,
-                  SelectableTextRowItem(
-                    value: washer.email,
-                  ): ListUtil.xLColumn,
-                  TextRowItem(
-                    value: GawDateUtil.tryFormatReadableDate(
-                      GawDateUtil.tryFromApi(washer.createdAt),
-                    ),
-                  ): ListUtil.mColumn,
-                  BaseRowItem(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 128,
-                          child: _ApprovalButton(
-                            label: 'Approve',
-                            icon: PixelPerfectIcons.checkMedium,
-                            backgroundColor: GawTheme.mainTint,
-                            textColor: GawTheme.clearText,
-                            onTap: () {
-                              setLoading(true);
+              return ColorlessInkWell(
+                onTap: () {
+                  onSelected(washer);
+                },
+                child: BaseListItem(
+                  items: {
+                    ProfileRowItem(
+                      firstName: washer.firstName,
+                      lastName: washer.lastName,
+                      imageUrl: FormattingUtil.formatUrl(
+                        washer.profilePictureUrl,
+                      ),
+                    ): ListUtil.xLColumn,
+                    SelectableTextRowItem(
+                      value: washer.email,
+                    ): ListUtil.xLColumn,
+                    TextRowItem(
+                      value: GawDateUtil.tryFormatReadableDate(
+                        GawDateUtil.tryFromApi(washer.createdAt),
+                      ),
+                    ): ListUtil.mColumn,
+                    BaseRowItem(
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 128,
+                            child: _ApprovalButton(
+                              label: 'Approve',
+                              icon: PixelPerfectIcons.checkMedium,
+                              backgroundColor: GawTheme.mainTint,
+                              textColor: GawTheme.clearText,
+                              onTap: () {
+                                setLoading(true);
 
-                              WashersApi.acceptWasher(
-                                id: washer.id!,
-                              )
-                                  .then((_) => loadData(
-                                      itemCount: itemCount, page: page))
-                                  .whenComplete(() => setLoading(false));
-                            },
+                                WashersApi.acceptWasher(
+                                  id: washer.id!,
+                                )
+                                    .then((_) => loadData(
+                                        itemCount: itemCount, page: page))
+                                    .whenComplete(() => setLoading(false));
+                              },
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 105,
-                          child: _ApprovalButton(
-                            label: 'Deny',
-                            icon: PixelPerfectIcons.xMedium,
-                            backgroundColor: GawTheme.clearText,
-                            textColor: GawTheme.mainTint,
-                            onTap: () {
-                              setLoading(true);
+                          SizedBox(
+                            width: 105,
+                            child: _ApprovalButton(
+                              label: 'Deny',
+                              icon: PixelPerfectIcons.xMedium,
+                              backgroundColor: GawTheme.clearText,
+                              textColor: GawTheme.mainTint,
+                              onTap: () {
+                                setLoading(true);
 
-                              WashersApi.deleteWasher(
-                                id: washer.id!,
-                              )
-                                  .then((_) => loadData(
-                                      itemCount: itemCount, page: page))
-                                  .whenComplete(() => setLoading(false));
-                            },
+                                WashersApi.deleteWasher(
+                                  id: washer.id!,
+                                )
+                                    .then((_) => loadData(
+                                        itemCount: itemCount, page: page))
+                                    .whenComplete(() => setLoading(false));
+                              },
+                            ),
                           ),
-                        ),
-                        ColorlessInkWell(
-                          onTap: () {
-                            onSelected(washer);
-                          },
-                          child: const SizedBox(
+                          SizedBox(
                             width: 56,
                             child: IconRowItem(
                               icon: PixelPerfectIcons.customEye,
+                              onTap: () {
+                                onSelected(washer);
+                              },
                             ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ): 320,
-                },
+                          )
+                        ],
+                      ),
+                    ): 320,
+                  },
+                ),
               );
             },
           ).toList() ??

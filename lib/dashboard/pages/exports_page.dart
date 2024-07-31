@@ -33,6 +33,21 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
 
   String? sortingValue;
 
+  Future<void> createExport(bool monthly) async {
+    setLoading(true);
+
+    if (!monthly) {
+      await ExportsApi.refreshExports(
+        startTime: GawDateUtil.getApiStartOfMonth(),
+        endTime: GawDateUtil.getApiEndOfMonth(),
+      );
+    } else {
+      await ExportsApi.refreshExports();
+    }
+
+    loadData();
+  }
+
   void loadData({
     int? page,
     int? itemCount,
@@ -88,8 +103,12 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
           title: 'Exports',
           valueName: 'exports',
           onSearch: (String value) {
-            if (value == 'Admin') {
-              ExportsApi.refreshExports().whenComplete(() => loadData());
+            if (value == 'Monthly') {
+              createExport(true);
+            }
+
+            if (value == 'Current') {
+              createExport(false);
             }
           },
           onEditItemCount: (int index) {
@@ -182,7 +201,13 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
                         ),
                         fixedWidth: ListUtil.lColumn,
                       ): ListUtil.xLColumn,
-                      const IconRowItem(
+                      IconRowItem(
+                        onTap: () {
+                          DownloadUtil.downloadFile(
+                            export.fileUrl,
+                            export.fileName,
+                          );
+                        },
                         icon: PixelPerfectIcons.download,
                       ): ListUtil.miniColumn,
                     },
