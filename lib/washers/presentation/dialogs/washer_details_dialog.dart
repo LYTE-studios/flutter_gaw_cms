@@ -38,7 +38,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
           ..address = address?.toBuilder()
           ..taxNumber = tecIban.text
           ..company = tecSsn.text
-          ..dateOfBirth = GawDateUtil.tryToApi(dateOfBirth),
+          ..dateOfBirth = GawDateUtil.tryToApiUtc(dateOfBirth),
       ),
     ).then((_) {
       loadData();

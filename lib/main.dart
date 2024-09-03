@@ -58,9 +58,6 @@ class GawApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Configuration.clientSecret = apiSecret;
     Configuration.apiUrl = apiUrl;
-    Configuration.googleApiUrl = googleApiUrl;
-    Configuration.routesGoogleApiUrl = routesGoogleApiUrl;
-    Configuration.googleApiKey = apiGoogleKey;
 
     WebAppReloadDetector.onReload(() {
       if (Configuration.accessToken != null &&

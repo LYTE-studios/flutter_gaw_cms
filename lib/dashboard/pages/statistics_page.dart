@@ -205,9 +205,16 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
                                 ),
                               ),
                               Expanded(
-                                flex: 2,
                                 child: TargetStatisticsBlock(
                                   jobsCount: adminStatistics?.jobCount ?? 0,
+                                  increaseAmount:
+                                      adminStatistics?.getJobCountTrend() ?? 0,
+                                ),
+                              ),
+                              Expanded(
+                                child: TargetStatisticsBlock(
+                                  candidatesCount:
+                                      adminStatistics?.candidatesCount ?? 0,
                                   increaseAmount:
                                       adminStatistics?.getJobCountTrend() ?? 0,
                                 ),

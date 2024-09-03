@@ -102,10 +102,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     ),
                   ),
                   Expanded(
-                    flex: 2,
                     child: TargetStatisticsBlock(
                       loading: loading,
                       jobsCount: adminStatistics?.jobCount ?? 0,
+                      increaseAmount: adminStatistics?.getJobCountTrend() ?? 0,
+                    ),
+                  ),
+                  Expanded(
+                    child: TargetStatisticsBlock(
+                      loading: loading,
+                      candidatesCount: adminStatistics?.candidatesCount ?? 0,
                       increaseAmount: adminStatistics?.getJobCountTrend() ?? 0,
                     ),
                   )

@@ -89,22 +89,14 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
       return;
     }
 
-    GoogleApi.fetchUrl(
-      {
-        "query": query!.trim(),
-        "key": Configuration.googleApiKey,
-        "region": "be",
-      },
-    ).then(
+    GoogleApi.autocomplete(query!.trim()).then(
       (value) {
         setTicker();
         if (value != null) {
-          PlaceAutocompleteResponse response =
-              PlaceAutocompleteResponse.fromJson(value);
-          if (response.predictions != null) {
+          if (value.predictions != null) {
             setData(() {
               options = placesToOptions(
-                response.predictions!,
+                value.predictions!,
               );
             });
           }
