@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/providers/notifications/notifications_provider.dart';
 import 'package:flutter_gaw_cms/core/providers/users/user_provider.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/route_description.dart';
 import 'package:flutter_gaw_cms/secrets.dart';
@@ -295,8 +294,6 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
   Widget build(BuildContext context) {
     final imageUrl = ref.watch(userProvider).profilePictureUrl;
 
-    final notificationState = ref.watch(notificationsTickerProvider);
-
     return Container(
       width: 86,
       height: 48,
@@ -341,10 +338,7 @@ class _NotificationButtonState extends ConsumerState<NotificationButton> {
                       width: 20,
                       height: 20,
                       child: NotificationIcon(
-                        openNotifications: notificationState.notifications
-                                ?.map((e) => e.seen)
-                                .contains(false) ??
-                            false,
+                        openNotifications: false,
                       ),
                     ),
                   ),
@@ -427,29 +421,7 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
   List<api.Notification>? archive;
 
   void loadData() {
-    reload();
     api.NotificationsApi.readAllNotifications();
-  }
-
-  void reload() {
-    setLoading(true);
-    ref.read(notificationsTickerProvider.notifier)
-      ..addListener((state) {
-        loadArrays();
-      })
-      ..loadData().whenComplete(() => setLoading(false));
-  }
-
-  void loadArrays() {
-    List<api.Notification> notifications =
-        ref.read(notificationsTickerProvider).notifications ?? [];
-    setState(() {
-      all = notifications
-          .where((notification) => !notification.archived)
-          .toList();
-      archive =
-          notifications.where((notification) => notification.archived).toList();
-    });
   }
 
   void toggleNotificationArchive(String id, bool shouldBeArchived) async {
@@ -461,7 +433,6 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
     );
 
     await api.NotificationsApi.updateNotification(request: updateRequest);
-    reload();
   }
 
   @override

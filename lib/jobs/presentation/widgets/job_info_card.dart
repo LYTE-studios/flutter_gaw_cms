@@ -61,9 +61,11 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
       child: LoadingSwitcher(
         loading: loading,
         child: Container(
-          height: 280,
-          width: 307,
-          padding: const EdgeInsets.all(PaddingSizes.extraBigPadding),
+          height: 240,
+          width: 240,
+          padding: const EdgeInsets.all(
+            PaddingSizes.bigPadding,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             color: GawTheme.clearText,
@@ -79,98 +81,100 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: InitialsAvatar(
-                      isBlock: true,
-                      initials: '',
-                      imageUrl: FormattingUtil.formatUrl(
-                        widget.info.customer.profilePictureUrl,
-                      ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        MainText(
+                          widget.info.title ?? "",
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: PaddingSizes.extraSmallPadding,
+                            right: PaddingSizes.bigPadding,
+                          ),
+                          child: MainText(
+                            widget.info.address.formattedAddress(),
+                            alignment: TextAlign.start,
+                            fontSize: 10,
+                            color: GawTheme.unselectedText,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Visibility(
-                    visible: !widget.basic && (widget.info.isDraft ?? false),
-                    child: ColorlessInkWell(
-                      onTap: () {
-                        setLoading(true);
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Visibility(
+                        visible:
+                            !widget.basic && (widget.info.isDraft ?? false),
+                        child: ColorlessInkWell(
+                          onTap: () {
+                            setLoading(true);
 
-                        JobsApi.createJob(
-                          request: CreateJobRequest(
-                            (b) => b
-                              ..title = widget.info.title
-                              ..startTime = widget.info.startTime
-                              ..endTime = widget.info.endTime
-                              ..applicationStartTime =
-                                  widget.info.applicationStartTime
-                              ..applicationEndTime =
-                                  widget.info.applicationEndTime
-                              ..customerId = widget.info.customer.id
-                              ..maxWashers = widget.info.maxWashers
-                              ..isDraft = true
-                              ..address = widget.info.address.toBuilder()
-                              ..description = widget.info.description,
+                            JobsApi.createJob(
+                              request: CreateJobRequest(
+                                (b) => b
+                                  ..title = widget.info.title
+                                  ..startTime = widget.info.startTime
+                                  ..endTime = widget.info.endTime
+                                  ..applicationStartTime =
+                                      widget.info.applicationStartTime
+                                  ..applicationEndTime =
+                                      widget.info.applicationEndTime
+                                  ..customerId = widget.info.customer.id
+                                  ..maxWashers = widget.info.maxWashers
+                                  ..isDraft = true
+                                  ..address = widget.info.address.toBuilder()
+                                  ..description = widget.info.description,
+                              ),
+                            ).then((_) {
+                              ref.read(jobsProvider.notifier).loadData();
+                            }).catchError((error) {
+                              ExceptionHandler.show(error);
+                            }).whenComplete(
+                              () => setLoading(false),
+                            );
+                          },
+                          child: MainText(
+                            "duplicate draft",
+                            textStyleOverride: TextStyles.mainStyle.copyWith(
+                              decoration: TextDecoration.underline,
+                              fontSize: 12,
+                              color: GawTheme.unselectedText,
+                            ),
                           ),
-                        ).then((_) {
-                          ref.read(jobsProvider.notifier).loadData();
-                        }).catchError((error) {
-                          ExceptionHandler.show(error);
-                        }).whenComplete(
-                          () => setLoading(false),
-                        );
-                      },
-                      child: MainText(
-                        "duplicate draft",
-                        textStyleOverride: TextStyles.mainStyle.copyWith(
-                          decoration: TextDecoration.underline,
-                          fontSize: 12,
-                          color: GawTheme.unselectedText,
                         ),
                       ),
-                    ),
+                      Container(
+                        alignment: Alignment.centerRight,
+                        child: MainText(
+                          GawDateUtil.formatDate(
+                            GawDateUtil.fromApi(widget.info.startTime),
+                          ),
+                          textStyleOverride: TextStyles.mainStyle.copyWith(
+                            color: GawTheme.secondaryTint,
+                            fontWeight: FontWeight.w600,
+                            height: 1,
+                          ),
+                        ),
+                      ),
+                      MainText(
+                        GawDateUtil.formatTimeInterval(
+                          GawDateUtil.fromApi(widget.info.startTime),
+                          GawDateUtil.fromApi(widget.info.endTime),
+                        ),
+                        color: GawTheme.secondaryTint,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              Container(
-                alignment: Alignment.centerRight,
-                child: MainText(
-                  GawDateUtil.formatDate(
-                    GawDateUtil.fromApi(widget.info.startTime),
-                  ),
-                  textStyleOverride: TextStyles.mainStyle.copyWith(
-                    color: GawTheme.secondaryTint,
-                    fontWeight: FontWeight.w600,
-                    height: 1,
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: MainText(
-                      widget.info.title ?? "",
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                  MainText(
-                    GawDateUtil.formatTimeInterval(
-                      GawDateUtil.fromApi(widget.info.startTime),
-                      GawDateUtil.fromApi(widget.info.endTime),
-                    ),
-                    color: GawTheme.secondaryTint,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: PaddingSizes.mainPadding,
-              ),
-              Row(
-                children: locations,
               ),
               const SizedBox(
                 height: PaddingSizes.mainPadding,
@@ -184,13 +188,14 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
               ),
               Row(
                 children: [
+                  const SizedBox(
+                    width: PaddingSizes.extraSmallPadding,
+                  ),
                   SelectedWashersWidget(
                     selectedWashers: widget.info.selectedWashers,
                     maxWashers: widget.info.maxWashers,
                   ),
-                  const SizedBox(
-                    width: PaddingSizes.extraBigPadding,
-                  ),
+                  const Spacer(),
                   Visibility(
                     visible: !widget.basic,
                     child: Container(
@@ -217,112 +222,148 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                   ),
                 ],
               ),
-              const SizedBox(height: PaddingSizes.bigPadding),
-              widget.basic
-                  ? ColorlessInkWell(
+              const SizedBox(
+                height: PaddingSizes.smallPadding,
+              ),
+              [JobState.done, JobState.cancelled].contains(widget.info.state) ||
+                      isActive
+                  ? EditButton(
                       onTap: () {
-                        dashboardRouter.beamToNamed(
-                          ApplicationReviewScreen.route.replaceFirst(
-                            ApplicationReviewScreen.kJobId,
-                            widget.info.id ?? '',
+                        DialogUtil.show(
+                          dialog: JobDetailsPopup(
+                            job: widget.info,
                           ),
-                        );
+                          context: context,
+                        ).then((_) {
+                          ref.read(jobsProvider.notifier).loadData();
+                        });
                       },
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: GawTheme.secondaryTint,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: PaddingSizes.smallPadding,
-                          ),
-                          child: Row(
-                            children: [
-                              const Spacer(),
-                              MainText(
-                                'View applications for this job',
-                                textStyleOverride:
-                                    TextStyles.mainStyle.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: GawTheme.clearText,
-                                ),
-                              ),
-                              const Spacer(),
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                  right: PaddingSizes.mainPadding,
-                                ),
-                                child: SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: SvgIcon(
-                                    PixelPerfectIcons.arrowRightMedium,
-                                    color: GawTheme.clearText,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      icon: PixelPerfectIcons.info,
+                      label: "Info",
+                      fontSize: 12,
+                      minHeight: 35,
+                      color: GawTheme.clearText,
                     )
-                  : [JobState.done, JobState.cancelled]
-                              .contains(widget.info.state) ||
-                          isActive
-                      ? EditButton(
+                  : Column(
+                      children: [
+                        ColorlessInkWell(
                           onTap: () {
-                            DialogUtil.show(
-                              dialog: JobDetailsPopup(
-                                job: widget.info,
+                            dashboardRouter.beamToNamed(
+                              ApplicationReviewScreen.route.replaceFirst(
+                                ApplicationReviewScreen.kJobId,
+                                widget.info.id ?? '',
                               ),
-                              context: context,
-                            ).then((_) {
-                              ref.read(jobsProvider.notifier).loadData();
-                            });
+                            );
                           },
-                          icon: PixelPerfectIcons.info,
-                          label: "Info",
-                          fontSize: 12,
-                          minHeight: 35,
-                          color: GawTheme.clearText,
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            EditButton(
-                              label: "Delete",
-                              fontSize: 12,
-                              minHeight: 35,
-                              color: GawTheme.error,
-                              textColor: GawTheme.clearText,
-                              onTap: () {
-                                DialogUtil.show(
-                                  dialog: JobDeletePopup(
-                                    id: widget.info.id!,
-                                  ),
-                                  context: context,
-                                );
-                              },
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: GawTheme.secondaryTint,
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            EditButton(
-                              onTap: () {
-                                DialogUtil.show(
-                                  dialog: JobEditPopup(
-                                    job: widget.info,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: PaddingSizes.smallPadding,
+                              ),
+                              child: Center(
+                                child: MainText(
+                                  'View applications for this job',
+                                  textStyleOverride:
+                                      TextStyles.mainStyle.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: GawTheme.clearText,
+                                    fontSize: 10,
                                   ),
-                                  context: context,
-                                );
-                              },
-                              icon: PixelPerfectIcons.editNormal,
-                              label: "Edit",
-                              fontSize: 12,
-                              minHeight: 35,
-                              color: GawTheme.clearText,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: PaddingSizes.smallPadding,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ColorlessInkWell(
+                                onTap: () {
+                                  DialogUtil.show(
+                                    dialog: JobDeletePopup(
+                                      id: widget.info.id!,
+                                    ),
+                                    context: context,
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: GawTheme.error,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: PaddingSizes.smallPadding,
+                                    ),
+                                    child: Center(
+                                      child: MainText(
+                                        'Delete',
+                                        textStyleOverride:
+                                            TextStyles.mainStyle.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: GawTheme.clearText,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: PaddingSizes.smallPadding,
+                            ),
+                            Expanded(
+                              child: ColorlessInkWell(
+                                onTap: () {
+                                  DialogUtil.show(
+                                    dialog: JobEditPopup(
+                                      job: widget.info,
+                                    ),
+                                    context: context,
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      width: 0.5,
+                                    ),
+                                    color: GawTheme.clearText,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: PaddingSizes.smallPadding,
+                                    ),
+                                    child: Center(
+                                      child: MainText(
+                                        'Edit',
+                                        textStyleOverride:
+                                            TextStyles.mainStyle.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: GawTheme.text,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
+                      ],
+                    ),
             ],
           ),
         ),

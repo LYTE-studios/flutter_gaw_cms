@@ -1,6 +1,5 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gaw_cms/core/providers/notifications/notifications_provider.dart';
 import 'package:flutter_gaw_cms/core/screens/base_layout_screen.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
@@ -62,8 +61,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(notificationsTickerProvider);
-
     return BaseLayoutScreen(
       showWelcomeMessage: true,
       mainRoute: 'Dashboard',

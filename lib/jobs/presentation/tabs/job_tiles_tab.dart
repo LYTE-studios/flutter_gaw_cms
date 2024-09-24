@@ -24,30 +24,25 @@ class JobTilesTab extends StatefulWidget {
 class _JobTilesTabState extends State<JobTilesTab> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 56,
-            ),
-            child: LoadingSwitcher(
-              loading: widget.loading,
-              child: SizedBox(
-                width: double.infinity,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    crossAxisAlignment: WrapCrossAlignment.start,
-                    children: buildItems(),
-                  ),
-                ),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: 56,
+      ),
+      child: LoadingSwitcher(
+        loading: widget.loading,
+        child: SizedBox(
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: buildItems(),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

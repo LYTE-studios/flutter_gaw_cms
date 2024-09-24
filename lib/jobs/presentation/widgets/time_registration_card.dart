@@ -53,7 +53,8 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
                     (b) => b
                       ..jobId = widget.job.id
                       ..startTime = GawDateUtil.toApi(startTime)
-                      ..endTime = GawDateUtil.toApi(endTime),
+                      ..endTime = GawDateUtil.toApi(endTime)
+                      ..breakTime = 0,
                   ),
                 ).catchError((error) {
                   ExceptionHandler.show(error);

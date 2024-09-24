@@ -106,15 +106,6 @@ class MenuDrawer extends StatelessWidget {
             },
             iconUrl: PixelPerfectIcons.workMedium,
             active: [JobsPage.route, ApplicationsPage.route].contains(route),
-            subItems: [
-              DrawerNavigationSubItem(
-                onTap: () {
-                  onChange?.call(ApplicationsPage.route);
-                },
-                label: 'Applications',
-                active: route == ApplicationsPage.route,
-              ),
-            ],
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,
