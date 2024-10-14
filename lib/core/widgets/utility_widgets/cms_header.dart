@@ -420,11 +420,30 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
   List<api.Notification>? all;
   List<api.Notification>? archive;
 
-  void loadData() {
-    api.NotificationsApi.readAllNotifications();
+  Future<void> loadData() async {
+    setLoading(true);
+    api.NotificationsListResponse? response =
+        await api.NotificationsApi.getNotifications();
+
+    setState(() {
+      all = response?.notifications
+          ?.toList()
+          .where((e) => e.archived == false)
+          .toList();
+      archive = response?.notifications
+          ?.toList()
+          .where((e) => e.archived == true)
+          .toList();
+    });
+
+    setLoading(false);
+
+    await api.NotificationsApi.readAllNotifications();
   }
 
   void toggleNotificationArchive(String id, bool shouldBeArchived) async {
+    setLoading(true);
+
     final updateRequest = api.NotificationsUpdateRequest(
       (b) => b
         ..id = id
@@ -433,11 +452,15 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
     );
 
     await api.NotificationsApi.updateNotification(request: updateRequest);
+
+    loadData();
   }
 
   @override
   void initState() {
-    loadData();
+    Future(() {
+      loadData();
+    });
     super.initState();
   }
 

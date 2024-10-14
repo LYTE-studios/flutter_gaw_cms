@@ -5,6 +5,7 @@ import 'package:flutter_gaw_cms/core/screens/not_found_screen.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/customers_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/dimona_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/exports_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
@@ -20,6 +21,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
   CustomersPage.route: (context, state, data) => customersBeamPage,
   DashboardPage.route: (context, state, data) => dashboardPageBeamPage,
   WashersPage.route: (context, state, data) => washersBeamPage,
+  DimonaPage.route: (context, state, data) => dimonasBeamPage,
   ApplicationsPage.route: (context, state, data) => applicationsBeamPage,
   RegistrationsPage.route: (context, state, data) => registrationsBeamPage,
   ExportsPage.route: (context, state, data) => exportsBeamPage,

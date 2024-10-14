@@ -120,7 +120,11 @@ class _ApplicationDetailsDialogState
                                 right: PaddingSizes.mainPadding,
                               ),
                               child: GenericButton(
+                                loading: loading,
                                 onTap: () {
+                                  if (loading) {
+                                    return;
+                                  }
                                   setLoading(true);
                                   JobsApi.approveApplication(
                                           id: widget.application.id!)
@@ -128,7 +132,11 @@ class _ApplicationDetailsDialogState
                                     Navigator.pop(context);
                                     ref.invalidate(jobsProvider);
                                   }).catchError((error) {
-                                    ExceptionHandler.show(error);
+                                    ExceptionHandler.show(
+                                      error,
+                                      message:
+                                          'Washer could not be approved. Does the washer have all necessary information?',
+                                    );
                                   }).whenComplete(() => setLoading(false));
                                 },
                                 label: 'Approve',
@@ -143,8 +151,12 @@ class _ApplicationDetailsDialogState
                           GenericButton(
                             label: 'Deny',
                             outline: true,
+                            loading: loading,
                             textColor: GawTheme.unselectedText,
                             onTap: () {
+                              if (loading) {
+                                return;
+                              }
                               setLoading(true);
                               JobsApi.denyApplication(
                                       id: widget.application.id!)

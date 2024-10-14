@@ -47,7 +47,7 @@ class BaseDialogScreen extends StatelessWidget {
                 height: PaddingSizes.bigPadding,
               ),
               SizedBox(
-                width: 240,
+                width: 320,
                 child: Center(
                   child: MainText(
                     description ?? 'Something went wrong, try again later!',

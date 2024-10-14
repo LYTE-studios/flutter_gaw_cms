@@ -356,7 +356,11 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                                       .then((_) {
                                     loadData();
                                   }).catchError((error) {
-                                    ExceptionHandler.show(error);
+                                    ExceptionHandler.show(
+                                      error,
+                                      message:
+                                          'Washer could not be approved. Does the washer have all necessary information?',
+                                    );
                                   }).whenComplete(() => setLoading(false));
                                 },
                               ),

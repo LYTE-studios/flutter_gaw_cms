@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/widgets/dialogs/confirm_logout_dialog.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_item.dart';
 import 'package:flutter_gaw_cms/core/widgets/navigation/drawer_navigation_sub_item.dart';
-import 'package:flutter_gaw_cms/dashboard/pages/applications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/dashboard_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/dimona_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/exports_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/jobs_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
@@ -84,8 +84,10 @@ class MenuDrawer extends StatelessWidget {
             onTap: () {
               onChange?.call(WashersPage.route);
             },
-            active:
-                [WashersPage.route, RegistrationsPage.route].contains(route),
+            active: [
+              WashersPage.route,
+              RegistrationsPage.route,
+            ].contains(route),
             subItems: [
               DrawerNavigationSubItem(
                 onTap: () {
@@ -105,7 +107,19 @@ class MenuDrawer extends StatelessWidget {
               onChange?.call(JobsPage.route);
             },
             iconUrl: PixelPerfectIcons.workMedium,
-            active: [JobsPage.route, ApplicationsPage.route].contains(route),
+            active: [
+              JobsPage.route,
+              DimonaPage.route,
+            ].contains(route),
+            subItems: [
+              DrawerNavigationSubItem(
+                onTap: () {
+                  onChange?.call(DimonaPage.route);
+                },
+                label: 'Dimonas',
+                active: route == DimonaPage.route,
+              ),
+            ],
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,
