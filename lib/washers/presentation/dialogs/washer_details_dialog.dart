@@ -22,22 +22,22 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     with ScreenStateMixin {
   bool canEdit = false;
 
-  Washer? washer;
+  Worker? washer;
 
   void _update() {
     setLoading(true);
 
-    WashersApi.updateWasher(
+    WorkersApi.updateWorker(
       id: widget.washerId!,
-      request: WasherUpdateRequest(
+      request: WorkerUpdateRequest(
         (b) => b
           ..firstName = tecFirstname.text
           ..lastName = tecLastName.text
           ..email = tecEmail.text
           ..phoneNumber = tecPhoneNumber.text
           ..address = address?.toBuilder()
-          ..taxNumber = tecIban.text
-          ..company = tecSsn.text
+          ..iban = tecIban.text
+          ..ssn = tecSsn.text
           ..dateOfBirth = GawDateUtil.tryToApiUtc(dateOfBirth),
       ),
     ).then((_) {
@@ -55,15 +55,15 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   void loadData() {
     setLoading(true);
 
-    WashersApi.getWasher(id: widget.washerId!).then((Washer? washer) {
+    WorkersApi.getWorker(id: widget.washerId!).then((Worker? washer) {
       setState(() {
         this.washer = washer;
         tecFirstname.text = washer?.firstName ?? '';
         tecLastName.text = washer?.lastName ?? '';
         tecEmail.text = washer?.email ?? '';
         tecPhoneNumber.text = washer?.phoneNumber ?? '';
-        tecIban.text = washer?.taxNumber ?? '';
-        tecSsn.text = washer?.company ?? '';
+        tecIban.text = washer?.iban ?? '';
+        tecSsn.text = washer?.ssn ?? '';
         address = washer?.address;
         dateOfBirth = GawDateUtil.tryFromApi(washer?.dateOfBirth);
       });
@@ -87,7 +87,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   );
 
   late TextEditingController tecIban = TextEditingController(
-    text: washer?.taxNumber,
+    text: washer?.iban,
   );
 
   late TextEditingController tecPhoneNumber = TextEditingController(
@@ -95,7 +95,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   );
 
   late TextEditingController tecSsn = TextEditingController(
-    text: washer?.company,
+    text: washer?.ssn,
   );
 
   Address? address;

@@ -3,7 +3,7 @@ import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class WashersInfoBlock extends StatelessWidget {
-  final Washer washer;
+  final Worker washer;
 
   const WashersInfoBlock({
     required this.washer,
@@ -36,7 +36,7 @@ class WashersInfoBlock extends StatelessWidget {
                   ),
                   const SizedBox(width: PaddingSizes.mainPadding),
                   MainText(
-                    washer.firstName,
+                    washer.firstName ?? '',
                     color: GawTheme.specialText,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,

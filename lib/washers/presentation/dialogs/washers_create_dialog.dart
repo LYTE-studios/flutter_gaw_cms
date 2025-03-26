@@ -35,7 +35,7 @@ class _WasherCreateDialogState extends State<WasherCreateDialog>
   void _next() {
     if (index == 2) {
       setLoading(true);
-      WashersApi.registerWasher(
+      WorkersApi.registerWorker(
           request: RegisterRequest(
         (b) => b
           ..firstName = tecFirstName.text

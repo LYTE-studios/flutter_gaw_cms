@@ -53,9 +53,9 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
 
   int page = 1;
 
-  WashersListResponse? washersListResponse;
+  WorkersListResponse? washersListResponse;
 
-  List<Washer> selection = [];
+  List<Worker> selection = [];
 
   bool allSelected = false;
 
@@ -81,7 +81,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    WashersApi.getWashers(
+    WorkersApi.getWorkers(
       page: page,
       itemCount: itemCount,
       searchTerm: term,
@@ -110,7 +110,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
     super.initState();
   }
 
-  void onSelected(Washer washer) {
+  void onSelected(Worker washer) {
     DialogUtil.show(
       dialog: WasherDetailsDialog(
         washerId: washer.id,
@@ -158,7 +158,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
           ): ListUtil.mColumn,
         },
       ),
-      rows: washersListResponse?.washers.map(
+      rows: washersListResponse?.workers.map(
             (washer) {
               return ColorlessInkWell(
                 onTap: () {
@@ -194,7 +194,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
                               onTap: () {
                                 setLoading(true);
 
-                                WashersApi.acceptWasher(
+                                WorkersApi.acceptWorker(
                                   id: washer.id!,
                                 )
                                     .then((_) => loadData(
@@ -213,7 +213,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
                               onTap: () {
                                 setLoading(true);
 
-                                WashersApi.deleteWasher(
+                                WorkersApi.deleteWorker(
                                   id: washer.id!,
                                 )
                                     .then((_) => loadData(
@@ -258,7 +258,6 @@ class _ApprovalButton extends StatelessWidget {
   final Function()? onTap;
 
   const _ApprovalButton({
-    super.key,
     required this.label,
     required this.icon,
     required this.backgroundColor,

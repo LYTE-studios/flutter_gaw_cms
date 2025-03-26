@@ -67,7 +67,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           ..applicationEndTime =
               GawDateUtil.toApi(applicationRecruitmentPeriodEnd)
           ..customerId = customerId
-          ..maxWashers = int.parse(tecNeededWashers.text)
+          ..maxworkers = int.parse(tecNeededWashers.text)
           ..isDraft = isDraft
           ..address = address!.toBuilder()
           ..description = tecDescription.text,
@@ -91,7 +91,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
 
     for (Customer customer in response.customers.toList()) {
       if (customer.firstName == null || customer.lastName == null) {
-        customerOptions[customer.id!] = customer.email ?? '';
+        customerOptions[customer.id ?? ''] = customer.email ?? '';
       } else {
         customerOptions[customer.id!] =
             '${customer.firstName ?? ''} ${customer.lastName ?? ''}';

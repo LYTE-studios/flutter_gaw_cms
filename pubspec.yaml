@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for Get-a-Wash
 publish_to: none
-version: 1.3.0+1
+version: 1.4.0+1
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -29,12 +29,12 @@ dependencies:
   flutter_riverpod: ^2.3.10
   freezed: ^2.4.1
   google_map_polyline_new: ^0.3.0+2
-  file_picker: ^6.1.1
+  file_picker: ^5.3.0
   dio: ^5.3.3
   geolocator: ^10.1.0
   widget_to_marker: ^1.0.4
   page_transition: ^2.1.0
-  flutter_dropzone: ^3.0.7
+  flutter_dropzone: ^4.0.0
   collection: ^1.18.0
   sentry_flutter: ^7.16.1
   flutter_native_splash: ^2.3.2
@@ -54,8 +54,8 @@ dependencies:
 
 dependency_overrides:
   dio: ^5.3.3
-  gaw_ui:
-    path: ../flutter_package_gaw_ui
+  # gaw_ui:
+  #   path: ../flutter_package_gaw_ui
   gaw_api:
     path: ../flutter_package_gaw_api
 

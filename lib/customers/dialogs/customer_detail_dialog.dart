@@ -46,8 +46,23 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
     super.initState();
   }
 
+  String toCommittee(String pc) {
+    switch (pc) {
+      case '121':
+        return 'Automotive';
+      case 'h121':
+        return 'Hospitality';
+      case '302':
+        return 'Horeca';
+    }
+
+    return 'Automotive';
+  }
+
   @override
   Widget build(BuildContext context) {
+    String committee = toCommittee(customer?.specialCommittee ?? '');
+
     return BaseDialog(
       height: 680,
       child: Padding(
@@ -101,42 +116,87 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
                     bottom: Borders.mainSide,
                   ),
                 ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 120,
-                    width: 120,
-                    child: ProfilePictureAvatar(
-                      canEdit: true,
-                      showCircle: true,
-                      imageUrl:
-                          FormattingUtil.formatUrl(customer?.profilePictureUrl),
-                      onEditPressed: () {
-                        setLoading(true);
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: PaddingSizes.mainPadding),
+                      child: SizedBox(
+                        height: 120,
+                        width: 120,
+                        child: ProfilePictureAvatar(
+                          canEdit: true,
+                          showCircle: true,
+                          imageUrl: FormattingUtil.formatUrl(
+                              customer?.profilePictureUrl),
+                          onEditPressed: () {
+                            setLoading(true);
 
-                        FilePicker.platform
-                            .pickFiles(
-                          type: FileType.image,
-                        )
-                            .then((FilePickerResult? result) {
-                          if (result?.files.isEmpty ?? true) {
-                            setLoading(false);
+                            FilePicker.platform
+                                .pickFiles(
+                              type: FileType.image,
+                            )
+                                .then((FilePickerResult? result) {
+                              if (result?.files.isEmpty ?? true) {
+                                setLoading(false);
 
-                            return;
-                          }
+                                return;
+                              }
 
-                          UsersApi.uploadProfilePicture(
-                            result!.files[0].bytes!,
-                            userId: customer!.id,
-                          ).then((_) {
-                            loadData();
-                          }).catchError((error) {
-                            ExceptionHandler.show(error);
-                          }).whenComplete(() => setLoading(false));
-                        });
-                      },
+                              UsersApi.uploadProfilePicture(
+                                result!.files[0].bytes!,
+                                userId: customer!.id,
+                              ).then((_) {
+                                loadData();
+                              }).catchError((error) {
+                                ExceptionHandler.show(error);
+                              }).whenComplete(() => setLoading(false));
+                            });
+                          },
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      width: 256,
+                      child: LoadingSwitcher(
+                        loading: loading,
+                        child: InputMultiSelectionForm(
+                          isMulti: false,
+                          selectedOptions: [committee],
+                          options: const {
+                            'Automotive': null,
+                            'Horeca': null,
+                            'Hospitality': null,
+                          },
+                          onUpdate: (String value) async {
+                            setLoading(true);
+
+                            String committee = '121';
+
+                            switch (value) {
+                              case 'Automotive':
+                                committee = '121';
+                              case 'Horeca':
+                                committee = '302';
+                              case 'Hospitality':
+                                committee = 'h121';
+                            }
+
+                            await CustomerApi.updateCustomer(
+                              id: customer!.id!,
+                              request: UpdateCustomerRequest(
+                                (b) => b..specialCommittee = committee,
+                              ),
+                            );
+
+                            loadData();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

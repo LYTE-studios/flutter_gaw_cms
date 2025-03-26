@@ -108,7 +108,7 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
     text: widget.job.title,
   )..addListener(validate);
   late final TextEditingController tecNeededWashers = TextEditingController(
-    text: widget.job.maxWashers.toString(),
+    text: widget.job.maxWorkers.toString(),
   )..addListener(validate);
   late final TextEditingController tecDescription = TextEditingController(
     text: widget.job.description,
@@ -128,7 +128,7 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
 
   bool validated = true;
 
-  WashersForJobResponse? washersForJob;
+  WorkersForJobResponse? washersForJob;
 
   void loadData() {
     setLoading(true);
@@ -260,7 +260,7 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
 class _WashersBlock extends StatelessWidget {
   final bool loading;
 
-  final WashersForJobResponse? response;
+  final WorkersForJobResponse? response;
 
   final Job? job;
 
@@ -301,10 +301,10 @@ class _WashersBlock extends StatelessWidget {
   List<Widget> getItems() {
     List<Widget> widgets = [];
 
-    for (Washer washer in response?.washers ?? []) {
+    for (Worker washer in response?.workers ?? []) {
       TimeRegistration? registration =
           response?.timeRegistrations.firstWhereOrNull(
-        (item) => item.washer?.id == washer.id,
+        (item) => item.worker?.id == washer.id,
       );
 
       if (job == null) {

@@ -260,6 +260,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
             label: !widget.isJobSpecific ? 'Job title' : 'Region',
           ): ListUtil.lColumn,
           const BaseHeaderItem(
+            label: 'Notes',
+          ): ListUtil.sColumn,
+          const BaseHeaderItem(
             label: 'Distance',
           ): ListUtil.sColumn,
         },
@@ -281,15 +284,15 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                       onTap: () {
                         DialogUtil.show(
                           dialog: WasherHistoryDialog(
-                            washerId: application.washer.id!,
+                            washerId: application.worker.id!,
                           ),
                           context: context,
                         );
                       },
-                      firstName: application.washer.firstName,
-                      lastName: application.washer.lastName,
+                      firstName: application.worker.firstName,
+                      lastName: application.worker.lastName,
                       imageUrl: FormattingUtil.formatUrl(
-                        application.washer.profilePictureUrl,
+                        application.worker.profilePictureUrl,
                       ),
                     ): ListUtil.xLColumn,
                     TextRowItem(
@@ -309,6 +312,22 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                             value: application.address.city ??
                                 application.address.postalCode,
                           ): ListUtil.lColumn,
+                    BaseRowItem(
+                      child: Visibility(
+                        visible: application.note?.isNotEmpty ?? false,
+                        child: const Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            height: 21,
+                            width: 21,
+                            child: SvgIcon(
+                              PixelPerfectIcons.customCopy,
+                              color: GawTheme.unselectedText,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ): ListUtil.sColumn,
                     TextRowItem(
                       value: distance,
                     ): ListUtil.sColumn,
@@ -340,7 +359,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                             visible: application.state ==
                                     JobApplicationState.pending &&
                                 application.job.selectedWashers <
-                                    application.job.maxWashers,
+                                    application.job.maxWorkers,
                             child: SizedBox(
                               width: 128,
                               child: _ApprovalButton(
@@ -370,7 +389,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                             visible: application.state ==
                                     JobApplicationState.pending &&
                                 application.job.selectedWashers <
-                                    application.job.maxWashers,
+                                    application.job.maxWorkers,
                             child: SizedBox(
                               width: 105,
                               child: _ApprovalButton(

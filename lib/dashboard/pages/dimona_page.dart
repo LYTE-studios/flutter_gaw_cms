@@ -120,9 +120,9 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
                     },
                     items: {
                       ProfileRowItem(
-                        firstName: dimona.application.washer.firstName,
-                        lastName: dimona.application.washer.lastName,
-                        imageUrl: dimona.application.washer.profilePictureUrl,
+                        firstName: dimona.application.worker.firstName,
+                        lastName: dimona.application.worker.lastName,
+                        imageUrl: dimona.application.worker.profilePictureUrl,
                       ): ListUtil.lColumn,
                       TextRowItem(
                         value: dimona.success == null

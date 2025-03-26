@@ -31,6 +31,7 @@ class _JobTilesTabState extends State<JobTilesTab> {
       child: LoadingSwitcher(
         loading: widget.loading,
         child: SizedBox(
+          height: double.infinity,
           width: double.infinity,
           child: SingleChildScrollView(
             child: Align(

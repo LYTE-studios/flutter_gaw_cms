@@ -31,9 +31,9 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
 
   int page = 1;
 
-  WashersListResponse? washersListResponse;
+  WorkersListResponse? washersListResponse;
 
-  List<Washer> selection = [];
+  List<Worker> selection = [];
 
   bool allSelected = false;
 
@@ -56,7 +56,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    WashersApi.getWashers(
+    WorkersApi.getWorkers(
       page: page,
       itemCount: itemCount,
       searchTerm: term,
@@ -148,7 +148,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                   return;
                 }
                 if (value) {
-                  selection.addAll(washersListResponse?.washers ?? []);
+                  selection.addAll(washersListResponse?.workers ?? []);
                   allSelected = true;
                 } else {
                   selection = [];
@@ -217,7 +217,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
               ): ListUtil.mColumn,
             },
           ),
-          rows: washersListResponse?.washers.map(
+          rows: washersListResponse?.workers.map(
                 (washer) {
                   return BaseListItem(
                     selected: selection.contains(washer),
@@ -241,9 +241,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                           washerId: washer.id!,
                         ),
                         context: context,
-                      ).then((_) {
-                        loadData();
-                      });
+                      );
                     },
                     items: {
                       ProfileRowItem(
@@ -263,8 +261,8 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                         value: washer.phoneNumber,
                         fixedWidth: ListUtil.mColumn,
                       ): ListUtil.lColumn,
-                      TextRowItem(
-                        value: washer.formatHours(),
+                      const TextRowItem(
+                        value: null,
                         fixedWidth: ListUtil.xSColumn,
                       ): ListUtil.mColumn,
                       StatusRowItem(

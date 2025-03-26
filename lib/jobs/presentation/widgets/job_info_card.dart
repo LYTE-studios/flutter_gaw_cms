@@ -127,7 +127,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                                   ..applicationEndTime =
                                       widget.info.applicationEndTime
                                   ..customerId = widget.info.customer.id
-                                  ..maxWashers = widget.info.maxWashers
+                                  ..maxworkers = widget.info.maxWorkers
                                   ..isDraft = true
                                   ..address = widget.info.address.toBuilder()
                                   ..description = widget.info.description,
@@ -193,7 +193,7 @@ class _JobInfoCardState extends ConsumerState<JobInfoCard>
                   ),
                   SelectedWashersWidget(
                     selectedWashers: widget.info.selectedWashers,
-                    maxWashers: widget.info.maxWashers,
+                    maxWashers: widget.info.maxWorkers,
                   ),
                   const Spacer(),
                   Visibility(

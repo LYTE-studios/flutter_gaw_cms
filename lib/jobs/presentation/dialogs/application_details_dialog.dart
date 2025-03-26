@@ -33,7 +33,6 @@ class _ApplicationDetailsDialogState
 
   void loadData() {
     JobsApi.getRegistrationForJob(
-      washerId: widget.application.washer.id!,
       jobId: widget.application.job.id!,
     ).then(
       (TimeRegistrationResponse? response) {
@@ -71,7 +70,7 @@ class _ApplicationDetailsDialogState
                 onTap: () {
                   DialogUtil.show(
                     dialog: WasherHistoryDialog(
-                      washerId: widget.application.washer.id!,
+                      washerId: widget.application.worker.id!,
                     ),
                     context: context,
                   );
@@ -114,7 +113,7 @@ class _ApplicationDetailsDialogState
                         children: [
                           Visibility(
                             visible: widget.application.job.selectedWashers <
-                                widget.application.job.maxWashers,
+                                widget.application.job.maxWorkers,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                 right: PaddingSizes.mainPadding,
@@ -207,7 +206,7 @@ class _ApplicationDetailsDialogState
                         SelectedWashersWidget(
                           selectedWashers:
                               widget.application.job.selectedWashers,
-                          maxWashers: widget.application.job.maxWashers,
+                          maxWashers: widget.application.job.maxWorkers,
                         ),
                       ],
                     ),

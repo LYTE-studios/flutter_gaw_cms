@@ -5,7 +5,7 @@ import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 class WashersOverviewDialog extends ConsumerWidget {
-  final Washer washer;
+  final Worker washer;
 
   const WashersOverviewDialog({
     super.key,
@@ -32,7 +32,7 @@ class WashersOverviewDialog extends ConsumerWidget {
               onPressed: () {},
             ),
             const SizedBox(height: 68),
-            Text(washer.firstName),
+            Text(washer.firstName ?? ''),
             const SizedBox(height: 54),
             Row(
               children: [

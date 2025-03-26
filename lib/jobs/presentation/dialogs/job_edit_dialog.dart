@@ -84,7 +84,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           ..applicationEndTime =
               GawDateUtil.toApi(applicationRecruitmentPeriodEnd!)
           ..customerId = customerId
-          ..maxWashers = int.parse(tecNeededWashers.text)
+          ..maxworkers = int.parse(tecNeededWashers.text)
           ..isDraft = isDraft
           ..address = address!.toBuilder()
           ..description = tecDescription.text,
@@ -190,7 +190,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
     text: widget.job.title,
   )..addListener(validate);
   late final TextEditingController tecNeededWashers = TextEditingController(
-    text: widget.job.maxWashers.toString(),
+    text: widget.job.maxWorkers.toString(),
   )..addListener(validate);
   late final TextEditingController tecDescription = TextEditingController(
     text: widget.job.description,

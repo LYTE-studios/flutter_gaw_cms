@@ -208,7 +208,9 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
                     key: mapKey,
                     setInitialMarker: widget.address != null,
                     initialZoom: widget.address == null ? null : 15,
-                    startPosition: widget.address == null
+                    startPosition: widget.address == null ||
+                            widget.address!.latitude == null ||
+                            widget.address!.longitude == null
                         ? const LatLng(
                             50.5039,
                             4.4699,

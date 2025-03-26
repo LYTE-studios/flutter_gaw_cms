@@ -173,11 +173,8 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
                 },
               ): ListUtil.xLColumn,
               const BaseHeaderItem(
-                label: '',
-              ): ListUtil.sColumn,
-              const BaseHeaderItem(
                 label: '  ',
-              ): ListUtil.miniColumn,
+              ): ListUtil.sColumn,
             },
           ),
           rows: exportsListResponse?.exports?.map(
@@ -209,7 +206,7 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
                           );
                         },
                         icon: PixelPerfectIcons.download,
-                      ): ListUtil.miniColumn,
+                      ): ListUtil.sColumn,
                     },
                   );
                 },

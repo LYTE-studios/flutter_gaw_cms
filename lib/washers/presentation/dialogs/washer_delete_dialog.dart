@@ -21,7 +21,7 @@ class _JobDeletePopupState extends ConsumerState<WasherDeleteDialog>
   Future<void> deleteCustomers() async {
     setLoading(true);
     for (String id in widget.ids) {
-      await WashersApi.deleteWasher(
+      await WorkersApi.deleteWorker(
         id: id,
       );
     }

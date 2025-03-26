@@ -10,7 +10,7 @@ class TimeRegistrationCard extends ConsumerStatefulWidget {
 
   final TimeRegistration? timeRegistration;
 
-  final Washer? washer;
+  final Worker? washer;
 
   final Function()? onEdit;
 
@@ -87,8 +87,8 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
               children: [
                 ColorlessInkWell(
                   onTap: () {
-                    String value = widget.washer?.company ??
-                        widget.timeRegistration?.washer?.company ??
+                    String value = widget.washer?.ssn ??
+                        widget.timeRegistration?.worker?.ssn ??
                         '';
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -227,7 +227,7 @@ class _TimeRegistrationCardState extends ConsumerState<TimeRegistrationCard>
                                       child: Image.network(
                                         FormattingUtil.formatUrl(
                                               widget.timeRegistration
-                                                  ?.washerSignatureUrl,
+                                                  ?.workerSignatureUrl,
                                             ) ??
                                             '',
                                         fit: BoxFit.contain,
