@@ -56,8 +56,8 @@ dependency_overrides:
   dio: ^5.3.3
   # gaw_ui:
   #   path: ../flutter_package_gaw_ui
-  gaw_api:
-    path: ../flutter_package_gaw_api
+  # gaw_api:
+  #   path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
