@@ -509,9 +509,11 @@ packages:
   gaw_api:
     dependency: "direct main"
     description:
-      path: "../flutter_package_gaw_api"
-      relative: true
-    source: path
+      path: "."
+      ref: main
+      resolved-ref: "4a1dfe0f54b4dc12ba2fd4d0fb587559f76489a7"
+      url: "https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api"
+    source: git
     version: "1.4.0"
   gaw_ui:
     dependency: "direct main"
