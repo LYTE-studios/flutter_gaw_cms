@@ -213,9 +213,12 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
             ),
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(),
+                  bottom: BorderSide(
+                    color: GawTheme.unselectedText.withOpacity(0.4),
+                    width: 1.0,
+                  ),
                 ),
               ),
               child: Row(
