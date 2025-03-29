@@ -41,7 +41,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
 
   String? term;
 
-  void loadData({
+  void fetchWashers({
     int? page,
     int? itemCount,
     String? term,
@@ -50,7 +50,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   }) {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
@@ -63,7 +63,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
       sortTerm: sortTerm,
       ascending: ascending,
     ).then((response) {
-      setData(() {
+      setState(() {
         washersListResponse = response;
       });
     }).catchError((error) {
@@ -76,7 +76,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   @override
   void initState() {
     Future(() {
-      loadData(
+      fetchWashers(
         page: page,
         itemCount: itemCount,
       );
@@ -111,13 +111,13 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
             if (value == term) {
               return;
             }
-            loadData(page: 1, itemCount: itemCount, term: value);
+            fetchWashers(page: 1, itemCount: itemCount, term: value);
           },
           onEditItemCount: (int index) {
-            loadData(itemCount: index, page: page);
+            fetchWashers(itemCount: index, page: page);
           },
           onChangePage: (int index) {
-            loadData(itemCount: itemCount, page: index);
+            fetchWashers(itemCount: itemCount, page: index);
           },
           page: page,
           onDelete: () {
@@ -132,7 +132,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
             ).then((_) {
               selection = [];
 
-              loadData(
+              fetchWashers(
                 page: 1,
                 itemCount: itemCount,
               );
@@ -165,7 +165,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                     setState(() {
                       sortingValue = null;
                     });
-                    loadData(
+                    fetchWashers(
                       page: 1,
                       itemCount: itemCount,
                     );
@@ -174,7 +174,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                   setState(() {
                     sortingValue = 'first_name';
                   });
-                  loadData(
+                  fetchWashers(
                     page: 1,
                     itemCount: itemCount,
                     sortTerm: 'first_name',
@@ -201,7 +201,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                   setState(() {
                     sortingValue = 'hours';
                   });
-                  loadData(
+                  fetchWashers(
                     page: 1,
                     itemCount: itemCount,
                     sortTerm: 'hours',

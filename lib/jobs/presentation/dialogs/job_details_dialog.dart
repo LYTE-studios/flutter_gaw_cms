@@ -130,10 +130,10 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
 
   WorkersForJobResponse? washersForJob;
 
-  void loadData() {
+  Future<void> loadData() {
     setLoading(true);
 
-    JobsApi.getWashersForJob(jobId: widget.job.id!).then((response) {
+    return JobsApi.getWashersForJob(jobId: widget.job.id!).then((response) {
       setState(() {
         washersForJob = response;
       });

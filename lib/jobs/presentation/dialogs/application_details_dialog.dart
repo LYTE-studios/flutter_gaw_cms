@@ -31,8 +31,9 @@ class _ApplicationDetailsDialogState
   late bool canEdit = GawDateUtil.fromApi(widget.application.job.startTime)
       .isAfter(DateTime.now());
 
-  void loadData() {
-    JobsApi.getRegistrationForJob(
+  @override
+  Future<void> loadData() async {
+    return JobsApi.getRegistrationForJob(
       jobId: widget.application.job.id!,
     ).then(
       (TimeRegistrationResponse? response) {

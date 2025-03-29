@@ -63,7 +63,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
 
   String? term;
 
-  void loadData({
+  void fetchData({
     int? page,
     int? itemCount,
     String? term,
@@ -75,7 +75,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
     page ??= this.page;
     itemCount ??= this.itemCount;
 
-    setData(() {
+    setState(() {
       this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
@@ -89,7 +89,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       ascending: ascending,
       showRegistered: true,
     ).then((response) {
-      setData(() {
+      setState(() {
         washersListResponse = response;
       });
     }).catchError((error) {
@@ -102,7 +102,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
   @override
   void initState() {
     Future(() {
-      loadData(
+      fetchData(
         page: page,
         itemCount: itemCount,
       );
@@ -117,7 +117,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       ),
       context: context,
     ).then(
-      (_) => loadData(
+      (_) => fetchData(
         itemCount: itemCount,
         page: page,
       ),
@@ -136,13 +136,13 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
         if (value == term) {
           return;
         }
-        loadData(page: 1, itemCount: itemCount, term: value);
+        fetchData(page: 1, itemCount: itemCount, term: value);
       },
       onEditItemCount: (int index) {
-        loadData(itemCount: index, page: page);
+        fetchData(itemCount: index, page: page);
       },
       onChangePage: (int index) {
-        loadData(itemCount: itemCount, page: index);
+        fetchData(itemCount: itemCount, page: index);
       },
       page: page,
       header: BaseListHeader(
@@ -197,7 +197,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
                                 WorkersApi.acceptWorker(
                                   id: washer.id!,
                                 )
-                                    .then((_) => loadData(
+                                    .then((_) => fetchData(
                                         itemCount: itemCount, page: page))
                                     .whenComplete(() => setLoading(false));
                               },
@@ -216,7 +216,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
                                 WorkersApi.deleteWorker(
                                   id: washer.id!,
                                 )
-                                    .then((_) => loadData(
+                                    .then((_) => fetchData(
                                         itemCount: itemCount, page: page))
                                     .whenComplete(() => setLoading(false));
                               },

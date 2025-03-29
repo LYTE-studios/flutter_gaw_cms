@@ -26,13 +26,13 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
 
   ApplicationListResponse? applicationsListResponse;
 
-  void loadData({
+  void fetchWasherHistory({
     int? page,
     int? itemCount,
   }) {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -42,7 +42,7 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
       page: page ?? 1,
       itemCount: itemCount ?? 25,
     ).then((response) {
-      setData(() {
+      setState(() {
         applicationsListResponse = response;
       });
     }).catchError((error) {
@@ -54,13 +54,13 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
 
   @override
   void initState() {
+    super.initState();
     Future(() {
-      loadData(
+      fetchWasherHistory(
         page: page,
         itemCount: itemCount,
       );
     });
-    super.initState();
   }
 
   void onSelected(JobApplication application) {
@@ -69,7 +69,7 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
         application: application,
       ),
       context: context,
-    ).then((_) => loadData());
+    ).then((_) => fetchWasherHistory());
   }
 
   @override
@@ -85,10 +85,10 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
         title: 'Job history',
         valueName: LocaleKeys.jobs.tr().toLowerCase(),
         onEditItemCount: (int index) {
-          loadData(itemCount: index, page: page);
+          fetchWasherHistory(itemCount: index, page: page);
         },
         onChangePage: (int index) {
-          loadData(itemCount: itemCount, page: index);
+          fetchWasherHistory(itemCount: itemCount, page: index);
         },
         page: page,
         itemsPerPage: itemCount,

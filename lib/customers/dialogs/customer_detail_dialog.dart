@@ -24,10 +24,10 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
 
   bool canEdit = false;
 
-  void loadData() {
+  Future<void> loadData() {
     setLoading(true);
 
-    CustomerApi.getCustomer(id: widget.customerId).then((Customer? customer) {
+    return CustomerApi.getCustomer(id: widget.customerId).then((Customer? customer) {
       setState(() {
         this.customer = customer;
       });

@@ -216,18 +216,19 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
     super.initState();
   }
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
-    JobsApi.getApplications(jobId: widget.jobId).then((response) {
-      setData(() {
-        applicationsListResponse = response;
-      });
-    }).catchError((error) {
+    try {
+      final response = await JobsApi.getApplications(jobId: widget.jobId);
+      applicationsListResponse = response;
+      setData();
+    } catch (error) {
       ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
-    );
+    } finally {
+      setLoading(false);
+    }
   }
 
   void onSelected(JobApplication application) {

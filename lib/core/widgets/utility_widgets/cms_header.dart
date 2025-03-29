@@ -208,7 +208,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
                         ? const SizedBox()
                         : SvgIcon(
                             icon,
-                            useRawColors: true,
+                            useRawCode: true,
                           ),
                   ),
                 ),
@@ -268,7 +268,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
               height: 32,
               child: SvgIcon(
                 icon,
-                useRawColors: true,
+                useRawCode: true,
               ),
             ),
           ),

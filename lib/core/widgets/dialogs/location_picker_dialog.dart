@@ -45,7 +45,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
   }
 
   void setLateLoader(String query) {
-    setData(() {
+    setState(() {
       isLateLoading = true;
     });
     Future.delayed(
@@ -53,7 +53,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
         milliseconds: 500,
       ),
     ).then((_) {
-      setData(() {
+      setState(() {
         isLateLoading = false;
       });
       placeAutocomplete(query);
@@ -61,7 +61,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
   }
 
   void setTicker() {
-    setData(() {
+    setState(() {
       canRequest = false;
     });
 
@@ -70,7 +70,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
         milliseconds: 500,
       ),
     ).then((_) {
-      setData(() {
+      setState(() {
         canRequest = true;
       });
     });
@@ -94,7 +94,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
         setTicker();
         if (value != null) {
           if (value.predictions != null) {
-            setData(() {
+            setState(() {
               options = placesToOptions(
                 value.predictions!,
               );
@@ -183,7 +183,7 @@ class _LocationPickerDialogState extends State<LocationPickerDialog>
 
                   updateMap(newAddress);
 
-                  setData(() {
+                  setState(() {
                     address = newAddress;
                   });
                 }

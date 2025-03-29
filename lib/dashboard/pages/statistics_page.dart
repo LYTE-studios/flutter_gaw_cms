@@ -39,7 +39,8 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
 
   bool showPicker = false;
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     if (startTime == null || endTime == null) {
@@ -50,7 +51,7 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
       startTime: GawDateUtil.toApi(startTime!),
       endTime: GawDateUtil.toApi(endTime!),
     ).then((adminStats) {
-      setData(() {
+      setState(() {
         adminStatistics = adminStats;
       });
     }).catchError(

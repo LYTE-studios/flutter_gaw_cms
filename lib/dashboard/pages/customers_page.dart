@@ -43,7 +43,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
 
   String? term;
 
-  void loadData({
+  void fetchCustomers({
     int? page,
     int? itemCount,
     String? term,
@@ -52,7 +52,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
   }) {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
@@ -65,7 +65,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
       sortTerm: sortTerm,
       ascending: ascending,
     ).then((response) {
-      setData(() {
+      setState(() {
         customerListResponse = response;
       });
     }).catchError((error) {
@@ -78,7 +78,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
   @override
   void initState() {
     Future(() {
-      loadData(
+      fetchCustomers(
         page: page,
         itemCount: itemCount,
       );
@@ -100,7 +100,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
             dialog: const CustomerCreateDialog(),
             context: context,
           ).then((_) {
-            loadData(
+            fetchCustomers(
               page: 1,
               itemCount: itemCount,
             );
@@ -118,13 +118,13 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
             if (value == term) {
               return;
             }
-            loadData(page: 1, itemCount: itemCount, term: value);
+            fetchCustomers(page: 1, itemCount: itemCount, term: value);
           },
           onEditItemCount: (int index) {
-            loadData(itemCount: index, page: page);
+            fetchCustomers(itemCount: index, page: page);
           },
           onChangePage: (int index) {
-            loadData(itemCount: itemCount, page: index);
+            fetchCustomers(itemCount: itemCount, page: index);
           },
           page: page,
           onDelete: () {
@@ -138,7 +138,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
               context: context,
             ).then((_) {
               selection = [];
-              loadData(
+              fetchCustomers(
                 page: 1,
                 itemCount: itemCount,
               );
@@ -171,7 +171,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                     setState(() {
                       sortingValue = null;
                     });
-                    loadData(
+                    fetchCustomers(
                       page: 1,
                       itemCount: itemCount,
                     );
@@ -180,7 +180,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                   setState(() {
                     sortingValue = 'first_name';
                   });
-                  loadData(
+                  fetchCustomers(
                     page: 1,
                     itemCount: itemCount,
                     sortTerm: 'first_name',
@@ -207,7 +207,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                   setState(() {
                     sortingValue = 'hours';
                   });
-                  loadData(
+                  fetchCustomers(
                     page: 1,
                     itemCount: itemCount,
                     sortTerm: 'hours',
@@ -223,7 +223,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                     setState(() {
                       sortingValue = null;
                     });
-                    loadData(
+                    fetchCustomers(
                       page: 1,
                       itemCount: itemCount,
                     );
@@ -232,7 +232,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                   setState(() {
                     sortingValue = 'company_name';
                   });
-                  loadData(
+                  fetchCustomers(
                     page: 1,
                     itemCount: itemCount,
                     sortTerm: 'company_name',
@@ -270,7 +270,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
                         ),
                         context: context,
                       ).then((_) {
-                        loadData();
+                        fetchCustomers();
                       });
                     },
                     items: {

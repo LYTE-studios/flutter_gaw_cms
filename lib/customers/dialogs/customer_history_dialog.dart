@@ -21,18 +21,17 @@ class CustomerHistoryDialog extends StatefulWidget {
 class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
     with ScreenStateMixin {
   int itemCount = 25;
-
   int page = 1;
-
   JobListResponse? jobListResponse;
 
-  void loadData({
+  // Create a helper method instead of overriding loadData
+  void fetchData({
     int? page,
     int? itemCount,
   }) {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -42,7 +41,7 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
       page: page ?? 1,
       itemCount: itemCount ?? 25,
     ).then((response) {
-      setData(() {
+      setState(() {
         jobListResponse = response;
       });
     }).catchError((error) {
@@ -52,15 +51,18 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
     );
   }
 
+  // Override the loadData method with the correct signature
+  @override
+  Future<void> loadData() async {
+    fetchData(page: page, itemCount: itemCount);
+  }
+
   @override
   void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
     super.initState();
+    Future(() {
+      loadData();
+    });
   }
 
   void onSelected(Job job) {
@@ -85,10 +87,10 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
         title: 'Job history',
         valueName: LocaleKeys.jobs.tr().toLowerCase(),
         onEditItemCount: (int index) {
-          loadData(itemCount: index, page: page);
+          fetchData(itemCount: index, page: page);
         },
         onChangePage: (int index) {
-          loadData(itemCount: itemCount, page: index);
+          fetchData(itemCount: itemCount, page: index);
         },
         page: page,
         itemsPerPage: itemCount,
@@ -113,7 +115,6 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
         rows: jobListResponse?.jobs?.map(
               (job) {
                 DateTime startTime = GawDateUtil.fromApi(job.startTime);
-
                 DateTime endTime = GawDateUtil.fromApi(job.endTime);
 
                 return BaseListItem(

@@ -28,27 +28,30 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     with ScreenStateMixin {
   AdminStatisticsOverviewResponse? adminStatistics;
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     Tuple2<DateTime, DateTime> dateRange = GawDateUtil.getWeekRange();
 
-    StatisticsApi.getAdminStatistics(
-      startTime: GawDateUtil.toApi(
-        dateRange.item1,
-      ),
-      endTime: GawDateUtil.toApi(
-        dateRange.item2,
-      ),
-    ).then((adminStats) {
-      setData(() {
+    try {
+      final adminStats = await StatisticsApi.getAdminStatistics(
+        startTime: GawDateUtil.toApi(
+          dateRange.item1,
+        ),
+        endTime: GawDateUtil.toApi(
+          dateRange.item2,
+        ),
+      );
+      
+      setState(() {
         adminStatistics = adminStats;
       });
-    }).catchError(
-      (error) {
-        ExceptionHandler.show(error);
-      },
-    ).whenComplete(() => setLoading(false));
+    } catch (error) {
+      ExceptionHandler.show(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   @override

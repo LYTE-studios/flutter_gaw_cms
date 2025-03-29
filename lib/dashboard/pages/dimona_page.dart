@@ -24,45 +24,57 @@ class DimonaPage extends StatefulWidget {
 
 class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
   int itemCount = 25;
-
   int page = 1;
-
   DimonaListResponse? dimonaListResponse;
 
-  void loadData({
+  // Create a helper method instead of overriding loadData
+  void fetchData({
     int? page,
     int? itemCount,
   }) {
     setLoading(true);
 
-    setData(() {
+    // Update the state with the provided or existing values
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
 
+    // Use the updated state values for the API call
     LegalApi.getDimonas(
-      page: page,
-      itemCount: itemCount,
+      page: this.page,
+      itemCount: this.itemCount,
     ).then((response) {
-      setData(() {
-        dimonaListResponse = response;
-      });
+      if (mounted) {
+        setState(() {
+          dimonaListResponse = response;
+        });
+      }
     }).catchError((error) {
-      ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
-    );
+      if (mounted) {
+        ExceptionHandler.show(error);
+      }
+    }).whenComplete(() {
+      if (mounted) {
+        setLoading(false);
+      }
+    });
+  }
+
+  // Override the loadData method with the correct signature
+  @override
+  Future<void> loadData() async {
+    fetchData(page: page, itemCount: itemCount);
   }
 
   @override
   void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
     super.initState();
+    // Call loadData directly without passing parameters since
+    // they're already initialized as class fields
+    Future(() {
+      loadData();
+    });
   }
 
   @override
@@ -79,10 +91,10 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
           title: 'Dimonas',
           valueName: 'dimonas',
           onEditItemCount: (int index) {
-            loadData(itemCount: index, page: page);
+            fetchData(itemCount: index, page: page);
           },
           onChangePage: (int index) {
-            loadData(itemCount: itemCount, page: index);
+            fetchData(itemCount: itemCount, page: index);
           },
           page: page,
           itemsPerPage: itemCount,

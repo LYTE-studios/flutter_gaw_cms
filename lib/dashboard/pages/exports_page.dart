@@ -48,34 +48,36 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
     loadData();
   }
 
-  void loadData({
+  Future<void> loadData({
     int? page,
     int? itemCount,
     String? term,
     String? sortTerm,
     bool ascending = true,
-  }) {
+  }) async {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    ExportsApi.getExports(
-      page: page,
-      itemCount: itemCount,
-      sortTerm: sortTerm,
-      ascending: ascending,
-    ).then((response) {
-      setData(() {
+    try {
+      final response = await ExportsApi.getExports(
+        page: page,
+        itemCount: itemCount,
+        sortTerm: sortTerm,
+        ascending: ascending,
+      );
+      
+      setState(() {
         exportsListResponse = response;
       });
-    }).catchError((error) {
+    } catch (error) {
       ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
-    );
+    } finally {
+      setLoading(false);
+    }
   }
 
   @override

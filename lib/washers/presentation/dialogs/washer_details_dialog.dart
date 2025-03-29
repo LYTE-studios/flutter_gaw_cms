@@ -23,6 +23,8 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   bool canEdit = false;
   late TabController _tabController;
   Worker? washer;
+  RegistrationOnboardingData? registrationData;
+  List<JobType> jobTypes = [];
 
   bool isJobTypeExpanded = false;
   bool isSituationExpanded = false;
@@ -57,26 +59,55 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     );
   }
 
-  void loadData() {
+  Future<void> loadData() async {
     setLoading(true);
 
-    WorkersApi.getWorker(id: widget.washerId!).then((Worker? washer) {
+    try {
+      Worker? worker = await WorkersApi.getWorker(id: widget.washerId!);
       setState(() {
-        this.washer = washer;
-        tecFirstname.text = washer?.firstName ?? '';
-        tecLastName.text = washer?.lastName ?? '';
-        tecEmail.text = washer?.email ?? '';
-        tecPhoneNumber.text = washer?.phoneNumber ?? '';
-        tecIban.text = washer?.iban ?? '';
-        tecSsn.text = washer?.ssn ?? '';
-        address = washer?.address;
-        dateOfBirth = GawDateUtil.tryFromApi(washer?.dateOfBirth);
+        washer = worker;
+        tecFirstname.text = worker?.firstName ?? '';
+        tecLastName.text = worker?.lastName ?? '';
+        tecEmail.text = worker?.email ?? '';
+        tecPhoneNumber.text = worker?.phoneNumber ?? '';
+        tecIban.text = worker?.iban ?? '';
+        tecSsn.text = worker?.ssn ?? '';
+        address = worker?.address;
+        dateOfBirth = GawDateUtil.tryFromApi(worker?.dateOfBirth);
       });
-    }).catchError(
-      (error) {
-        ExceptionHandler.show(error);
-      },
-    ).whenComplete(() => setLoading(false));
+    } catch (error) {
+      ExceptionHandler.show(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> loadRegistrationData() async {
+    setLoading(true);
+
+    try {
+      RegistrationOnboardingData? data =
+          await AuthenticationApi.getWorkerRegistrationData(
+        widget.washerId!,
+      );
+
+      setState(() {
+        registrationData = data;
+        jobTypes = data?.jobTypes ?? [];
+      });
+    } catch (error) {
+      // Add console log to help diagnose the issue
+      print('Error loading registration data: $error');
+      ExceptionHandler.show(error);
+
+      // Set empty lists to prevent null errors
+      setState(() {
+        registrationData = null;
+        jobTypes = [];
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   late TextEditingController tecFirstname = TextEditingController(
@@ -112,6 +143,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     _tabController = TabController(length: 2, vsync: this);
     Future(() {
       loadData();
+      loadRegistrationData();
     });
     super.initState();
   }
@@ -422,36 +454,47 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               isJobTypeExpanded = !isJobTypeExpanded;
                             });
                           },
-                          child: Wrap(
-                            spacing: 8.0,
-                            runSpacing: 8.0,
-                            children: const [
-                              Chip(
-                                label: Text(
-                                  'Car Washing - Intermediate',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                              Chip(
-                                label: Text(
-                                  'Waiter - Beginner',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                              Chip(
-                                label: Text(
-                                  'Cleaning - Skilled',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                              Chip(
-                                label: Text(
-                                  'Other - Expert',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: loading
+                              ? const Center(child: CircularProgressIndicator())
+                              : jobTypes.isEmpty
+                                  ? const Padding(
+                                      padding: EdgeInsets.all(
+                                          PaddingSizes.smallPadding),
+                                      child: Text(
+                                        'No job types available',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    )
+                                  : Wrap(
+                                      spacing: 8.0,
+                                      runSpacing: 8.0,
+                                      children: jobTypes.map((jobType) {
+                                        try {
+                                          return Chip(
+                                            label: Text(
+                                              jobType.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          // Handle any rendering errors
+                                          print('Error rendering job type: $e');
+                                          return const Chip(
+                                            label: Text(
+                                              'Error displaying job type',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }).toList(),
+                                    ),
                         ),
 
                         // Situation Section
