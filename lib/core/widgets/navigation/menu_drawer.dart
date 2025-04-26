@@ -79,7 +79,7 @@ class MenuDrawer extends StatelessWidget {
             height: PaddingSizes.smallPadding,
           ),
           DrawerNavigationItem(
-            label: 'Washers',
+            label: 'Workers',
             iconUrl: PixelPerfectIcons.waterDripNormal,
             onTap: () {
               onChange?.call(WashersPage.route);

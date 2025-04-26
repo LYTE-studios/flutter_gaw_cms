@@ -11,8 +11,8 @@ import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage washersBeamPage = BeamPage(
-  title: 'Washers',
-  key: ValueKey('washers'),
+  title: 'Workers',
+  key: ValueKey('workers'),
   type: BeamPageType.noTransition,
   child: WashersPage(),
 );
@@ -77,11 +77,11 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(
-      mainRoute: 'Washers',
-      subRoute: 'Washers',
+      mainRoute: 'Workers',
+      subRoute: 'Workers',
       extraActionButtonPadding: 128,
       actionWidget: ActionButton(
-        label: 'New washer',
+        label: 'New Worker',
         icon: PixelPerfectIcons.customAdd,
         onTap: () {
           DialogUtil.show(

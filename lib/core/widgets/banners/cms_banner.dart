@@ -27,9 +27,9 @@ class CmsBanner extends StatelessWidget {
             left: -180,
             child: SizedBox(
               height: 720,
-              width: 540,
+              width: 720,
               child: MainLogoSmall(
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fitWidth,
                 color: GawTheme.secondaryTint.withOpacity(0.05),
               ),
             ),
@@ -43,7 +43,7 @@ class CmsBanner extends StatelessWidget {
                 maxHeight: 720,
               ),
               height: height,
-              child: _HoveringItems(),
+              child: const _HoveringItems(),
             ),
           ),
           Positioned(
@@ -54,7 +54,7 @@ class CmsBanner extends StatelessWidget {
               height: 56,
               child: Center(
                 child: MainText(
-                  '© ${DateTime.now().year} GET-A-WASH',
+                  '© ${DateTime.now().year} WERKR',
                   textStyleOverride: TextStyles.mainStyle.copyWith(
                     fontSize: 12,
                     color: GawTheme.clearText,

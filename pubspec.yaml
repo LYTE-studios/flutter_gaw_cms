@@ -1,5 +1,5 @@
 name: flutter_gaw_cms
-description: The admin application for Get-a-Wash
+description: The admin application for WERKR
 publish_to: none
 version: 1.4.0+1
 
@@ -39,8 +39,8 @@ dependencies:
   sentry_flutter: ^7.16.1
   flutter_native_splash: ^2.3.2
   flutterwebapp_reload_detector: 0.0.1
+  readmore: ^3.0.0
 
-  # Get-a-Wash
 
   gaw_ui:
     git:
@@ -50,16 +50,15 @@ dependencies:
     git:
       url: https://lyte-manager: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@github.com/LYTE-studios/flutter_package_gaw_api
       ref: main
-  readmore: ^3.0.0
 
 dependency_overrides:
   dio: ^5.3.3
   syncfusion_flutter_datepicker: ^29.1.33
   syncfusion_flutter_charts: ^29.1.33
-  # gaw_ui:
-  #   path: ../flutter_package_gaw_ui
-  # gaw_api:
-  #   path: ../flutter_package_gaw_api
+  gaw_ui:
+    path: ../flutter_package_gaw_ui
+  gaw_api:
+    path: ../flutter_package_gaw_api
 
 dev_dependencies:
   flutter_test:
@@ -72,4 +71,3 @@ flutter:
 
   assets:
     - lib/assets/styles/map_style.json
-    - lib/assets/images/

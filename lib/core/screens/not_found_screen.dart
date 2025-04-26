@@ -25,7 +25,7 @@ class _NotFoundScreenState extends State<NotFoundScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: GawTheme.mainTint,
       body: Center(
-        child: SplashLogo(),
+        child: MainLogoSmall(),
       ),
     );
   }

@@ -204,9 +204,9 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             ),
             FormItem(
               child: InputTextForm(
-                label: 'Needed washers for the job',
+                label: 'Needed Workers for the job',
                 controller: tecNeededWashers,
-                hint: 'Enter needed washers',
+                hint: 'Enter needed workers',
                 number: true,
               ),
             ),

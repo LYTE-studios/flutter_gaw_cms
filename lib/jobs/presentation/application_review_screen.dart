@@ -28,7 +28,7 @@ class _ApplicationReviewScreenState extends State<ApplicationReviewScreen>
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(
-      mainRoute: 'Washers',
+      mainRoute: 'Workers',
       subRoute: 'Applications',
       goBack: () {
         dashboardRouter.beamBack();

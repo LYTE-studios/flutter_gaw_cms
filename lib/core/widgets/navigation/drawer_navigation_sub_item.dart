@@ -51,15 +51,14 @@ class _DrawerNavigationSubItemState extends State<DrawerNavigationSubItem> {
                   width: 4,
                   thickness: 2,
                   color: widget.active || hover
-                      ? GawTheme.secondaryTint
+                      ? GawTheme.mainTint
                       : GawTheme.unselectedText,
                 ),
               ),
               MainText(
                 widget.label,
-                color: widget.active || hover
-                    ? GawTheme.secondaryTint
-                    : GawTheme.text,
+                color:
+                    widget.active || hover ? GawTheme.mainTint : GawTheme.text,
               )
             ],
           ),

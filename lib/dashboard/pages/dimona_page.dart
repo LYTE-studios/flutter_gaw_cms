@@ -81,7 +81,7 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
             selected: false,
             items: {
               const BaseHeaderItem(
-                label: 'Washer',
+                label: 'Worker',
               ): ListUtil.lColumn,
               const BaseHeaderItem(
                 label: 'Status',

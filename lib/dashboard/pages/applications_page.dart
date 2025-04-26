@@ -208,7 +208,6 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
     with ScreenStateMixin {
   ApplicationListResponse? applicationsListResponse;
 
-
   @override
   Future<void> loadData() async {
     setLoading(true);
@@ -245,7 +244,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
       header: BaseListHeader(
         items: {
           const BaseHeaderItem(
-            label: 'Washer name',
+            label: 'Worker name',
           ): ListUtil.xLColumn,
           BaseHeaderItem(
             label: !widget.isJobSpecific ? 'Job Date' : 'Date',
@@ -372,7 +371,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
                                     ExceptionHandler.show(
                                       error,
                                       message:
-                                          'Washer could not be approved. Does the washer have all necessary information?',
+                                          'Worker could not be approved. Does the washer have all necessary information?',
                                     );
                                   }).whenComplete(() => setLoading(false));
                                 },

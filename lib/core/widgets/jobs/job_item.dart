@@ -40,7 +40,7 @@ class JobItem extends StatelessWidget {
                     GawDateUtil.fromApi(job.startTime),
                     GawDateUtil.fromApi(job.endTime),
                   ),
-                  color: GawTheme.secondaryTint,
+                  color: GawTheme.mainTint,
                 ),
               ],
             ),

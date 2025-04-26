@@ -11,7 +11,7 @@ import 'package:gaw_api/gaw_api.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 const BeamPage splashBeamPage = BeamPage(
-  title: 'Get a Wash',
+  title: 'WERKR',
   key: ValueKey('splash'),
   type: BeamPageType.noTransition,
   child: SplashScreen(),
@@ -104,7 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: GawTheme.mainTint,
       body: Center(
-        child: SplashLogo(),
+        child: MainLogoSmall(),
       ),
     );
   }

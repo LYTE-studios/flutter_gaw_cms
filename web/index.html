@@ -1,118 +1,129 @@
 <!DOCTYPE "html">
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-    <meta content="The admin console for the Get a Wash app" name="description">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta content="The admin console for the Get a Wash app" name="description">
 
-    <!-- iOS meta tags & icons -->
-    <meta content="yes" name="apple-mobile-web-app-capable">
-    <meta content="black" name="apple-mobile-web-app-status-bar-style">
-    <meta content="flutter_gaw_cms" name="apple-mobile-web-app-title">
-    <link href="icons/Icon-192.png" rel="apple-touch-icon">
+  <!-- iOS meta tags & icons -->
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="black" name="apple-mobile-web-app-status-bar-style">
+  <meta content="flutter_gaw_cms" name="apple-mobile-web-app-title">
+  <link href="icons/Icon-192.png" rel="apple-touch-icon">
 
-    <!-- Favicon -->
-    <link href="favicon.png" rel="icon" type="image/png">
+  <!-- Favicon -->
+  <link href="favicon.png" rel="icon" type="image/png">
 
-    <title>Get-a-Wash CMS</title>
-    <link href="manifest.json" rel="manifest">
+  <title>WERKR CMS</title>
+  <link href="manifest.json" rel="manifest">
 
-    <script src="https://unpkg.com/pica/dist/pica.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnT6K41vywypMPL7FRMrwqtuoXsQnLQ6U"></script>
-    <!-- This script adds the flutter initialization JS code -->
-    <script defer="" src="flutter.js"></script>
-    <style id="splash-screen-style">
-        html {
-          height: 100%
-        }
+  <script src="https://unpkg.com/pica/dist/pica.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBnT6K41vywypMPL7FRMrwqtuoXsQnLQ6U"></script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script defer="" src="flutter.js"></script>
 
-        body {
-          margin: 0;
-          min-height: 100%;
-          background-color: #4EABE9;
-              background-size: 100% 100%;
-        }
 
-        .center {
-          margin: 0;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          -ms-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-        }
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <style id="splash-screen-style">
+    html {
+      height: 100%
+    }
 
-        .contain {
-          display:block;
-          width:100%; height:100%;
-          object-fit: contain;
-        }
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #0B1956;
+      background-size: 100% 100%;
+    }
 
-        .stretch {
-          display:block;
-          width:100%; height:100%;
-        }
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
 
-        .cover {
-          display:block;
-          width:100%; height:100%;
-          object-fit: cover;
-        }
+    .contain {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-        .bottom {
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          -ms-transform: translate(-50%, 0);
-          transform: translate(-50%, 0);
-        }
+    .stretch {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
 
-        .bottomLeft {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-        }
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-        .bottomRight {
-          position: absolute;
-          bottom: 0;
-          right: 0;
-        }
-    </style>
-    <script id="splash-screen-script">
-        function removeSplashFromWeb() {
-          document.getElementById("splash")?.remove();
-          document.getElementById("splash-branding")?.remove();
-          document.body.style.background = "transparent";
-        }
-    </script>
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-          name="viewport">
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+
+    .bottomLeft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bottomRight {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
 </head>
+
 <body>
-<picture id="splash">
-    <source media="(prefers-color-scheme: light)"
-            srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x">
-    <source media="(prefers-color-scheme: dark)"
-            srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x">
-    <img alt="" aria-hidden="true" class="center" src="splash/img/light-1x.png">
-</picture>
-<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.15.2/firebase-storage.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
-<script>
+  <picture id="splash">
+    <source
+      srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
+      media="(prefers-color-scheme: light)">
+    <source
+      srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x"
+      media="(prefers-color-scheme: dark)">
+    <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+
+  <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.2/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-analytics.js"></script>
+  <script>
     // Your web app's Firebase configuration
     var firebaseConfig = {
-        ...
+      ...
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 
 
-</script>
-<script async src="flutter_bootstrap.js"></script>
+  </script>
+  <script async="" src="flutter_bootstrap.js"></script>
+
 </body>
+
 </html>

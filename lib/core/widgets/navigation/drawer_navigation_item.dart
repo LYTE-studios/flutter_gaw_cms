@@ -109,7 +109,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
                       child: SvgIcon(
                         widget.iconUrl,
                         color: widget.active || hover
-                            ? widget.hoverColor ?? GawTheme.secondaryTint
+                            ? widget.hoverColor ?? GawTheme.mainTint
                             : GawTheme.text,
                       ),
                     ),
@@ -117,7 +117,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
                   MainText(
                     widget.label,
                     color: widget.active || hover
-                        ? widget.hoverColor ?? GawTheme.secondaryTint
+                        ? widget.hoverColor ?? GawTheme.mainTint
                         : GawTheme.text,
                   ),
                   const Spacer(),
@@ -151,7 +151,7 @@ class _DrawerNavigationItemState extends State<DrawerNavigationItem>
                             child: SvgIcon(
                               PixelPerfectIcons.arrowRightMedium,
                               color: widget.active || hover
-                                  ? GawTheme.secondaryTint
+                                  ? GawTheme.mainTint
                                   : GawTheme.text,
                             ),
                           ),

@@ -48,7 +48,7 @@ class _ApplicationDetailsDialogState
       () => setLoading(false),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BaseDialog(
@@ -125,7 +125,7 @@ class _ApplicationDetailsDialogState
                                     ExceptionHandler.show(
                                       error,
                                       message:
-                                          'Washer could not be approved. Does the washer have all necessary information?',
+                                          'Worker could not be approved. Does the washer have all necessary information?',
                                     );
                                   }).whenComplete(() => setLoading(false));
                                 },

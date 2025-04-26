@@ -150,7 +150,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               MainText(
-                                'Washers job applications',
+                                'Workers job applications',
                                 textStyleOverride:
                                     TextStyles.mainStyle.copyWith(
                                   fontSize: 10,

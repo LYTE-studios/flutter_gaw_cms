@@ -28,7 +28,7 @@ class _RegistrationsPageState extends ConsumerState<RegistrationsPage>
   @override
   Widget build(BuildContext context) {
     return const BaseLayoutScreen(
-      mainRoute: 'Washers',
+      mainRoute: 'Workers',
       subRoute: 'Registrations',
       child: ScreenSheet(
         topPadding: 120,
@@ -138,7 +138,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       header: BaseListHeader(
         items: {
           const BaseHeaderItem(
-            label: 'Washer name',
+            label: 'Worker name',
           ): ListUtil.xLColumn,
           const BaseHeaderItem(
             label: 'Email',

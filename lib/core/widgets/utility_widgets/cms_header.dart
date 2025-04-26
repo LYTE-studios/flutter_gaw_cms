@@ -32,7 +32,7 @@ class CmsHeader extends ConsumerWidget {
 
     return Container(
       height: heightOverride ?? CmsHeader.headerHeight,
-      decoration: const BoxDecoration(color: GawTheme.secondaryTint),
+      decoration: const BoxDecoration(color: GawTheme.mainTint),
       child: Padding(
         padding: const EdgeInsets.only(
           left: PaddingSizes.extraBigPadding + PaddingSizes.smallPadding,

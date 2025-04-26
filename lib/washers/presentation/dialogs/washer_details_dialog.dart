@@ -122,7 +122,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     MainText(
-                      'Washer profile',
+                      'Worker profile',
                       textStyleOverride: TextStyles.mainStyleTitle,
                     ),
                     Padding(
@@ -297,7 +297,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                             frozen: !canEdit,
                             text: address?.formattedAddress(),
                             icon: PixelPerfectIcons.placeIndicator,
-                            hint: 'Washer address',
+                            hint: 'Worker address',
                           ),
                         ),
                       ],

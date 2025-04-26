@@ -57,14 +57,14 @@ class WasherBasicDetailsForm extends StatelessWidget {
             FormItem(
               child: InputTextForm(
                 label: 'First name',
-                hint: 'Washer first name',
+                hint: 'Worker first name',
                 controller: tecFirstName..addListener(validate),
               ),
             ),
             FormItem(
               child: InputTextForm(
                 label: 'Last name',
-                hint: 'Washer last name',
+                hint: 'Worker last name',
                 controller: tecLastName..addListener(validate),
               ),
             ),
@@ -72,7 +72,7 @@ class WasherBasicDetailsForm extends StatelessWidget {
               flex: 2,
               child: InputTextForm(
                 label: 'Email',
-                hint: 'Washer email',
+                hint: 'Worker email',
                 controller: tecEmail..addListener(validate),
               ),
             )
@@ -83,7 +83,7 @@ class WasherBasicDetailsForm extends StatelessWidget {
             FormItem(
               child: InputTextForm(
                 label: 'Phone number',
-                hint: 'Washer phone number',
+                hint: 'Worker phone number',
                 controller: tecPhoneNumber..addListener(validate),
               ),
             ),
@@ -105,7 +105,7 @@ class WasherBasicDetailsForm extends StatelessWidget {
                 },
                 text: address?.formattedAddress(),
                 icon: PixelPerfectIcons.placeIndicator,
-                hint: 'Washer address',
+                hint: 'Worker address',
               ),
             ),
           ],
