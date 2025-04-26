@@ -28,7 +28,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     with ScreenStateMixin {
   AdminStatisticsOverviewResponse? adminStatistics;
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     Tuple2<DateTime, DateTime> dateRange = GawDateUtil.getWeekRange();
@@ -41,7 +42,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         dateRange.item2,
       ),
     ).then((adminStats) {
-      setData(() {
+      setState(() {
         adminStatistics = adminStats;
       });
     }).catchError(
@@ -49,14 +50,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         ExceptionHandler.show(error);
       },
     ).whenComplete(() => setLoading(false));
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
   }
 
   @override

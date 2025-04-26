@@ -26,13 +26,14 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
 
   ApplicationListResponse? applicationsListResponse;
 
-  void loadData({
+  @override
+  Future<void> loadData({
     int? page,
     int? itemCount,
-  }) {
+  }) async {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -42,7 +43,7 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
       page: page ?? 1,
       itemCount: itemCount ?? 25,
     ).then((response) {
-      setData(() {
+      setState(() {
         applicationsListResponse = response;
       });
     }).catchError((error) {
@@ -50,17 +51,6 @@ class _WasherDetailsFormState extends State<WasherHistoryDialog>
     }).whenComplete(
       () => setLoading(false),
     );
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
-    super.initState();
   }
 
   void onSelected(JobApplication application) {

@@ -52,7 +52,8 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     );
   }
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     WorkersApi.getWorker(id: widget.washerId!).then((Worker? washer) {
@@ -101,14 +102,6 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   Address? address;
 
   DateTime? dateOfBirth;
-
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {

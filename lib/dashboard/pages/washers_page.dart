@@ -41,16 +41,17 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
 
   String? term;
 
-  void loadData({
+  @override
+  Future<void> loadData({
     int? page,
     int? itemCount,
     String? term,
     String? sortTerm,
     bool ascending = true,
-  }) {
+  }) async {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
@@ -63,7 +64,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
       sortTerm: sortTerm,
       ascending: ascending,
     ).then((response) {
-      setData(() {
+      setState(() {
         washersListResponse = response;
       });
     }).catchError((error) {
@@ -71,17 +72,6 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
     }).whenComplete(
       () => setLoading(false),
     );
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
-    super.initState();
   }
 
   @override

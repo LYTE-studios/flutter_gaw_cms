@@ -29,13 +29,14 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
 
   DimonaListResponse? dimonaListResponse;
 
-  void loadData({
+  @override
+  Future<void> loadData({
     int? page,
     int? itemCount,
-  }) {
+  }) async {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -44,7 +45,7 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
       page: page,
       itemCount: itemCount,
     ).then((response) {
-      setData(() {
+      setState(() {
         dimonaListResponse = response;
       });
     }).catchError((error) {
@@ -52,17 +53,6 @@ class _DimonaPageState extends State<DimonaPage> with ScreenStateMixin {
     }).whenComplete(
       () => setLoading(false),
     );
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
-    super.initState();
   }
 
   @override

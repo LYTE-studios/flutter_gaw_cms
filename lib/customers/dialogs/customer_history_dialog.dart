@@ -26,13 +26,14 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
 
   JobListResponse? jobListResponse;
 
-  void loadData({
+  @override
+  Future<void> loadData({
     int? page,
     int? itemCount,
-  }) {
+  }) async {
     setLoading(true);
 
-    setData(() {
+    setState(() {
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
     });
@@ -42,7 +43,7 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
       page: page ?? 1,
       itemCount: itemCount ?? 25,
     ).then((response) {
-      setData(() {
+      setState(() {
         jobListResponse = response;
       });
     }).catchError((error) {
@@ -50,17 +51,6 @@ class CustomerHistoryDialogState extends State<CustomerHistoryDialog>
     }).whenComplete(
       () => setLoading(false),
     );
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
-    super.initState();
   }
 
   void onSelected(Job job) {

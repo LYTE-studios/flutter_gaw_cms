@@ -14,8 +14,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.2.1
   toggle_switch: ^2.1.0
-  syncfusion_flutter_datepicker: ^24.0.0
-  syncfusion_flutter_charts: ^24.0.0
+  syncfusion_flutter_datepicker: ^29.1.33
+  syncfusion_flutter_charts: ^29.1.33
   smooth_page_indicator: ^1.1.0
   carousel_indicator: ^1.0.6
   fl_chart: ^0.66.2
@@ -54,6 +54,8 @@ dependencies:
 
 dependency_overrides:
   dio: ^5.3.3
+  syncfusion_flutter_datepicker: ^29.1.33
+  syncfusion_flutter_charts: ^29.1.33
   # gaw_ui:
   #   path: ../flutter_package_gaw_ui
   # gaw_api:

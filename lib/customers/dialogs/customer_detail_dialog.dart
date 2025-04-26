@@ -24,7 +24,8 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
 
   bool canEdit = false;
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     CustomerApi.getCustomer(id: widget.customerId).then((Customer? customer) {
@@ -36,14 +37,6 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
         ExceptionHandler.show(error);
       },
     ).whenComplete(() => setLoading(false));
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
   }
 
   String toCommittee(String pc) {

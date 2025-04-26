@@ -27,14 +27,6 @@ class _JobsPageState extends ConsumerState<JobsPage> {
   int selectedPage = 0;
 
   @override
-  void initState() {
-    Future(() {
-      ref.read(jobsProvider.notifier).loadData();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final jobsProviderState = ref.watch(jobsProvider);
 

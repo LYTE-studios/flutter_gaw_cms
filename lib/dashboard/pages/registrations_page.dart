@@ -63,19 +63,20 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
 
   String? term;
 
-  void loadData({
+  @override
+  Future<void> loadData({
     int? page,
     int? itemCount,
     String? term,
     String? sortTerm,
     bool ascending = true,
-  }) {
+  }) async {
     setLoading(true);
 
     page ??= this.page;
     itemCount ??= this.itemCount;
 
-    setData(() {
+    setState(() {
       this.term = term;
       this.page = page ?? this.page;
       this.itemCount = itemCount ?? this.itemCount;
@@ -89,7 +90,7 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       ascending: ascending,
       showRegistered: true,
     ).then((response) {
-      setData(() {
+      setState(() {
         washersListResponse = response;
       });
     }).catchError((error) {
@@ -97,17 +98,6 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
     }).whenComplete(
       () => setLoading(false),
     );
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData(
-        page: page,
-        itemCount: itemCount,
-      );
-    });
-    super.initState();
   }
 
   void onSelected(Worker washer) {

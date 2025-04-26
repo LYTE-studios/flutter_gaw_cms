@@ -208,7 +208,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
                         ? const SizedBox()
                         : SvgIcon(
                             icon,
-                            useRawColors: true,
+                            leaveUnaltered: true,
                           ),
                   ),
                 ),
@@ -268,7 +268,7 @@ class _LanguageButtonState extends ConsumerState<LanguageButton> {
               height: 32,
               child: SvgIcon(
                 icon,
-                useRawColors: true,
+                leaveUnaltered: true,
               ),
             ),
           ),
@@ -454,14 +454,6 @@ class _NotificationDialogState extends ConsumerState<NotificationDialog>
     await api.NotificationsApi.updateNotification(request: updateRequest);
 
     loadData();
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
   }
 
   @override

@@ -130,7 +130,8 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
 
   WorkersForJobResponse? washersForJob;
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     JobsApi.getWashersForJob(jobId: widget.job.id!).then((response) {
@@ -140,14 +141,6 @@ class _JobCreateFormState extends ConsumerState<_JobDetailsForm>
     }).catchError((error) {
       ExceptionHandler.show(error);
     }).whenComplete(() => setLoading(false));
-  }
-
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
   }
 
   @override

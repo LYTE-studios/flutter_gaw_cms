@@ -211,11 +211,6 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
   bool validated = true;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     validate();
 

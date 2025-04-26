@@ -116,7 +116,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage>
                               );
 
                               await AuthenticationApi.testConnection();
-                              setData(() {
+                              setState(() {
                                 loading = false;
                               });
                             },

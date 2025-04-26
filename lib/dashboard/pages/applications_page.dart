@@ -208,19 +208,13 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
     with ScreenStateMixin {
   ApplicationListResponse? applicationsListResponse;
 
-  @override
-  void initState() {
-    Future(() {
-      loadData();
-    });
-    super.initState();
-  }
 
-  void loadData() {
+  @override
+  Future<void> loadData() async {
     setLoading(true);
 
     JobsApi.getApplications(jobId: widget.jobId).then((response) {
-      setData(() {
+      setState(() {
         applicationsListResponse = response;
       });
     }).catchError((error) {
