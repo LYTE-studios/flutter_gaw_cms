@@ -42,36 +42,16 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
   String? term;
 
   @override
-  Future<void> loadData({
-    int? page,
-    int? itemCount,
-    String? term,
-    String? sortTerm,
-    bool ascending = true,
-  }) async {
-    setLoading(true);
-
-    setState(() {
-      this.term = term;
-      this.page = page ?? this.page;
-      this.itemCount = itemCount ?? this.itemCount;
-    });
-
-    WorkersApi.getWorkers(
+  Future<void> loadData() async {
+    WorkersListResponse? response = await WorkersApi.getWorkers(
       page: page,
       itemCount: itemCount,
       searchTerm: term,
-      sortTerm: sortTerm,
-      ascending: ascending,
-    ).then((response) {
-      setState(() {
-        washersListResponse = response;
-      });
-    }).catchError((error) {
-      ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
     );
+
+    setState(() {
+      washersListResponse = response;
+    });
   }
 
   @override
@@ -101,13 +81,27 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
             if (value == term) {
               return;
             }
-            loadData(page: 1, itemCount: itemCount, term: value);
+
+            setState(() {
+              term = value;
+            });
+
+            setData();
           },
           onEditItemCount: (int index) {
-            loadData(itemCount: index, page: page);
+            if (index == itemCount) {
+              return;
+            }
+            setState(() {
+              itemCount = index;
+            });
+            setData();
           },
           onChangePage: (int index) {
-            loadData(itemCount: itemCount, page: index);
+            if (index == page) {
+              return;
+            }
+            setData();
           },
           page: page,
           onDelete: () {
@@ -122,10 +116,7 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
             ).then((_) {
               selection = [];
 
-              loadData(
-                page: 1,
-                itemCount: itemCount,
-              );
+              setData();
             });
           },
           itemsPerPage: itemCount,
@@ -150,27 +141,6 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
               BaseHeaderItem(
                 label: LocaleKeys.name.tr(),
                 sorting: sortingValue == 'first_name',
-                onSort: (bool? ascending) {
-                  if (ascending == null) {
-                    setState(() {
-                      sortingValue = null;
-                    });
-                    loadData(
-                      page: 1,
-                      itemCount: itemCount,
-                    );
-                    return;
-                  }
-                  setState(() {
-                    sortingValue = 'first_name';
-                  });
-                  loadData(
-                    page: 1,
-                    itemCount: itemCount,
-                    sortTerm: 'first_name',
-                    ascending: !ascending,
-                  );
-                },
               ): ListUtil.lColumn,
               BaseHeaderItem(
                 label: LocaleKeys.email.tr(),
@@ -181,23 +151,6 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
               BaseHeaderItem(
                 label: LocaleKeys.hours.tr(),
                 sorting: sortingValue == 'hours',
-                onSort: (bool? ascending) {
-                  if (ascending == null) {
-                    setState(() {
-                      sortingValue = null;
-                    });
-                    return;
-                  }
-                  setState(() {
-                    sortingValue = 'hours';
-                  });
-                  loadData(
-                    page: 1,
-                    itemCount: itemCount,
-                    sortTerm: 'hours',
-                    ascending: ascending,
-                  );
-                },
               ): ListUtil.mColumn,
               const BaseHeaderItem(
                 label: '',

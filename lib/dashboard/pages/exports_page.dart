@@ -63,7 +63,7 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    ExportsApi.getExports(
+    await ExportsApi.getExports(
       page: page,
       itemCount: itemCount,
       sortTerm: sortTerm,
@@ -78,7 +78,7 @@ class _ExportsPageState extends ConsumerState<ExportsPage>
       () => setLoading(false),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(

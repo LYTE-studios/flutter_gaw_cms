@@ -30,26 +30,21 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
   @override
   Future<void> loadData() async {
-    setLoading(true);
-
     Tuple2<DateTime, DateTime> dateRange = GawDateUtil.getWeekRange();
 
-    StatisticsApi.getAdminStatistics(
+    AdminStatisticsOverviewResponse? adminStats =
+        await StatisticsApi.getAdminStatistics(
       startTime: GawDateUtil.toApi(
         dateRange.item1,
       ),
       endTime: GawDateUtil.toApi(
         dateRange.item2,
       ),
-    ).then((adminStats) {
-      setState(() {
-        adminStatistics = adminStats;
-      });
-    }).catchError(
-      (error) {
-        ExceptionHandler.show(error);
-      },
-    ).whenComplete(() => setLoading(false));
+    );
+
+    setState(() {
+      adminStatistics = adminStats;
+    });
   }
 
   @override

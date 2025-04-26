@@ -59,7 +59,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    CustomerApi.getCustomers(
+    await CustomerApi.getCustomers(
       page: page,
       itemCount: itemCount,
       searchTerm: term,
@@ -75,6 +75,7 @@ class _CustomersPageState extends ConsumerState<CustomersPage>
       () => setLoading(false),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return BaseLayoutScreen(

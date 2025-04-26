@@ -82,22 +82,19 @@ class _RegistrationsListViewState extends State<RegistrationsListView>
       this.itemCount = itemCount ?? this.itemCount;
     });
 
-    WorkersApi.getWorkers(
+    WorkersListResponse? response = await WorkersApi.getWorkers(
       page: page,
       itemCount: itemCount,
       searchTerm: term,
       sortTerm: sortTerm,
       ascending: ascending,
       showRegistered: true,
-    ).then((response) {
-      setState(() {
-        washersListResponse = response;
-      });
-    }).catchError((error) {
-      ExceptionHandler.show(error);
-    }).whenComplete(
-      () => setLoading(false),
     );
+
+    setState(() {
+      washersListResponse = response;
+      loading = false;
+    });
   }
 
   void onSelected(Worker washer) {

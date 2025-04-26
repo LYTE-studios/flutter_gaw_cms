@@ -95,7 +95,7 @@ class CmsDrawer extends StatelessWidget {
             ),
             child: Center(
               child: MainText(
-                '© ${DateTime.now().year} Get a Wash',
+                '© ${DateTime.now().year} WERKR',
                 textStyleOverride: TextStyles.mainStyle.copyWith(
                   fontSize: 12,
                 ),

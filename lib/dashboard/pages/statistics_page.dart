@@ -41,13 +41,11 @@ class _StatisticsPageState extends State<StatisticsPage> with ScreenStateMixin {
 
   @override
   Future<void> loadData() async {
-    setLoading(true);
-
     if (startTime == null || endTime == null) {
       return;
     }
 
-    StatisticsApi.getAdminStatistics(
+    await StatisticsApi.getAdminStatistics(
       startTime: GawDateUtil.toApi(startTime!),
       endTime: GawDateUtil.toApi(endTime!),
     ).then((adminStats) {
