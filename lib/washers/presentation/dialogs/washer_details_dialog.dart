@@ -142,7 +142,6 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
     Future(() {
-      loadData();
       loadRegistrationData();
     });
     super.initState();
@@ -171,7 +170,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  MainText(
+                  const MainText(
                     'Washer profile',
                     textStyleOverride: TextStyles.titleStyle,
                   ),
@@ -253,30 +252,27 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                   ),
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  TabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'General Info'),
-                      Tab(text: 'Onboarding Information'),
-                    ],
-                    labelColor: GawTheme.text,
-                    unselectedLabelColor: GawTheme.unselectedText,
-                    indicatorColor: GawTheme.mainTint,
-                    indicatorWeight: 2.0,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    labelStyle: TextStyles.mainStyle.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    unselectedLabelStyle: TextStyles.mainStyle.copyWith(
-                      color: GawTheme.unselectedText,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    isScrollable: true,
-                  ),
+              child: TabBar(
+                tabAlignment: TabAlignment.start,
+                padding: EdgeInsets.zero,
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'General Info'),
+                  Tab(text: 'Onboarding Information'),
                 ],
+                labelColor: GawTheme.text,
+                unselectedLabelColor: GawTheme.unselectedText,
+                indicatorColor: GawTheme.mainTint,
+                indicatorWeight: 2.0,
+                indicatorSize: TabBarIndicatorSize.label,
+                labelStyle: TextStyles.mainStyle.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: TextStyles.mainStyle.copyWith(
+                  color: GawTheme.unselectedText,
+                  fontWeight: FontWeight.w600,
+                ),
+                isScrollable: true,
               ),
             ),
             Expanded(
@@ -459,7 +455,8 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               : jobTypes.isEmpty
                                   ? const Padding(
                                       padding: EdgeInsets.all(
-                                          PaddingSizes.smallPadding),
+                                        PaddingSizes.smallPadding,
+                                      ),
                                       child: Text(
                                         'No job types available',
                                         style: TextStyle(
