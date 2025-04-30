@@ -224,6 +224,14 @@ class _WashersPageState extends State<WashersPage> with ScreenStateMixin {
                       IconRowItem(
                         icon: PixelPerfectIcons.timeDiamondpNormal,
                         secondIcon: PixelPerfectIcons.customEye,
+                        onTapSecond: () {
+                          DialogUtil.show(
+                            dialog: WasherDetailsDialog(
+                              washerId: washer.id!,
+                            ),
+                            context: context,
+                          );
+                        },
                         onTap: () {
                           DialogUtil.show(
                             dialog: WasherHistoryDialog(washerId: washer.id!),

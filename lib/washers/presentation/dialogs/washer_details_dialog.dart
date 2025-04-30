@@ -24,12 +24,11 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   late TabController _tabController;
   Worker? washer;
   RegistrationOnboardingData? registrationData;
-  List<JobType> jobTypes = [];
 
-  bool isJobTypeExpanded = false;
-  bool isSituationExpanded = false;
-  bool isLocationsExpanded = false;
-  bool isWorkTimesExpanded = false;
+  bool isJobTypeExpanded = true;
+  bool isSituationExpanded = true;
+  bool isLocationsExpanded = true;
+  bool isWorkTimesExpanded = true;
 
   void _update() {
     setLoading(true);
@@ -93,17 +92,11 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
 
       setState(() {
         registrationData = data;
-        jobTypes = data?.jobTypes ?? [];
       });
     } catch (error) {
-      // Add console log to help diagnose the issue
-      print('Error loading registration data: $error');
-      ExceptionHandler.show(error);
-
       // Set empty lists to prevent null errors
       setState(() {
         registrationData = null;
-        jobTypes = [];
       });
     } finally {
       setLoading(false);
@@ -450,48 +443,11 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               isJobTypeExpanded = !isJobTypeExpanded;
                             });
                           },
-                          child: loading
-                              ? const Center(child: CircularProgressIndicator())
-                              : jobTypes.isEmpty
-                                  ? const Padding(
-                                      padding: EdgeInsets.all(
-                                        PaddingSizes.smallPadding,
-                                      ),
-                                      child: Text(
-                                        'No job types available',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    )
-                                  : Wrap(
-                                      spacing: 8.0,
-                                      runSpacing: 8.0,
-                                      children: jobTypes.map((jobType) {
-                                        try {
-                                          return Chip(
-                                            label: Text(
-                                              jobType.toString(),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          // Handle any rendering errors
-                                          print('Error rendering job type: $e');
-                                          return const Chip(
-                                            label: Text(
-                                              'Error displaying job type',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.red,
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      }).toList(),
-                                    ),
+                          children: registrationData?.jobTypes
+                                  .map((e) => _DisplayItem(
+                                      value: e.name, extra: e.mastery.name))
+                                  .toList() ??
+                              [],
                         ),
 
                         // Situation Section
@@ -503,18 +459,15 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               isSituationExpanded = !isSituationExpanded;
                             });
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: PaddingSizes.smallPadding,
-                              vertical: PaddingSizes.smallPadding,
-                            ),
-                            child: Text(
-                              'Situation details go here.',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
+                          children: registrationData?.workTypes
+                                  .map(
+                                    (e) => _DisplayItem(
+                                      value: e.name,
+                                    ),
+                                  )
+                                  .toList() ??
+                              [],
                         ),
-
                         // Locations Section
                         _buildExpandableSection(
                           title: 'Locations',
@@ -524,37 +477,14 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                               isLocationsExpanded = !isLocationsExpanded;
                             });
                           },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: PaddingSizes.smallPadding,
-                              vertical: PaddingSizes.smallPadding,
-                            ),
-                            child: Text(
-                              'Location details go here.',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ),
-
-                        // Work Times Section
-                        _buildExpandableSection(
-                          title: 'Work Times',
-                          isExpanded: isWorkTimesExpanded,
-                          onToggle: () {
-                            setState(() {
-                              isWorkTimesExpanded = !isWorkTimesExpanded;
-                            });
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: PaddingSizes.smallPadding,
-                              vertical: PaddingSizes.smallPadding,
-                            ),
-                            child: Text(
-                              'Work time details go here.',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
+                          children: registrationData?.locations
+                                  .map(
+                                    (e) => _DisplayItem(
+                                      value: e.name,
+                                    ),
+                                  )
+                                  .toList() ??
+                              [],
                         ),
                       ],
                     ),
@@ -572,7 +502,7 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     required String title,
     required bool isExpanded,
     required VoidCallback onToggle,
-    required Widget child,
+    required List<Widget> children,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -632,9 +562,53 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                 borderRadius:
                     BorderRadius.circular(8), // Always rounded on all sides
               ),
-              child: child,
+              child: Wrap(
+                children: children,
+              ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _DisplayItem extends StatelessWidget {
+  final String value;
+  final String? extra;
+
+  const _DisplayItem({
+    super.key,
+    required this.value,
+    this.extra,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: PaddingSizes.mainPadding,
+        vertical: PaddingSizes.smallPadding,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: GawTheme.unselectedText.withOpacity(0.3),
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: PaddingSizes.smallPadding,
+            horizontal: PaddingSizes.mainPadding,
+          ),
+          child: MainText(
+            '$value${extra == null ? '' : ' - $extra'}',
+            textStyleOverride: TextStyles.mainStyle.copyWith(
+              fontSize: 12,
+            ),
+          ),
+        ),
       ),
     );
   }

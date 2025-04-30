@@ -212,7 +212,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
   Future<void> loadData() async {
     setLoading(true);
 
-    JobsApi.getApplications(jobId: widget.jobId).then((response) {
+    await JobsApi.getApplications(jobId: widget.jobId).then((response) {
       setState(() {
         applicationsListResponse = response;
       });
@@ -236,6 +236,7 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
   Widget build(BuildContext context) {
     return GenericListView(
       loading: loading,
+      minWidth: 1240,
       title: LocaleKeys.applications.tr(),
       valueName: LocaleKeys.applications.tr().toLowerCase(),
       totalItems: 0,
@@ -258,6 +259,9 @@ class _ApplicationsListViewState extends State<ApplicationsListView>
           const BaseHeaderItem(
             label: 'Distance',
           ): ListUtil.sColumn,
+          const BaseHeaderItem(
+            label: '',
+          ): ListUtil.mColumn,
         },
       ),
       rows: applicationsListResponse?.applications.map(

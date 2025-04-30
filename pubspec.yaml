@@ -1,7 +1,7 @@
 name: flutter_gaw_cms
 description: The admin application for WERKR
 publish_to: none
-version: 1.4.0+1
+version: 1.4.0+2
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
@@ -29,7 +29,7 @@ dependencies:
   flutter_riverpod: ^2.3.10
   freezed: ^2.4.1
   google_map_polyline_new: ^0.3.0+2
-  file_picker: ^5.3.0
+  file_picker: ^10.1.2
   dio: ^5.3.3
   geolocator: ^10.1.0
   widget_to_marker: ^1.0.4
