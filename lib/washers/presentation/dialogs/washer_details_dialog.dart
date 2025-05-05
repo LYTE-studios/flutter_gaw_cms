@@ -680,7 +680,6 @@ class _DisplayItem extends StatelessWidget {
   final String? extra;
 
   const _DisplayItem({
-    super.key,
     required this.value,
     this.extra,
   });
