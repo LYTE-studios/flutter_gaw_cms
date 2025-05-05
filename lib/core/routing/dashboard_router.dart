@@ -12,6 +12,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/tags_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/washers_page.dart';
 import 'package:flutter_gaw_cms/jobs/presentation/application_review_screen.dart';
 import 'package:gaw_ui/generated/locale_keys.g.dart';
@@ -25,6 +26,7 @@ Map<Pattern, Function(BuildContext, BeamState, Object?)> routes = {
   ApplicationsPage.route: (context, state, data) => applicationsBeamPage,
   RegistrationsPage.route: (context, state, data) => registrationsBeamPage,
   ExportsPage.route: (context, state, data) => exportsBeamPage,
+  TagsPage.route: (context, state, data) => tagsBeamPage,
   ApplicationReviewScreen.route: (context, state, data) {
     final jobId = state.pathParameters[ApplicationReviewScreen.kJobId]
         ?.replaceFirst(':', '');

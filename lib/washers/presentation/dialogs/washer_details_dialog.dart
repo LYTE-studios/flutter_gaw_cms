@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -24,11 +25,16 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
   late TabController _tabController;
   Worker? washer;
   RegistrationOnboardingData? registrationData;
+  String? workerType;
 
   bool isJobTypeExpanded = true;
   bool isSituationExpanded = true;
   bool isLocationsExpanded = true;
   bool isWorkTimesExpanded = true;
+
+  TagListResponse? tags;
+
+  List<Tag> selectedTags = [];
 
   void _update() {
     setLoading(true);
@@ -58,10 +64,13 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
     );
   }
 
+  @override
   Future<void> loadData() async {
     setLoading(true);
 
     try {
+      tags = await JobsApi.getTags();
+
       Worker? worker = await WorkersApi.getWorker(id: widget.washerId!);
       setState(() {
         washer = worker;
@@ -73,6 +82,9 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
         tecSsn.text = worker?.ssn ?? '';
         address = worker?.address;
         dateOfBirth = GawDateUtil.tryFromApi(worker?.dateOfBirth);
+        tags = tags;
+        selectedTags = worker?.tags?.toList() ?? [];
+        workerType = worker?.workerType;
       });
     } catch (error) {
       ExceptionHandler.show(error);
@@ -190,49 +202,140 @@ class _WasherDetailsFormState extends State<WasherDetailsDialog>
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                bottom: PaddingSizes.bigPadding,
-              ),
-              child: Container(
-                height: 100,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: SizedBox(
-                    height: 120,
-                    width: 120,
-                    child: ProfilePictureAvatar(
-                      canEdit: true,
-                      showCircle: true,
-                      imageUrl: FormattingUtil.formatUrl(
-                        washer?.profilePictureUrl,
+            SizedBox(
+              height: 160,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: PaddingSizes.bigPadding,
+                    ),
+                    child: SizedBox(
+                      height: 100,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: SizedBox(
+                          height: 120,
+                          width: 120,
+                          child: ProfilePictureAvatar(
+                            canEdit: true,
+                            showCircle: true,
+                            imageUrl: FormattingUtil.formatUrl(
+                              washer?.profilePictureUrl,
+                            ),
+                            onEditPressed: () {
+                              setLoading(true);
+
+                              FilePicker.platform
+                                  .pickFiles(
+                                type: FileType.image,
+                              )
+                                  .then((FilePickerResult? result) {
+                                if (result?.files.isEmpty ?? true) {
+                                  setLoading(false);
+                                  return;
+                                }
+
+                                UsersApi.uploadProfilePicture(
+                                  result!.files[0].bytes!,
+                                  userId: washer!.id,
+                                ).then((_) {
+                                  loadData();
+                                }).catchError((error) {
+                                  ExceptionHandler.show(error);
+                                }).whenComplete(() => setLoading(false));
+                              });
+                            },
+                          ),
+                        ),
                       ),
-                      onEditPressed: () {
-                        setLoading(true);
-
-                        FilePicker.platform
-                            .pickFiles(
-                          type: FileType.image,
-                        )
-                            .then((FilePickerResult? result) {
-                          if (result?.files.isEmpty ?? true) {
-                            setLoading(false);
-                            return;
-                          }
-
-                          UsersApi.uploadProfilePicture(
-                            result!.files[0].bytes!,
-                            userId: washer!.id,
-                          ).then((_) {
-                            loadData();
-                          }).catchError((error) {
-                            ExceptionHandler.show(error);
-                          }).whenComplete(() => setLoading(false));
-                        });
-                      },
                     ),
                   ),
-                ),
+                  const Spacer(),
+                  SizedBox(
+                    width: 256,
+                    child: LoadingSwitcher(
+                      loading: loading,
+                      child: InputMultiSelectionForm(
+                        selectedOptions:
+                            selectedTags.map((e) => e.title).toList(),
+                        options: Map.fromEntries(
+                          tags?.tags?.map(
+                                (e) => MapEntry(
+                                  e.title,
+                                  CircleAvatar(
+                                    backgroundColor: HexColor.fromHex(e.color),
+                                    child: SvgIcon(
+                                      e.icon,
+                                      useRawCode: true,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ) ??
+                              [],
+                        ),
+                        isMulti: true,
+                        onUpdate: (String value) async {
+                          setLoading(true);
+
+                          Tag tag = tags!.tags!.firstWhere(
+                            (e) => e.title == value,
+                          );
+
+                          if (selectedTags.map((t) => t.id).contains(tag.id)) {
+                            selectedTags.removeWhere((t) => t.id == tag.id);
+                          } else {
+                            selectedTags.add(tag);
+                          }
+
+                          await WorkersApi.updateWorker(
+                            id: washer!.id!,
+                            request: WorkerUpdateRequest(
+                              (b) => b
+                                ..tagIds = BuiltList<String>.from(
+                                        selectedTags.map((e) => e.id ?? ''))
+                                    .toBuilder(),
+                            ),
+                          );
+
+                          setData();
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 18,
+                  ),
+                  SizedBox(
+                    width: 256,
+                    child: LoadingSwitcher(
+                      loading: loading,
+                      child: InputMultiSelectionForm(
+                        isMulti: false,
+                        selectedOptions:
+                            workerType == null ? [] : [workerType!],
+                        options: const {
+                          'Flexi': null,
+                          'Student': null,
+                          'Freelance': null,
+                        },
+                        onUpdate: (String value) async {
+                          setLoading(true);
+                          await WorkersApi.updateWorker(
+                            id: washer!.id!,
+                            request: WorkerUpdateRequest(
+                              (b) => b..workerType = value,
+                            ),
+                          );
+
+                          setData();
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Container(

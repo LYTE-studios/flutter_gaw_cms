@@ -153,10 +153,11 @@ class _HoveringItemsState extends State<_HoveringItems> {
                   child: const BaseBannerItem(
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        horizontal: PaddingSizes.bigPadding,
+                        vertical: PaddingSizes.bigPadding,
                       ),
                       child: SvgImage(
                         'assets/images/banner/banner_item_3.svg',
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
                   ),

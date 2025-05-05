@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/utils/exception_handler.dart';
@@ -24,13 +25,19 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
 
   bool canEdit = false;
 
+  TagListResponse? tags;
+
   @override
   Future<void> loadData() async {
     setLoading(true);
 
-    CustomerApi.getCustomer(id: widget.customerId).then((Customer? customer) {
+    tags = await JobsApi.getTags();
+
+    await CustomerApi.getCustomer(id: widget.customerId)
+        .then((Customer? customer) {
       setState(() {
         this.customer = customer;
+        this.tags = tags;
       });
     }).catchError(
       (error) {
@@ -54,8 +61,6 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
 
   @override
   Widget build(BuildContext context) {
-    String committee = toCommittee(customer?.specialCommittee ?? '');
-
     return BaseDialog(
       height: 680,
       child: Padding(
@@ -156,35 +161,41 @@ class _CustomerDetailDialogState extends State<CustomerDetailDialog>
                       child: LoadingSwitcher(
                         loading: loading,
                         child: InputMultiSelectionForm(
-                          isMulti: false,
-                          selectedOptions: [committee],
-                          options: const {
-                            'Automotive': null,
-                            'Horeca': null,
-                            'Hospitality': null,
-                          },
+                          selectedOptions: customer?.tag == null
+                              ? []
+                              : [customer!.tag!.title],
+                          options: Map.fromEntries(
+                            tags?.tags?.map(
+                                  (e) => MapEntry(
+                                    e.title,
+                                    CircleAvatar(
+                                      backgroundColor:
+                                          HexColor.fromHex(e.color),
+                                      child: SvgIcon(
+                                        e.icon,
+                                        useRawCode: true,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ) ??
+                                [],
+                          ),
                           onUpdate: (String value) async {
                             setLoading(true);
 
-                            String committee = '121';
-
-                            switch (value) {
-                              case 'Automotive':
-                                committee = '121';
-                              case 'Horeca':
-                                committee = '302';
-                              case 'Hospitality':
-                                committee = 'h121';
-                            }
+                            Tag tag = tags!.tags!.firstWhere(
+                              (e) => e.title == value,
+                            );
 
                             await CustomerApi.updateCustomer(
                               id: customer!.id!,
                               request: UpdateCustomerRequest(
-                                (b) => b..specialCommittee = committee,
+                                (b) => b..tagId = tag.id,
                               ),
                             );
 
-                            loadData();
+                            setData();
                           },
                         ),
                       ),

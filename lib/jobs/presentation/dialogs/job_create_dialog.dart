@@ -49,6 +49,17 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
 
   Map<String, String> options = {};
 
+  TagListResponse? tags;
+
+  @override
+  Future<void> loadData() async {
+    tags = await JobsApi.getTags();
+
+    setState(() {
+      tags = tags;
+    });
+  }
+
   void createJob({required bool isDraft}) {
     if (!validated) {
       return;
@@ -70,7 +81,8 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
           ..maxworkers = int.parse(tecNeededWashers.text)
           ..isDraft = isDraft
           ..address = address!.toBuilder()
-          ..description = tecDescription.text,
+          ..description = tecDescription.text
+          ..tagId = tag?.id,
       ),
     ).then((_) {
       Navigator.pop(context);
@@ -172,6 +184,7 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
     ..addListener(validate);
 
   Address? address;
+  Tag? tag;
 
   String? customerId;
 
@@ -275,54 +288,112 @@ class _JobCreateFormState extends ConsumerState<_JobCreateForm>
             ),
           ],
         ),
-        FormRow(
-          formItems: [
-            FormItem(
-              child: InputSelectionForm(
-                options: options,
-                onChanged: (String? term) {
-                  setState(() {
-                    customerQueryTerm = term;
-                  });
-                  getCustomerOptions();
-                },
-                onSelected: (value) {
-                  setState(() {
-                    customerId = value as String;
-                    address = knownCustomers
-                        .firstWhere((customer) => customerId == customer.id)
-                        .address;
-                  });
-                },
-                label: 'Customer',
-                hint: 'Choose the customer for your job',
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  FormRow(
+                    formItems: [
+                      FormItem(
+                        child: InputSelectionForm(
+                          options: options,
+                          onChanged: (String? term) {
+                            setState(() {
+                              customerQueryTerm = term;
+                            });
+                            getCustomerOptions();
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              customerId = value as String;
+                              final customer = knownCustomers.firstWhere(
+                                  (customer) => customerId == customer.id);
+                              address = knownCustomers
+                                  .firstWhere(
+                                      (customer) => customerId == customer.id)
+                                  .address;
+                              tag = customer.tag;
+                            });
+                          },
+                          label: 'Customer',
+                          hint: 'Choose the customer for your job',
+                        ),
+                      ),
+                    ],
+                  ),
+                  FormRow(
+                    formItems: [
+                      FormItem(
+                        child: InputStaticTextForm(
+                          label: 'Location',
+                          onTap: () {
+                            DialogUtil.show(
+                              dialog: LocationPickerDialog(
+                                address: address,
+                                onAddressSelected: (Address address) {
+                                  setState(() {
+                                    this.address = address;
+                                  });
+                                },
+                              ),
+                              context: context,
+                            );
+                          },
+                          text: (address?.formattedAddress().isEmpty ?? true)
+                              ? address?.formattedLatLong()
+                              : address?.formattedAddress(),
+                          icon: PixelPerfectIcons.placeIndicator,
+                          hint: 'Location for the job',
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-        FormRow(
-          formItems: [
-            FormItem(
-              child: InputStaticTextForm(
-                label: 'Location',
-                onTap: () {
-                  DialogUtil.show(
-                    dialog: LocationPickerDialog(
-                      address: address,
-                      onAddressSelected: (Address address) {
-                        setState(() {
-                          this.address = address;
-                        });
-                      },
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 12,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(
+                    PaddingSizes.smallPadding,
+                  ),
+                  child: InputMultiSelectionForm(
+                    maxSize: 130,
+                    selectedOptions: tag == null ? [] : [tag!.title],
+                    options: Map.fromEntries(
+                      tags?.tags?.map(
+                            (e) => MapEntry(
+                              e.title,
+                              CircleAvatar(
+                                backgroundColor: HexColor.fromHex(e.color),
+                                child: SvgIcon(
+                                  e.icon,
+                                  useRawCode: true,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ) ??
+                          [],
                     ),
-                    context: context,
-                  );
-                },
-                text: (address?.formattedAddress().isEmpty ?? true)
-                    ? address?.formattedLatLong()
-                    : address?.formattedAddress(),
-                icon: PixelPerfectIcons.placeIndicator,
-                hint: 'Location for the job',
+                    onUpdate: (String value) async {
+                      setLoading(true);
+
+                      Tag selectedTag = tags!.tags!.firstWhere(
+                        (e) => e.title == value,
+                      );
+                      setState(() {
+                        tag = selectedTag;
+                      });
+                      setData();
+                    },
+                  ),
+                ),
               ),
             ),
           ],

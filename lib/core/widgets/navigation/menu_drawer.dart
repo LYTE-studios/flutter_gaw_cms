@@ -10,6 +10,7 @@ import 'package:flutter_gaw_cms/dashboard/pages/notifications_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/registrations_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/settings_page.dart';
 import 'package:flutter_gaw_cms/dashboard/pages/statistics_page.dart';
+import 'package:flutter_gaw_cms/dashboard/pages/tags_page.dart';
 import 'package:gaw_ui/gaw_ui.dart';
 
 import '../../../dashboard/pages/customers_page.dart';
@@ -142,6 +143,19 @@ class MenuDrawer extends StatelessWidget {
             height: PaddingSizes.smallPadding,
           ),
           DrawerNavigationItem(
+            label: 'Tags',
+            onTap: () {
+              onChange?.call(TagsPage.route);
+            },
+            iconUrl: PixelPerfectIcons.tag,
+            active: [
+              TagsPage.route,
+            ].contains(route),
+          ),
+          const SizedBox(
+            height: PaddingSizes.smallPadding,
+          ),
+          DrawerNavigationItem(
             label: 'Notifications',
             onTap: () {
               onChange?.call(NotificationsPage.route);
@@ -163,14 +177,6 @@ class MenuDrawer extends StatelessWidget {
           const SizedBox(
             height: PaddingSizes.smallPadding,
           ),
-          DrawerNavigationItem(
-            label: 'Settings',
-            onTap: () {
-              onChange?.call(SettingsPage.route);
-            },
-            iconUrl: PixelPerfectIcons.settingsNormal,
-            active: SettingsPage.route == route,
-          ),
           Padding(
             padding: const EdgeInsets.only(
               left: PaddingSizes.extraBigPadding + PaddingSizes.mainPadding,
@@ -184,6 +190,17 @@ class MenuDrawer extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
+          ),
+          const SizedBox(
+            height: PaddingSizes.smallPadding,
+          ),
+          DrawerNavigationItem(
+            label: 'Settings',
+            onTap: () {
+              onChange?.call(SettingsPage.route);
+            },
+            iconUrl: PixelPerfectIcons.settingsNormal,
+            active: SettingsPage.route == route,
           ),
           const SizedBox(
             height: PaddingSizes.smallPadding,

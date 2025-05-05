@@ -2,7 +2,6 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gaw_cms/core/screens/not_found_screen.dart';
 import 'package:flutter_gaw_cms/dashboard/dashboard_screen.dart';
-import 'package:flutter_gaw_cms/sign_in/password_reset_screen.dart';
 import 'package:flutter_gaw_cms/sign_in/sign_in_screen.dart';
 import 'package:flutter_gaw_cms/splash/splash_screen.dart';
 
